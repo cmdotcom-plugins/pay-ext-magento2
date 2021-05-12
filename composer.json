@@ -1,0 +1,16 @@
+{
+  "name": "cm/payments",
+  "require": {
+    "magento/framework": ">=102.0.0",
+    "php": ">=7.3"
+  },
+  "type": "magento2-module",
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "CM\\Payments\\": ""
+    }
+  }
+}

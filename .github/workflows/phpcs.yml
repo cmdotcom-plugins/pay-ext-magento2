@@ -1,0 +1,14 @@
+name: Magento Coding Standard
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Run codesniffer on everything excluding the Tests directory
+        run: docker run --volume $(pwd)/:/app/data michielgerritsen/magento-coding-standard:latest --severity=1 --ignore=*/Test/*
+
+      - name: Run codesniffer on the Tests directory
+        run: docker run --volume $(pwd)/Test:/app/data michielgerritsen/magento-coding-standard:latest --severity=10
