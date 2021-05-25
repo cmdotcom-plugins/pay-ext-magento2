@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright © 2021 cm.com. All rights reserved.
+  ~ See LICENSE.txt for license details.
+  -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="CM\Payments\Api\Service\OrderServiceInterface" type="CM\Payments\Service\OrderService" />
+    <preference for="CM\Payments\Api\Client\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
+    <preference for="CM\Payments\Api\Model\OrderRepositoryInterface" type="CM\Payments\Model\OrderRepository" />
+    <preference for="CM\Payments\Api\Model\Data\OrderInterface" type="CM\Payments\Model\Data\Order"/>
+    <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config"/>
+
+    <virtualType name="CMPaymentsFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">CMCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMInitializeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CMInitializeRequestBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">CM\Payments\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">CM\Payments\Gateway\Http\Client\RedirectClient</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMInitializeRequestBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transaction" xsi:type="string">CM\Payments\Gateway\Request\Builder\RedirectTransactionBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+</config>
