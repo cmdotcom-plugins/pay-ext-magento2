@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2021 cm.com. All rights reserved.
+ * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
 
@@ -10,7 +10,7 @@ namespace CM\Payments\Model;
 
 use CM\Payments\Model\ResourceModel\Order as ResourceOrder;
 
-class Order extends \Magento\Framework\Model\AbstractModel implements \Magento\Framework\DataObject\IdentityInterface
+class Order extends \Magento\Framework\Model\AbstractModel
 {
     const CACHE_TAG = 'cm_payments_order';
 

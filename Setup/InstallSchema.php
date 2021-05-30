@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2021 cm.com. All rights reserved.
+ * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
 

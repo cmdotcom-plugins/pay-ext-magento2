@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2021 cm.com. All rights reserved.
+ * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
 
@@ -40,13 +40,7 @@ class RedirectTransactionBuilder implements BuilderInterface
     public function build(array $buildSubject): array
     {
         $stateObject = $buildSubject['stateObject'];
-
-        $paymentDataObject = SubjectReader::readPayment($buildSubject);
-        $payment = $paymentDataObject->getPayment();
-        $order = $payment->getOrder();
-
         $state = Order::STATE_NEW;
-
         $stateObject->setState($state);
 
         // Early return on backend order

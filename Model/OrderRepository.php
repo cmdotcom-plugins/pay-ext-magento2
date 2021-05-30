@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2021 cm.com. All rights reserved.
+ * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
 
@@ -36,7 +36,7 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function __construct(
         ResourceOrder $resource,
-        OrderFactory $orderFactory,
+        \CM\Payments\Model\OrderFactory $orderFactory,
         ExtensibleDataObjectConverter $extensibleDataObjectConverter
     ) {
         $this->resource = $resource;

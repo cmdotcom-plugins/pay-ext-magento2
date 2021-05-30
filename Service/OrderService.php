@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2021 cm.com. All rights reserved.
+ * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
 
@@ -81,7 +81,8 @@ class OrderService implements OrderServiceInterface
             $this->getAmount($order),
             $order->getStoreCurrencyCode(),
             $order->getBillingAddress()->getEmail(),
-            substr($this->localeResolver->emulate($order->getStoreId()), 0, 2), // Todo: format locale and move to other file
+            // Todo: format locale and move to other file
+            substr($this->localeResolver->emulate($order->getStoreId()), 0, 2),
             $order->getBillingAddress()->getCountryId(),
             $this->config->getPaymentProfile($order->getStoreId())
         );

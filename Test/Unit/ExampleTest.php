@@ -1,5 +1,10 @@
 <?php
 /**
+ * Copyright © CM.com. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+
+/**
  *    ______            __             __
  *   / ____/___  ____  / /__________  / /
  *  / /   / __ \/ __ \/ __/ ___/ __ \/ /

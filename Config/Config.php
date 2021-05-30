@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2021 cm.com. All rights reserved.
+ * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
 
@@ -70,6 +70,9 @@ class Config implements ConfigInterface
         return $this->encryptor->decrypt($merchantPassword);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getPaymentProfile($storeId = null): string
     {
         return $this->scopeConfig->getValue(

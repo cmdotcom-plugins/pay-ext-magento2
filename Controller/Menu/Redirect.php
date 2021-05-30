@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright © 2021 cm.com. All rights reserved.
+ * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
 
@@ -73,6 +73,8 @@ class Redirect implements HttpGetActionInterface
             return $this->redirectFactory->create()
                 ->setUrl($orderRedirectUrl);
         } catch (\Exception $exception) {
+            // Todo: show error message
+
             $this->logger->error($exception);
             return $this->redirectToCheckout();
         }
