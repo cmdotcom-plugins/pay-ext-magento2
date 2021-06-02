@@ -5,7 +5,7 @@
   -->
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:framework:Config:etc/system_file.xsd">
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="cm_payments" sortOrder="210" translate="label" class="cm_payments-tab">
             <label>CM Payments</label>

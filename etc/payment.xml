@@ -4,9 +4,10 @@
   ~ See LICENSE.txt for license details.
   -->
 
-<payment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Payment:etc/payment.xsd">
+<payment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Payment:etc/payment.xsd">
     <groups>
-        <group id="cm_payments">
+        <group id="cm">
             <label>CM Payment Methods</label>
         </group>
     </groups>
