@@ -14,8 +14,10 @@ use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Model\Order;
+use CM\Payments\Client\Model\OrderFactory;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use Magento\Framework\Locale\ResolverInterface;
+use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
@@ -45,12 +47,21 @@ class OrderService implements OrderServiceInterface
      * @var ResolverInterface
      */
     private $localeResolver;
+    /**
+     * @var UrlInterface
+     */
+    private $urlBuilder;
 
     /**
-     * OrderService constructor.
+     * OrderService constructor
+     *
      * @param OrderRepositoryInterface $orderRepository
      * @param ApiClientInterface $apiClient
      * @param OrderInterfaceFactory $orderFactory
+     * @param CMOrderRepositoryInterface $CMOrderRepository
+     * @param ConfigInterface $config
+     * @param ResolverInterface $localeResolver
+     * @param UrlInterface $urlBuilder
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
@@ -58,7 +69,8 @@ class OrderService implements OrderServiceInterface
         OrderInterfaceFactory $orderFactory,
         CMOrderRepositoryInterface $CMOrderRepository,
         ConfigInterface $config,
-        ResolverInterface $localeResolver
+        ResolverInterface $localeResolver,
+        UrlInterface $urlBuilder
     ) {
         $this->orderRepository = $orderRepository;
         $this->apiClient = $apiClient;
@@ -66,6 +78,7 @@ class OrderService implements OrderServiceInterface
         $this->CMOrderRepository = $CMOrderRepository;
         $this->config = $config;
         $this->localeResolver = $localeResolver;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -84,7 +97,8 @@ class OrderService implements OrderServiceInterface
             // Todo: format locale and move to other file
             substr($this->localeResolver->emulate($order->getStoreId()), 0, 2),
             $order->getBillingAddress()->getCountryId(),
-            $this->config->getPaymentProfile($order->getStoreId())
+            $this->config->getPaymentProfile($order->getStoreId()),
+            $this->urlBuilder
         );
 
         $response = $this->apiClient->execute(new OrderCreateRequest($orderRequest));
@@ -98,14 +112,16 @@ class OrderService implements OrderServiceInterface
             $this->CMOrderRepository->save($model);
         }
 
+        $additionalInformation = $order->getPayment()->getAdditionalInformation();
         if ($response['expires_on']) {
-            $order->getPayment()->setAdditionalInformation('expires_at', $response['expires_on']);
+            $additionalInformation['expires_at'] = $response['expires_on'];
         }
 
         if ($response['url']) {
-            $order->getPayment()->setAdditionalInformation('checkout_url', $response['url']);
+            $additionalInformation['checkout_url'] = $response['url'];
         }
 
+        $order->getPayment()->setAdditionalInformation($additionalInformation);
         $this->orderRepository->save($order);
 
         // Todo: return order domain object

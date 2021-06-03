@@ -12,4 +12,16 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="CM\Payments\Controller\Menu\Redirect">
+        <arguments>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+
+    <type name="CM\Payments\Controller\Payment\Result">
+        <arguments>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
 </config>
