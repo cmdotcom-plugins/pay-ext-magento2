@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright © CM.com. All rights reserved.
+  ~ See LICENSE.txt for license details.
+  -->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="cm_payments_order" resource="default" engine="innodb"
+           comment="CM Payments order table">
+        <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="id"/>
+        <column xsi:type="int" name="order_id" padding="11" unsigned="true" nullable="false" identity="false"
+                default="0"
+                comment="Order Id"/>
+        <column xsi:type="varchar" name="increment_id" nullable="true" length="50" comment="Increment ID"/>
+        <column xsi:type="varchar" name="order_key" padding="255" unsigned="true" nullable="false" identity="false"
+                comment="Order Key"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+
+        <index referenceId="CM_PAYMENTS_ORDER_ORDER_ID" indexType="btree">
+            <column name="order_id"/>
+        </index>
+        <index referenceId="CM_PAYMENTS_ORDER_ORDER_KEY" indexType="btree">
+            <column name="order_key"/>
+        </index>
+        <index referenceId="CM_PAYMENTS_ORDER_INCREMENT_ID" indexType="btree">
+            <column name="increment_id"/>
+        </index>
+    </table>
+</schema>

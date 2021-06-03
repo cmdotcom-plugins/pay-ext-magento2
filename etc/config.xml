@@ -30,6 +30,11 @@
                 <transaction_type>redirect</transaction_type>
                 <group>cm_payments</group>
             </cm_payments>
+            <cm_payments_general>
+                <merchant_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <merchant_password backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <mode>test</mode>
+            </cm_payments_general>
         </payment>
     </default>
 </config>

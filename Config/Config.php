@@ -10,7 +10,6 @@ namespace CM\Payments\Config;
 
 use CM\Payments\Api\Config\ConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Encryption\EncryptorInterface;
 use Magento\Store\Model\ScopeInterface;
 
 class Config implements ConfigInterface
@@ -19,15 +18,10 @@ class Config implements ConfigInterface
      * @var ScopeConfigInterface
      */
     private $scopeConfig;
-    /**
-     * @var EncryptorInterface
-     */
-    private $encryptor;
 
-    public function __construct(ScopeConfigInterface $scopeConfig, EncryptorInterface $encryptor)
+    public function __construct(ScopeConfigInterface $scopeConfig)
     {
         $this->scopeConfig = $scopeConfig;
-        $this->encryptor = $encryptor;
     }
 
     /**
@@ -35,13 +29,7 @@ class Config implements ConfigInterface
      */
     public function getMerchantKey($storeId = null): string
     {
-        $merchantPassword = $this->scopeConfig->getValue(
-            'payment/cm_payments_general/merchant_key',
-            ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
-
-        return $this->encryptor->decrypt($merchantPassword);
+        return $this->getValue('payment/cm_payments_general/merchant_key', $storeId);
     }
 
     /**
@@ -49,11 +37,7 @@ class Config implements ConfigInterface
      */
     public function getMerchantName($storeId = null): string
     {
-        return $this->scopeConfig->getValue(
-            'payment/cm_payments_general/merchant_name',
-            ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
+        return $this->getValue('payment/cm_payments_general/merchant_name', $storeId);
     }
 
     /**
@@ -61,13 +45,7 @@ class Config implements ConfigInterface
      */
     public function getMerchantPassword($storeId = null): string
     {
-        $merchantPassword = $this->scopeConfig->getValue(
-            'payment/cm_payments_general/merchant_password',
-            ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
-
-        return $this->encryptor->decrypt($merchantPassword);
+        return $this->getValue('payment/cm_payments_general/merchant_password', $storeId);
     }
 
     /**
@@ -75,10 +53,29 @@ class Config implements ConfigInterface
      */
     public function getPaymentProfile($storeId = null): string
     {
-        return $this->scopeConfig->getValue(
-            'payment/cm_payments_methods/profile',
+        return $this->getValue('payment/cm_payments_methods/profile', $storeId);
+    }
+    /**
+     * @inheritDoc
+     */
+    public function getApiMode($storeId = null): string
+    {
+        return $this->getValue('payment/cm_payments_methods/mode', $storeId);
+    }
+
+    /**
+     * @param $path
+     * @param $storeId
+     * @return string
+     */
+    private function getValue(string $path, $storeId): string
+    {
+        $value = $this->scopeConfig->getValue(
+            $path,
             ScopeInterface::SCOPE_STORE,
             $storeId
         );
+
+        return $value ?: '';
     }
 }

@@ -14,6 +14,7 @@ interface OrderInterface extends ExtensibleDataInterface
 {
     const ORDER_ID = 'order_id';
     const ORDER_KEY = 'order_key';
+    const ORDER_INCREMENT_ID = 'increment_id';
     /**
      * @return int
      */
@@ -35,4 +36,10 @@ interface OrderInterface extends ExtensibleDataInterface
      * @return OrderInterface
      */
     public function setOrderKey(string $orderKey): OrderInterface;
+
+    /**
+     * @param string $incrementId
+     * @return OrderInterface
+     */
+    public function setIncrementId(string $incrementId): OrderInterface;
 }

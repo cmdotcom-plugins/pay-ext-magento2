@@ -15,7 +15,8 @@ use GuzzleHttp\Client as HttpClient;
 
 class ApiClient implements ApiClientInterface
 {
-    const API_URL = 'https://testsecure.docdatapayments.com/ps/api/public/v1/merchants/';
+    const API_TEST_URL = 'https://testsecure.docdatapayments.com/ps/api/public/v1/merchants/';
+    const API_URL = 'https://secure.docdatapayments.com/ps/api/public/v1/merchants/';
 
     /**
      * @var HttpClient
@@ -61,7 +62,7 @@ class ApiClient implements ApiClientInterface
 
             $authorizationToken = 'Basic ' . base64_encode($merchantName . ':' . $merchantPassword);
             $this->httpClient = new HttpClient([
-                'base_uri' => static::API_URL . $this->config->getMerchantKey() . '/',
+                'base_uri' => $this->getBaseApiUrl(),
                 'headers' => [
                     'Authorization' => $authorizationToken
                 ]
@@ -69,5 +70,15 @@ class ApiClient implements ApiClientInterface
         }
 
         return $this->httpClient;
+    }
+
+    /**
+     * @return string
+     */
+    private function getBaseApiUrl(): string
+    {
+        $url = $this->config->getApiMode() === 'live' ? self::API_URL : self::API_TEST_URL;
+
+        return $url . $this->config->getMerchantKey() . '/';
     }
 }
