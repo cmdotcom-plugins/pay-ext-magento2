@@ -33,4 +33,10 @@ interface ConfigInterface
      * @return string
      */
     public function getPaymentProfile($storeId = null): string;
+
+    /**
+     * @param int|null $storeId
+     * @return string
+     */
+    public function getApiMode($storeId = null): string;
 }
