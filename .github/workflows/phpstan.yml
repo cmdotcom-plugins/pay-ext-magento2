@@ -30,9 +30,9 @@ jobs:
       - name: Upload our code into the docker container
         run: docker cp $(pwd) magento-project-community-edition:/data/extensions/
 
-      # Only the tests in your repository will be run, the default Magento tests are not included in this.
-      - name: Run tests
-        run: docker exec magento-project-community-edition ls -al /data/extensions/
+      # Install the extension and PHPStan into Magento
+      - name: Install the extensions in Magento
+        run: docker exec magento-project-community-edition composer require cm/payments:@dev fooman/phpstan-magento2-magic-methods:^0.7
 
       # Only the tests in your repository will be run, the default Magento tests are not included in this.
       - name: Run tests
