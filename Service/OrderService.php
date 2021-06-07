@@ -13,9 +13,10 @@ use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Client\Model\Order;
-use CM\Payments\Client\Model\OrderFactory;
+use CM\Payments\Client\Model\Order as ClientOrder;
+use CM\Payments\Client\Model\OrderFactory as ClientOrderFactory;
 use CM\Payments\Client\Request\OrderCreateRequest;
+use CM\Payments\Client\Request\OrderCreateRequestFactory;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -51,6 +52,14 @@ class OrderService implements OrderServiceInterface
      * @var UrlInterface
      */
     private $urlBuilder;
+    /**
+     * @var ClientOrderFactory
+     */
+    private $clientOrderFactory;
+    /**
+     * @var OrderCreateRequestFactory
+     */
+    private $orderCreateRequestFactory;
 
     /**
      * OrderService constructor
@@ -62,6 +71,8 @@ class OrderService implements OrderServiceInterface
      * @param ConfigInterface $config
      * @param ResolverInterface $localeResolver
      * @param UrlInterface $urlBuilder
+     * @param ClientOrderFactory $clientOrderFactory
+     * @param OrderCreateRequestFactory $orderCreateRequestFactory
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
@@ -70,7 +81,9 @@ class OrderService implements OrderServiceInterface
         CMOrderRepositoryInterface $CMOrderRepository,
         ConfigInterface $config,
         ResolverInterface $localeResolver,
-        UrlInterface $urlBuilder
+        UrlInterface $urlBuilder,
+        ClientOrderFactory $clientOrderFactory,
+        OrderCreateRequestFactory $orderCreateRequestFactory
     ) {
         $this->orderRepository = $orderRepository;
         $this->apiClient = $apiClient;
@@ -79,6 +92,8 @@ class OrderService implements OrderServiceInterface
         $this->config = $config;
         $this->localeResolver = $localeResolver;
         $this->urlBuilder = $urlBuilder;
+        $this->clientOrderFactory = $clientOrderFactory;
+        $this->orderCreateRequestFactory = $orderCreateRequestFactory;
     }
 
     /**
@@ -88,20 +103,24 @@ class OrderService implements OrderServiceInterface
     {
         $order = $this->orderRepository->get($orderId);
 
-        // Todo: create factory instead of using Order model directly
-        $orderRequest = new Order(
-            $order->getIncrementId(),
-            $this->getAmount($order),
-            $order->getStoreCurrencyCode(),
-            $order->getBillingAddress()->getEmail(),
+        /** @var ClientOrder $clientOrder */
+        $clientOrder = $this->clientOrderFactory->create([
+            'orderId' => $order->getIncrementId(),
+            'amount' => $this->getAmount($order),
+            'currency' => $order->getStoreCurrencyCode(),
+            'email' => $order->getBillingAddress()->getEmail(),
             // Todo: format locale and move to other file
-            substr($this->localeResolver->emulate($order->getStoreId()), 0, 2),
-            $order->getBillingAddress()->getCountryId(),
-            $this->config->getPaymentProfile($order->getStoreId()),
-            $this->urlBuilder
-        );
+            'language' => substr($this->localeResolver->emulate($order->getStoreId()), 0, 2),
+            'country' => $order->getBillingAddress()->getCountryId(),
+            'paymentProfile' => $this->config->getPaymentProfile($order->getStoreId()),
+            'urlBuilder' => $this->urlBuilder
+        ]);
 
-        $response = $this->apiClient->execute(new OrderCreateRequest($orderRequest));
+        /** @var OrderCreateRequest $orderRequest */
+        $orderRequest = $this->orderCreateRequestFactory->create(['order' => $clientOrder]);
+        $response = $this->apiClient->execute(
+            $orderRequest
+        );
 
         if ($response['order_key']) {
             // Todo: save this cm_payments_order.

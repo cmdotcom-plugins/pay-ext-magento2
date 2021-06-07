@@ -8,15 +8,20 @@ declare(strict_types=1);
 
 namespace CM\Payments\Controller\Payment;
 
-use CM\Payments\Api\Service\OrderServiceInterface;
 use Exception;
 use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\ActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
+use Magento\Sales\Api\OrderManagementInterface;
 use Psr\Log\LoggerInterface;
+use CM\Payments\Client\Model\Order;
 
-class Result implements HttpPostActionInterface
+class Result implements ActionInterface, HttpGetActionInterface
 {
     /**
      * @var CheckoutSession
@@ -29,9 +34,19 @@ class Result implements HttpPostActionInterface
     private $redirectFactory;
 
     /**
-     * @var OrderServiceInterface
+     * @var RequestInterface
      */
-    private $orderService;
+    private $request;
+
+    /**
+     * @var MessageManagerInterface
+     */
+    private $messageManager;
+
+    /**
+     * @var OrderManagementInterface
+     */
+    private $orderManagement;
 
     /**
      * @var LoggerInterface
@@ -41,20 +56,24 @@ class Result implements HttpPostActionInterface
     /**
      * Result constructor
      *
+     * @param Context $context
      * @param CheckoutSession $checkoutSession
      * @param RedirectFactory $redirectFactory
-     * @param OrderServiceInterface $orderService
+     * @param OrderManagementInterface $orderManagement
      * @param LoggerInterface $logger
      */
     public function __construct(
+        Context $context,
         CheckoutSession $checkoutSession,
         RedirectFactory $redirectFactory,
-        OrderServiceInterface $orderService,
+        OrderManagementInterface $orderManagement,
         LoggerInterface $logger
     ) {
         $this->checkoutSession = $checkoutSession;
         $this->redirectFactory = $redirectFactory;
-        $this->orderService = $orderService;
+        $this->request = $context->getRequest();
+        $this->messageManager = $context->getMessageManager();
+        $this->orderManagement = $orderManagement;
         $this->logger = $logger;
     }
 
@@ -63,34 +82,47 @@ class Result implements HttpPostActionInterface
      */
     public function execute()
     {
-        try {
-            $order = $this->checkoutSession->getLastRealOrder();
-            $orderId = $order->getRealOrderId();
+        $referenceOrderId = $this->request->getParam('order_reference');
+        $status = $this->request->getParam('status');
 
-            $this->logger->debug(json_encode($order->getData()));
-            $this->logger->debug($orderId);
-            $this->logger->debug($order->getEntityId());
-            if (!$orderId) {
+        try {
+            if (!$referenceOrderId || !$status) {
+                $this->messageManager->addErrorMessage(__("The order reference is not valid!"));
+
                 return $this->redirectToCheckout();
             }
 
-            $orderRedirectUrl = $this->orderService->create($order->getEntityId());
+            $orderIncrementId = $this->checkoutSession->getLastRealOrder()->getIncrementId();
+            if (!$orderIncrementId || $referenceOrderId !== $orderIncrementId) {
+                $this->messageManager->addErrorMessage(__("The order reference is not valid!"));
+
+                return $this->redirectToCheckout();
+            }
+
+            if (in_array($status, [Order::STATUS_ERROR, Order::STATUS_CANCELLED])) {
+                $this->orderManagement->cancel($this->checkoutSession->getLastRealOrder()->getId());
+                $this->messageManager->addErrorMessage(__("The order was cancelled because of payment errors!"));
+
+                return $this->redirectToCheckout();
+            };
 
             return $this->redirectFactory->create()
-                ->setUrl($orderRedirectUrl);
+                ->setPath('checkout/onepage/success');
         } catch (Exception $exception) {
-            // Todo: show error message
-
             $this->logger->error($exception);
+            $this->messageManager->addErrorMessage($exception->getMessage());
+
             return $this->redirectToCheckout();
         }
     }
 
+    /**
+     * @return Redirect
+     */
     public function redirectToCheckout(): Redirect
     {
         $this->checkoutSession->restoreQuote();
 
-        // Todo: show error message
         return $this->redirectFactory->create()
             ->setPath('checkout/cart');
     }

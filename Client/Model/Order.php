@@ -14,6 +14,14 @@ use Magento\Framework\UrlInterface;
 class Order
 {
     /**
+     * Payment statuses constants
+     */
+    public const STATUS_SUCCESS = 'success';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_ERROR = 'error';
+
+    /**
      * @var string
      */
     private $orderId;
@@ -95,10 +103,10 @@ class Order
             'country' => $this->country,
             'profile' => $this->paymentProfile,
             'return_urls' => [
-                'success' => $this->getReturnUrl(),
-                'pending' => $this->getReturnUrl(),
-                'cancelled' => $this->getReturnUrl(),
-                'error' => $this->getReturnUrl(),
+                'success' => $this->getReturnUrl($this->orderId, self::STATUS_SUCCESS),
+                'pending' => $this->getReturnUrl($this->orderId, self::STATUS_PENDING),
+                'cancelled' => $this->getReturnUrl($this->orderId, self::STATUS_CANCELLED),
+                'error' => $this->getReturnUrl($this->orderId, self::STATUS_ERROR),
             ]
         ];
     }
@@ -106,12 +114,17 @@ class Order
     /**
      * Get Return Url
      *
+     * @param string $orderReference
+     * @param string $status
      * @return string
      */
-    private function getReturnUrl(): string
+    private function getReturnUrl(string $orderReference, string $status): string
     {
         return $this->urlBuilder->getUrl('cmpayments/payment/result', [
-            '_query' => ['order_reference' => '']
+            '_query' => [
+                'order_reference' => $orderReference,
+                'status' => $status
+            ]
         ]);
     }
 }
