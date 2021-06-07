@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
@@ -8,8 +9,18 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Model;
 
+use Magento\Framework\UrlInterface;
+
 class Order
 {
+    /**
+     * Payment statuses constants
+     */
+    public const STATUS_SUCCESS = 'success';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_ERROR = 'error';
+
     /**
      * @var string
      */
@@ -38,9 +49,14 @@ class Order
      * @var string
      */
     private $paymentProfile;
+    /**
+     * @var UrlInterface
+     */
+    private $urlBuilder;
 
     /**
-     * Order constructor.
+     * Order constructor
+     *
      * @param string $orderId
      * @param int $amount
      * @param string $currency
@@ -48,6 +64,7 @@ class Order
      * @param string $language
      * @param string $country
      * @param string $paymentProfile
+     * @param UrlInterface $urlBuilder
      */
     public function __construct(
         string $orderId,
@@ -56,9 +73,9 @@ class Order
         string $email,
         string $language,
         string $country,
-        string $paymentProfile
+        string $paymentProfile,
+        UrlInterface $urlBuilder
     ) {
-
         $this->orderId = $orderId;
         $this->amount = $amount;
         $this->currency = $currency;
@@ -66,10 +83,11 @@ class Order
         $this->language = $language;
         $this->country = $country;
         $this->paymentProfile = $paymentProfile;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
-     * convert object to array
+     * Convert object to array
      *
      * @return array
      */
@@ -84,6 +102,29 @@ class Order
             'language' => $this->language,
             'country' => $this->country,
             'profile' => $this->paymentProfile,
+            'return_urls' => [
+                'success' => $this->getReturnUrl($this->orderId, self::STATUS_SUCCESS),
+                'pending' => $this->getReturnUrl($this->orderId, self::STATUS_PENDING),
+                'cancelled' => $this->getReturnUrl($this->orderId, self::STATUS_CANCELLED),
+                'error' => $this->getReturnUrl($this->orderId, self::STATUS_ERROR),
+            ]
         ];
+    }
+
+    /**
+     * Get Return Url
+     *
+     * @param string $orderReference
+     * @param string $status
+     * @return string
+     */
+    private function getReturnUrl(string $orderReference, string $status): string
+    {
+        return $this->urlBuilder->getUrl('cmpayments/payment/result', [
+            '_query' => [
+                'order_reference' => $orderReference,
+                'status' => $status
+            ]
+        ]);
     }
 }
