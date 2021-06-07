@@ -113,7 +113,12 @@ class OrderService implements OrderServiceInterface
             'language' => substr($this->localeResolver->emulate($order->getStoreId()), 0, 2),
             'country' => $order->getBillingAddress()->getCountryId(),
             'paymentProfile' => $this->config->getPaymentProfile($order->getStoreId()),
-            'urlBuilder' => $this->urlBuilder
+            'returnUrls' => [
+                'success' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_SUCCESS),
+                'pending' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_PENDING),
+                'cancelled' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_CANCELLED),
+                'error' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_ERROR)
+            ]
         ]);
 
         /** @var OrderCreateRequest $orderRequest */
@@ -151,5 +156,22 @@ class OrderService implements OrderServiceInterface
     private function getAmount(OrderInterface $order): int
     {
         return (int)$order->getGrandTotal() * 100;
+    }
+
+    /**
+     * Get Return Url
+     *
+     * @param string $orderReference
+     * @param string $status
+     * @return string
+     */
+    private function getReturnUrl(string $orderReference, string $status): string
+    {
+        return $this->urlBuilder->getUrl('cmpayments/payment/result', [
+            '_query' => [
+                'order_reference' => $orderReference,
+                'status' => $status
+            ]
+        ]);
     }
 }
