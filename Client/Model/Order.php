@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Model;
 
-use Magento\Framework\UrlInterface;
-
 class Order
 {
     /**
@@ -50,9 +48,9 @@ class Order
      */
     private $paymentProfile;
     /**
-     * @var UrlInterface
+     * @var array
      */
-    private $urlBuilder;
+    private $returnUrls;
 
     /**
      * Order constructor
@@ -64,7 +62,7 @@ class Order
      * @param string $language
      * @param string $country
      * @param string $paymentProfile
-     * @param UrlInterface $urlBuilder
+     * @param array $returnUrls
      */
     public function __construct(
         string $orderId,
@@ -74,7 +72,7 @@ class Order
         string $language,
         string $country,
         string $paymentProfile,
-        UrlInterface $urlBuilder
+        array $returnUrls
     ) {
         $this->orderId = $orderId;
         $this->amount = $amount;
@@ -83,7 +81,7 @@ class Order
         $this->language = $language;
         $this->country = $country;
         $this->paymentProfile = $paymentProfile;
-        $this->urlBuilder = $urlBuilder;
+        $this->returnUrls = $returnUrls;
     }
 
     /**
@@ -102,29 +100,7 @@ class Order
             'language' => $this->language,
             'country' => $this->country,
             'profile' => $this->paymentProfile,
-            'return_urls' => [
-                'success' => $this->getReturnUrl($this->orderId, self::STATUS_SUCCESS),
-                'pending' => $this->getReturnUrl($this->orderId, self::STATUS_PENDING),
-                'cancelled' => $this->getReturnUrl($this->orderId, self::STATUS_CANCELLED),
-                'error' => $this->getReturnUrl($this->orderId, self::STATUS_ERROR),
-            ]
+            'return_urls' => $this->returnUrls
         ];
-    }
-
-    /**
-     * Get Return Url
-     *
-     * @param string $orderReference
-     * @param string $status
-     * @return string
-     */
-    private function getReturnUrl(string $orderReference, string $status): string
-    {
-        return $this->urlBuilder->getUrl('cmpayments/payment/result', [
-            '_query' => [
-                'order_reference' => $orderReference,
-                'status' => $status
-            ]
-        ]);
     }
 }

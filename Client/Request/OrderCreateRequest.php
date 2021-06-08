@@ -13,7 +13,11 @@ use CM\Payments\Client\Model\Order;
 
 class OrderCreateRequest implements RequestInterface
 {
-    const ENDPOINT = 'orders';
+    /**
+     * Orders Endpoint
+     */
+    public const ENDPOINT = 'orders';
+
     /**
      * @var Order
      */
