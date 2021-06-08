@@ -11,6 +11,8 @@ namespace CM\Payments\Model;
 use CM\Payments\Api\Model\Data\OrderInterface;
 use CM\Payments\Api\Model\OrderRepositoryInterface;
 use CM\Payments\Model\ResourceModel\Order as ResourceOrder;
+use CM\Payments\Model\Order;
+use Exception;
 use Magento\Framework\Api\ExtensibleDataObjectConverter;
 use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -36,7 +38,7 @@ class OrderRepository implements OrderRepositoryInterface
      */
     public function __construct(
         ResourceOrder $resource,
-        \CM\Payments\Model\OrderFactory $orderFactory,
+        OrderFactory $orderFactory,
         ExtensibleDataObjectConverter $extensibleDataObjectConverter
     ) {
         $this->resource = $resource;
@@ -47,9 +49,8 @@ class OrderRepository implements OrderRepositoryInterface
     /**
      * {@inheritdoc}
      */
-    public function save(
-        OrderInterface $order
-    ) {
+    public function save(OrderInterface $order): Order
+    {
         $orderData = $this->extensibleDataObjectConverter->toNestedArray(
             $order,
             [],
@@ -60,27 +61,27 @@ class OrderRepository implements OrderRepositoryInterface
 
         try {
             $this->resource->save($orderModel);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             throw new CouldNotSaveException(__(
                 'Could not save the order: %1',
                 $exception->getMessage()
             ));
         }
-        return $orderModel->getDataModel();
+        return $orderModel;
     }
 
     /**
      * @inheritDoc
      */
-    public function getByOrderKey(string $orderKey)
+    public function getByOrderKey(string $orderKey): Order
     {
         $order = $this->orderFactory->create();
-        $this->resource->load($order, $orderKey);
+        $this->resource->load($order, $orderKey, 'order_key');
 
         if (!$order->getId()) {
             throw new NoSuchEntityException(__('order with key 1" does not exist.', $orderKey));
         }
 
-        return $order->getDataModel();
+        return $order;
     }
 }

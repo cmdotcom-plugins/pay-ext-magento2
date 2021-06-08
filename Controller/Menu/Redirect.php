@@ -9,13 +9,25 @@ declare(strict_types=1);
 namespace CM\Payments\Controller\Menu;
 
 use CM\Payments\Api\Service\OrderServiceInterface;
+use Exception;
 use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
+use Magento\Framework\Phrase;
 use Psr\Log\LoggerInterface;
 
 class Redirect implements HttpGetActionInterface
 {
+    /**
+     * @var Context
+     */
+    private $context;
+    /**
+     * @var MessageManagerInterface
+     */
+    private $messageManager;
     /**
      * @var Session
      */
@@ -41,15 +53,18 @@ class Redirect implements HttpGetActionInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
+        Context $context,
         Session $checkoutSession,
         RedirectFactory $redirectFactory,
         OrderServiceInterface $orderService,
         LoggerInterface $logger
     ) {
+        $this->messageManager = $context->getMessageManager();
         $this->checkoutSession = $checkoutSession;
         $this->redirectFactory = $redirectFactory;
         $this->orderService = $orderService;
         $this->logger = $logger;
+        $this->context = $context;
     }
 
     /**
@@ -65,26 +80,31 @@ class Redirect implements HttpGetActionInterface
             $this->logger->debug($orderId);
             $this->logger->debug($order->getEntityId());
             if (!$orderId) {
-                return $this->redirectToCheckout();
+                return $this->redirectToCheckoutCart(__('No order id found.'));
             }
 
-            $orderRedirectUrl = $this->orderService->create($order->getEntityId());
+            $cmOrder = $this->orderService->create($order->getEntityId());
 
             return $this->redirectFactory->create()
-                ->setUrl($orderRedirectUrl);
-        } catch (\Exception $exception) {
-            // Todo: show error message
-
+                ->setUrl($cmOrder->getUrl());
+        } catch (Exception $exception) {
             $this->logger->error($exception);
-            return $this->redirectToCheckout();
+            return $this->redirectToCheckoutCart(__('Something went wrong while creating the order.'));
         }
     }
 
-    public function redirectToCheckout(): \Magento\Framework\Controller\Result\Redirect
+    /**
+     * Return to checkout cart with error message
+     * @param Phrase $message
+     *
+     * @return \Magento\Framework\Controller\Result\Redirect
+     */
+    public function redirectToCheckoutCart(Phrase $message): \Magento\Framework\Controller\Result\Redirect
     {
         $this->checkoutSession->restoreQuote();
 
-        // Todo: show error message
+        $this->messageManager->addErrorMessage($message);
+
         return $this->redirectFactory->create()
             ->setPath('checkout/cart');
     }

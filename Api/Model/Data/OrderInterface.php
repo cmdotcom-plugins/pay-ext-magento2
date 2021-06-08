@@ -38,6 +38,11 @@ interface OrderInterface extends ExtensibleDataInterface
     public function setOrderKey(string $orderKey): OrderInterface;
 
     /**
+     * @return string
+     */
+    public function getIncrementId(): string;
+
+    /**
      * @param string $incrementId
      * @return OrderInterface
      */
