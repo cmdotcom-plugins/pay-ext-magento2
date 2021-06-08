@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
@@ -10,6 +11,14 @@ namespace CM\Payments\Client\Model;
 
 class Order
 {
+    /**
+     * Payment statuses constants
+     */
+    public const STATUS_SUCCESS = 'success';
+    public const STATUS_PENDING = 'pending';
+    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_ERROR = 'error';
+
     /**
      * @var string
      */
@@ -38,9 +47,14 @@ class Order
      * @var string
      */
     private $paymentProfile;
+    /**
+     * @var array
+     */
+    private $returnUrls;
 
     /**
-     * Order constructor.
+     * Order constructor
+     *
      * @param string $orderId
      * @param int $amount
      * @param string $currency
@@ -48,6 +62,7 @@ class Order
      * @param string $language
      * @param string $country
      * @param string $paymentProfile
+     * @param array $returnUrls
      */
     public function __construct(
         string $orderId,
@@ -56,9 +71,9 @@ class Order
         string $email,
         string $language,
         string $country,
-        string $paymentProfile
+        string $paymentProfile,
+        array $returnUrls
     ) {
-
         $this->orderId = $orderId;
         $this->amount = $amount;
         $this->currency = $currency;
@@ -66,10 +81,11 @@ class Order
         $this->language = $language;
         $this->country = $country;
         $this->paymentProfile = $paymentProfile;
+        $this->returnUrls = $returnUrls;
     }
 
     /**
-     * convert object to array
+     * Convert object to array
      *
      * @return array
      */
@@ -84,6 +100,7 @@ class Order
             'language' => $this->language,
             'country' => $this->country,
             'profile' => $this->paymentProfile,
+            'return_urls' => $this->returnUrls
         ];
     }
 }
