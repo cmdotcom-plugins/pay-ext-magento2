@@ -11,7 +11,6 @@ namespace CM\Payments\Controller\Menu;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use Exception;
 use Magento\Checkout\Model\Session;
-use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
@@ -20,10 +19,6 @@ use Psr\Log\LoggerInterface;
 
 class Redirect implements HttpGetActionInterface
 {
-    /**
-     * @var Context
-     */
-    private $context;
     /**
      * @var MessageManagerInterface
      */
@@ -47,24 +42,24 @@ class Redirect implements HttpGetActionInterface
 
     /**
      * Redirect constructor.
+     * @param MessageManagerInterface $messageManager
      * @param Session $checkoutSession
      * @param RedirectFactory $redirectFactory
      * @param OrderServiceInterface $orderService
      * @param LoggerInterface $logger
      */
     public function __construct(
-        Context $context,
+        MessageManagerInterface $messageManager,
         Session $checkoutSession,
         RedirectFactory $redirectFactory,
         OrderServiceInterface $orderService,
         LoggerInterface $logger
     ) {
-        $this->messageManager = $context->getMessageManager();
+        $this->messageManager = $messageManager;
         $this->checkoutSession = $checkoutSession;
         $this->redirectFactory = $redirectFactory;
         $this->orderService = $orderService;
         $this->logger = $logger;
-        $this->context = $context;
     }
 
     /**

@@ -81,7 +81,7 @@ class OrderService implements OrderServiceInterface
         );
 
         if (empty($response['order_key'])) {
-            throw new EmptyOrderKeyException('Empty order key');
+            throw new EmptyOrderKeyException(__('Empty order key'));
         }
 
         $model = $this->orderFactory->create();

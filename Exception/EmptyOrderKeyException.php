@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace CM\Payments\Exception;
 
-class EmptyOrderKeyException extends \Exception
+use Magento\Framework\Exception\LocalizedException;
+
+class EmptyOrderKeyException extends LocalizedException
 {
 }

@@ -79,7 +79,7 @@ class OrderRepository implements OrderRepositoryInterface
         $this->resource->load($order, $orderKey, 'order_key');
 
         if (!$order->getId()) {
-            throw new NoSuchEntityException(__('order with key 1" does not exist.', $orderKey));
+            throw new NoSuchEntityException(__('order with key %1 does not exist.', $orderKey));
         }
 
         return $order;
