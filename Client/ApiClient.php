@@ -12,6 +12,7 @@ use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Client\Api\RequestInterface;
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\GuzzleException;
 
 class ApiClient implements ApiClientInterface
 {
@@ -22,13 +23,20 @@ class ApiClient implements ApiClientInterface
      * @var HttpClient
      */
     private $httpClient;
+
     /**
      * @var ConfigInterface
      */
     private $config;
 
-    public function __construct(ConfigInterface $config)
-    {
+    /**
+     * ApiClient constructor.
+     *
+     * @param ConfigInterface $config
+     */
+    public function __construct(
+        ConfigInterface $config
+    ) {
         $this->config = $config;
     }
 
@@ -37,15 +45,20 @@ class ApiClient implements ApiClientInterface
      *
      * @param RequestInterface $request
      * @return array
+     * @throws GuzzleException
      */
     public function execute(RequestInterface $request): array
     {
+        $options = [];
+        if ($request->getPayload()) {
+            $options = [
+                'json' => $request->getPayload()
+            ];
+        }
         $guzzleResponse = $this->getClient()->request(
             $request->getRequestMethod(),
             $request->getEndpoint(),
-            [
-                'json' => $request->getPayload()
-            ]
+            $options
         );
 
         return \GuzzleHttp\json_decode($guzzleResponse->getBody()->getContents(), true);

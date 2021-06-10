@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Model;
 
-class Order
+class OrderCreate
 {
     /**
      * Payment statuses constants
@@ -23,30 +23,37 @@ class Order
      * @var string
      */
     private $orderId;
+
     /**
      * @var int
      */
     private $amount;
+
     /**
      * @var string
      */
     private $currency;
+
     /**
      * @var string
      */
     private $email;
+
     /**
      * @var string
      */
     private $language;
+
     /**
      * @var string
      */
     private $country;
+
     /**
      * @var string
      */
     private $paymentProfile;
+
     /**
      * @var array
      */

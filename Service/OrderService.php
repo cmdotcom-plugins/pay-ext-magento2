@@ -10,17 +10,21 @@ namespace CM\Payments\Service;
 
 use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Config\ConfigInterface;
-use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
+use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
+use CM\Payments\Api\Model\Data\OrderInterfaceFactory as CMOrderFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Client\Model\Order as ClientOrder;
-use CM\Payments\Client\Model\OrderFactory as ClientOrderFactory;
+use CM\Payments\Client\Model\OrderCreate as OrderCreate;
+use CM\Payments\Client\Model\OrderCreateFactory as OrderCreateFactory;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Client\Request\OrderCreateRequestFactory;
+use CM\Payments\Client\Request\OrderGetRequest;
+use CM\Payments\Client\Request\OrderGetRequestFactory;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 
 class OrderService implements OrderServiceInterface
 {
@@ -28,72 +32,88 @@ class OrderService implements OrderServiceInterface
      * @var OrderRepositoryInterface
      */
     private $orderRepository;
+
     /**
      * @var ApiClientInterface
      */
     private $apiClient;
+
     /**
-     * @var OrderInterfaceFactory
+     * @var CMOrderFactory
      */
-    private $orderFactory;
+    private $cmOrderFactory;
+
     /**
      * @var CMOrderRepositoryInterface
      */
-    private $CMOrderRepository;
+    private $cmOrderRepository;
+
     /**
      * @var ConfigInterface
      */
     private $config;
+
     /**
      * @var ResolverInterface
      */
     private $localeResolver;
+
     /**
      * @var UrlInterface
      */
     private $urlBuilder;
+
     /**
-     * @var ClientOrderFactory
+     * @var OrderCreateFactory
      */
-    private $clientOrderFactory;
+    private $orderCreateFactory;
+
     /**
      * @var OrderCreateRequestFactory
      */
     private $orderCreateRequestFactory;
 
     /**
+     * @var OrderGetRequestFactory
+     */
+    private $orderGetRequestFactory;
+
+    /**
      * OrderService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
      * @param ApiClientInterface $apiClient
-     * @param OrderInterfaceFactory $orderFactory
-     * @param CMOrderRepositoryInterface $CMOrderRepository
+     * @param CMOrderFactory $cmOrderFactory
+     * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param ConfigInterface $config
      * @param ResolverInterface $localeResolver
      * @param UrlInterface $urlBuilder
-     * @param ClientOrderFactory $clientOrderFactory
+     * @param OrderCreateFactory $orderCreateFactory
      * @param OrderCreateRequestFactory $orderCreateRequestFactory
+     * @param OrderGetRequestFactory $orderGetRequestFactory
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         ApiClientInterface $apiClient,
-        OrderInterfaceFactory $orderFactory,
-        CMOrderRepositoryInterface $CMOrderRepository,
+        CMOrderFactory $cmOrderFactory,
+        CMOrderRepositoryInterface $cmOrderRepository,
         ConfigInterface $config,
         ResolverInterface $localeResolver,
         UrlInterface $urlBuilder,
-        ClientOrderFactory $clientOrderFactory,
-        OrderCreateRequestFactory $orderCreateRequestFactory
+        OrderCreateFactory $orderCreateFactory,
+        OrderCreateRequestFactory $orderCreateRequestFactory,
+        OrderGetRequestFactory $orderGetRequestFactory
     ) {
         $this->orderRepository = $orderRepository;
         $this->apiClient = $apiClient;
-        $this->orderFactory = $orderFactory;
-        $this->CMOrderRepository = $CMOrderRepository;
+        $this->cmOrderFactory = $cmOrderFactory;
+        $this->cmOrderRepository = $cmOrderRepository;
         $this->config = $config;
         $this->localeResolver = $localeResolver;
         $this->urlBuilder = $urlBuilder;
-        $this->clientOrderFactory = $clientOrderFactory;
+        $this->orderCreateFactory = $orderCreateFactory;
         $this->orderCreateRequestFactory = $orderCreateRequestFactory;
+        $this->orderGetRequestFactory = $orderGetRequestFactory;
     }
 
     /**
@@ -103,37 +123,40 @@ class OrderService implements OrderServiceInterface
     {
         $order = $this->orderRepository->get($orderId);
 
-        /** @var ClientOrder $clientOrder */
-        $clientOrder = $this->clientOrderFactory->create([
-            'orderId' => $order->getIncrementId(),
-            'amount' => $this->getAmount($order),
-            'currency' => $order->getStoreCurrencyCode(),
-            'email' => $order->getBillingAddress()->getEmail(),
-            // Todo: format locale and move to other file
-            'language' => substr($this->localeResolver->emulate($order->getStoreId()), 0, 2),
-            'country' => $order->getBillingAddress()->getCountryId(),
-            'paymentProfile' => $this->config->getPaymentProfile($order->getStoreId()),
-            'returnUrls' => [
-                'success' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_SUCCESS),
-                'pending' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_PENDING),
-                'cancelled' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_CANCELLED),
-                'error' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_ERROR)
+        /** @var OrderCreate $orderCreate */
+        $orderCreate = $this->orderCreateFactory->create(
+            [
+                'orderId' => $order->getIncrementId(),
+                'amount' => $this->getAmount($order),
+                'currency' => $order->getStoreCurrencyCode(),
+                'email' => $order->getBillingAddress()->getEmail(),
+                // Todo: format locale and move to other file
+                'language' => substr($this->localeResolver->emulate($order->getStoreId()), 0, 2),
+                'country' => $order->getBillingAddress()->getCountryId(),
+                'paymentProfile' => $this->config->getPaymentProfile($order->getStoreId()),
+                'returnUrls' => [
+                    'success' => $this->getReturnUrl($order->getIncrementId(), OrderCreate::STATUS_SUCCESS),
+                    'pending' => $this->getReturnUrl($order->getIncrementId(), OrderCreate::STATUS_PENDING),
+                    'cancelled' => $this->getReturnUrl($order->getIncrementId(), OrderCreate::STATUS_CANCELLED),
+                    'error' => $this->getReturnUrl($order->getIncrementId(), OrderCreate::STATUS_ERROR)
+                ]
             ]
-        ]);
+        );
 
-        /** @var OrderCreateRequest $orderRequest */
-        $orderRequest = $this->orderCreateRequestFactory->create(['order' => $clientOrder]);
+        /** @var OrderCreateRequest $orderCreateRequest */
+        $orderCreateRequest = $this->orderCreateRequestFactory->create(['orderCreate' => $orderCreate]);
         $response = $this->apiClient->execute(
-            $orderRequest
+            $orderCreateRequest
         );
 
         if ($response['order_key']) {
-            // Todo: save this cm_payments_order.
-            $model = $this->orderFactory->create();
-            $model->setOrderId((int)$orderId);
-            $model->setOrderKey($response['order_key']);
+            /** @var CMOrder $cmOrder */
+            $cmOrder = $this->cmOrderFactory->create();
+            $cmOrder->setOrderId((int)$orderId);
+            $cmOrder->setOrderKey($response['order_key']);
+            $cmOrder->setIncrementId($order->getIncrementId());
 
-            $this->CMOrderRepository->save($model);
+            $this->cmOrderRepository->save($cmOrder);
         }
 
         $additionalInformation = $order->getPayment()->getAdditionalInformation();
@@ -167,11 +190,50 @@ class OrderService implements OrderServiceInterface
      */
     private function getReturnUrl(string $orderReference, string $status): string
     {
-        return $this->urlBuilder->getUrl('cmpayments/payment/result', [
-            '_query' => [
-                'order_reference' => $orderReference,
-                'status' => $status
+        return $this->urlBuilder->getUrl(
+            'cmpayments/payment/result',
+            [
+                '_query' => [
+                    'order_reference' => $orderReference,
+                    'status' => $status
+                ]
             ]
-        ]);
+        );
+    }
+
+    /**
+     * @param string $cmOrderId
+     * @return array
+     */
+    public function get(string $cmOrderId): array
+    {
+        /** @var OrderGetRequest $orderGetRequest */
+        $orderGetRequest = $this->orderGetRequestFactory->create()
+            ->setEndpointParams(['{order_key}' => $cmOrderId]);
+
+        $response = $this->apiClient->execute(
+            $orderGetRequest
+        );
+
+        return $response;
+    }
+
+    /**
+     * Update the order status if the order state is Order::STATE_PROCESSING
+     *
+     * @param Order $order
+     * @param String $method
+     * @param string|null $status
+     */
+    public function setOrderStatus(Order $order, string $method, ?string $status = null)
+    {
+        if (!isset($status)) {
+            //TODO: Add the proper status
+            $status = 'processing';
+        }
+
+        if (Order::STATE_PROCESSING === $order->getState()) {
+            $order->addCommentToStatusHistory(__('Order processed by CM.'), $status);
+        }
     }
 }

@@ -12,16 +12,15 @@ use Exception;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
-use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Sales\Api\OrderManagementInterface;
 use Psr\Log\LoggerInterface;
-use CM\Payments\Client\Model\Order;
+use CM\Payments\Client\Model\OrderCreate;
 
-class Result implements ActionInterface, HttpGetActionInterface
+class Result implements HttpGetActionInterface
 {
     /**
      * @var CheckoutSession
@@ -99,7 +98,7 @@ class Result implements ActionInterface, HttpGetActionInterface
                 return $this->redirectToCheckout();
             }
 
-            if (in_array($status, [Order::STATUS_ERROR, Order::STATUS_CANCELLED])) {
+            if (in_array($status, [OrderCreate::STATUS_ERROR, OrderCreate::STATUS_CANCELLED])) {
                 $this->orderManagement->cancel($this->checkoutSession->getLastRealOrder()->getId());
                 $this->messageManager->addErrorMessage(__("The order was cancelled because of payment errors!"));
 

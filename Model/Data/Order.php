@@ -13,8 +13,6 @@ use Magento\Framework\Model\AbstractExtensibleModel;
 
 class Order extends AbstractExtensibleModel implements OrderInterface
 {
-    protected $_eventPrefix = 'cm_payments_order';
-
     /**
      * @inheritDoc
      */
@@ -50,8 +48,48 @@ class Order extends AbstractExtensibleModel implements OrderInterface
     /**
      * @inheritDoc
      */
+    public function getIncrementId(): string
+    {
+        return $this->getData(self::ORDER_INCREMENT_ID);
+    }
+    
+    /**
+     * @inheritDoc
+     */
     public function setIncrementId(string $incrementId): OrderInterface
     {
         return $this->setData(self::ORDER_INCREMENT_ID, $incrementId);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCreatedAt(): ?string
+    {
+        return $this->getData(self::CREATED_AT);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setCreatedAt(?string $createdAt): OrderInterface
+    {
+        return $this->setData(self::CREATED_AT, $createdAt);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUpdatedAt(): ?string
+    {
+        return $this->getData(self::UPDATED_AT);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setUpdatedAt(?string $updatedAt): OrderInterface
+    {
+        return $this->setData(self::UPDATED_AT, $updatedAt);
     }
 }

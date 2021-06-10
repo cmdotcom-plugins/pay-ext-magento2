@@ -14,8 +14,13 @@ interface OrderServiceInterface
 {
     /**
      * @param string $orderId
-     *
      * @return string
      */
     public function create(string $orderId): string;
+
+    /**
+     * @param string $cmOrderId
+     * @return array
+     */
+    public function get(string $orderId): array;
 }

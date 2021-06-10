@@ -9,9 +9,8 @@ declare(strict_types=1);
 namespace CM\Payments\Client\Request;
 
 use CM\Payments\Client\Api\RequestInterface;
-use CM\Payments\Client\Model\OrderCreate;
 
-class OrderCreateRequest implements RequestInterface
+class OrderGetRequest implements RequestInterface
 {
     /**
      * @var array
@@ -19,32 +18,20 @@ class OrderCreateRequest implements RequestInterface
     private array $endpointParams = [];
 
     /**
-     * Order Create Endpoint
+     * Order Get Endpoint
      */
-    public const ENDPOINT = 'orders';
-
-    /**
-     * @var OrderCreate
-     */
-    private $orderCreate;
-
-    /**
-     * OrderCreateRequest constructor.
-     *
-     * @param OrderCreate $orderCreate
-     */
-    public function __construct(
-        OrderCreate $orderCreate
-    ) {
-        $this->orderCreate = $orderCreate;
-    }
+    public const ENDPOINT = 'orders/{order_key}';
 
     /**
      * @inheritDoc
      */
     public function getEndpoint(): string
     {
-        return self::ENDPOINT;
+        $endpoint = self::ENDPOINT;
+        if ($this->getEndpointParams()) {
+            $endpoint = $this->getProcessedEndpoint($endpoint, $this->getEndpointParams());
+        }
+        return $endpoint;
     }
 
     /**
@@ -52,7 +39,7 @@ class OrderCreateRequest implements RequestInterface
      */
     public function getRequestMethod(): string
     {
-        return RequestInterface::HTTP_POST;
+        return RequestInterface::HTTP_GET;
     }
 
     /**
@@ -60,7 +47,7 @@ class OrderCreateRequest implements RequestInterface
      */
     public function getPayload(): array
     {
-        return $this->orderCreate->toArray();
+        return [];
     }
 
     /**
@@ -79,5 +66,15 @@ class OrderCreateRequest implements RequestInterface
         $this->endpointParams = $endpointParams;
 
         return $this;
+    }
+
+    /**
+     * @param string $endpoint
+     * @param array $params
+     * @return string
+     */
+    private function getProcessedEndpoint(string $endpoint, array $params): string
+    {
+        return str_replace(array_keys($params), array_values($params), $endpoint);
     }
 }

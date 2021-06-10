@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace CM\Payments\Model;
 
+use CM\Payments\Model\Order as CMOrder;
+use CM\Payments\Model\OrderFactory as CMOrderFactory;
 use CM\Payments\Api\Model\Data\OrderInterface;
 use CM\Payments\Api\Model\OrderRepositoryInterface;
 use CM\Payments\Model\ResourceModel\Order as ResourceOrder;
@@ -21,31 +23,40 @@ class OrderRepository implements OrderRepositoryInterface
      * @var ResourceOrder
      */
     private $resource;
+
     /**
-     * @var OrderFactory
+     * @var CMOrderFactory
      */
-    private $orderFactory;
+    private $cmOrderFactory;
+
     /**
      * @var ExtensibleDataObjectConverter
      */
     private $extensibleDataObjectConverter;
 
     /**
-     * OrderRepository constructor.
+     * OrderRepository constructor
+     *
      * @param ResourceOrder $resource
+     * @param CMOrderFactory $cmOrderFactory
+     * @param ExtensibleDataObjectConverter $extensibleDataObjectConverter
      */
     public function __construct(
         ResourceOrder $resource,
-        \CM\Payments\Model\OrderFactory $orderFactory,
+        CMOrderFactory $cmOrderFactory,
         ExtensibleDataObjectConverter $extensibleDataObjectConverter
     ) {
         $this->resource = $resource;
-        $this->orderFactory = $orderFactory;
+        $this->cmOrderFactory = $cmOrderFactory;
         $this->extensibleDataObjectConverter = $extensibleDataObjectConverter;
     }
 
     /**
-     * {@inheritdoc}
+     * Save order
+     *
+     * @param OrderInterface $order
+     * @return mixed
+     * @throws CouldNotSaveException
      */
     public function save(
         OrderInterface $order
@@ -56,7 +67,8 @@ class OrderRepository implements OrderRepositoryInterface
             OrderInterface::class
         );
 
-        $orderModel = $this->orderFactory->create()->setData($orderData);
+        /** @var CMOrder $orderModel */
+        $orderModel = $this->cmOrderFactory->create()->setData($orderData);
 
         try {
             $this->resource->save($orderModel);
@@ -66,21 +78,25 @@ class OrderRepository implements OrderRepositoryInterface
                 $exception->getMessage()
             ));
         }
+
         return $orderModel->getDataModel();
     }
 
     /**
-     * @inheritDoc
+     * Get Order by Order Key
+     *
+     * @throws NoSuchEntityException
      */
     public function getByOrderKey(string $orderKey)
     {
-        $order = $this->orderFactory->create();
-        $this->resource->load($order, $orderKey);
+        /** @var CMOrder $orderModel */
+        $orderModel = $this->cmOrderFactory->create();
+        $this->resource->load($orderModel, $orderKey, 'order_key');
 
-        if (!$order->getId()) {
-            throw new NoSuchEntityException(__('order with key 1" does not exist.', $orderKey));
+        if (!$orderModel->getId()) {
+            throw new NoSuchEntityException(__('Order with key 1" does not exist.', $orderKey));
         }
 
-        return $order->getDataModel();
+        return $orderModel->getDataModel();
     }
 }
