@@ -22,5 +22,10 @@
         "psr-4": {
             "CM\\Payments\\": ""
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-feature/redirect-flow": "0.0.1"
+        }
     }
 }
