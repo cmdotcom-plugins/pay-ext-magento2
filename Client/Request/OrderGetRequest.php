@@ -8,30 +8,38 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Request;
 
+use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
 use CM\Payments\Client\Api\RequestInterface;
 
 class OrderGetRequest implements RequestInterface
 {
     /**
-     * @var array
-     */
-    private array $endpointParams = [];
-
-    /**
      * Order Get Endpoint
      */
-    public const ENDPOINT = 'orders/{order_key}';
+    public const ENDPOINT = 'orders';
+
+    /**
+     * @var CMOrder
+     */
+    private $cmOrder;
+
+    /**
+     * OrderGetRequest constructor.
+     *
+     * @param CMOrder $cmOrder
+     */
+    public function __construct(
+        CMOrder $cmOrder
+    ) {
+        $this->cmOrder = $cmOrder;
+    }
 
     /**
      * @inheritDoc
      */
     public function getEndpoint(): string
     {
-        $endpoint = self::ENDPOINT;
-        if ($this->getEndpointParams()) {
-            $endpoint = $this->getProcessedEndpoint($endpoint, $this->getEndpointParams());
-        }
-        return $endpoint;
+        return  self::ENDPOINT . '/' . $this->cmOrder->getOrderKey();
     }
 
     /**
@@ -48,33 +56,5 @@ class OrderGetRequest implements RequestInterface
     public function getPayload(): array
     {
         return [];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getEndpointParams(): array
-    {
-        return $this->endpointParams;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setEndpointParams(array $endpointParams): RequestInterface
-    {
-        $this->endpointParams = $endpointParams;
-
-        return $this;
-    }
-
-    /**
-     * @param string $endpoint
-     * @param array $params
-     * @return string
-     */
-    private function getProcessedEndpoint(string $endpoint, array $params): string
-    {
-        return str_replace(array_keys($params), array_values($params), $endpoint);
     }
 }

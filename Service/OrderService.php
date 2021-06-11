@@ -202,20 +202,17 @@ class OrderService implements OrderServiceInterface
     }
 
     /**
-     * @param string $cmOrderId
+     * @param CMOrder $cmOrder
      * @return array
      */
-    public function get(string $cmOrderId): array
+    public function get(CMOrder $cmOrder): array
     {
         /** @var OrderGetRequest $orderGetRequest */
-        $orderGetRequest = $this->orderGetRequestFactory->create()
-            ->setEndpointParams(['{order_key}' => $cmOrderId]);
+        $orderGetRequest = $this->orderGetRequestFactory->create(['cmOrder' => $cmOrder]);
 
-        $response = $this->apiClient->execute(
+        return $this->apiClient->execute(
             $orderGetRequest
         );
-
-        return $response;
     }
 
     /**

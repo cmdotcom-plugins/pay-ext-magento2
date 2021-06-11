@@ -38,19 +38,4 @@ interface RequestInterface
      * @return array
      */
     public function getPayload(): array;
-
-    /**
-     * Get endpoint params
-     *
-     * @return array
-     */
-    public function getEndpointParams(): array;
-
-    /**
-     * Set endpoint params
-     *
-     * @param array $endpointParams
-     * @return RequestInterface
-     */
-    public function setEndpointParams(array $endpointParams): RequestInterface;
 }

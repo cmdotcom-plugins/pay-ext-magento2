@@ -14,11 +14,6 @@ use CM\Payments\Client\Model\OrderCreate;
 class OrderCreateRequest implements RequestInterface
 {
     /**
-     * @var array
-     */
-    private array $endpointParams = [];
-
-    /**
      * Order Create Endpoint
      */
     public const ENDPOINT = 'orders';
@@ -61,23 +56,5 @@ class OrderCreateRequest implements RequestInterface
     public function getPayload(): array
     {
         return $this->orderCreate->toArray();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getEndpointParams(): array
-    {
-        return $this->endpointParams;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setEndpointParams(array $endpointParams): RequestInterface
-    {
-        $this->endpointParams = $endpointParams;
-
-        return $this;
     }
 }
