@@ -4,7 +4,7 @@
  * See LICENSE.txt for license details.
  */
 
-namespace CM\Payments\Model\Adminhtml\Source;
+namespace CM\Payments\Model\AdminHtml\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
