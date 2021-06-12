@@ -12,9 +12,21 @@ use Magento\Framework\Api\ExtensibleDataInterface;
 
 interface OrderInterface extends ExtensibleDataInterface
 {
-    const ORDER_ID = 'order_id';
-    const ORDER_KEY = 'order_key';
-    const ORDER_INCREMENT_ID = 'increment_id';
+    /**
+     * Constant for table name
+     */
+    public const TABLE_NAME = 'cm_payments_order';
+
+    /**
+     * Properties
+     */
+    public const ID = 'id';
+    public const ORDER_ID = 'order_id';
+    public const ORDER_KEY = 'order_key';
+    public const ORDER_INCREMENT_ID = 'increment_id';
+    public const CREATED_AT = 'created_at';
+    public const UPDATED_AT = 'updated_at';
+
     /**
      * @return int
      */
@@ -47,4 +59,26 @@ interface OrderInterface extends ExtensibleDataInterface
      * @return OrderInterface
      */
     public function setIncrementId(string $incrementId): OrderInterface;
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt(): ?string;
+
+    /**
+     * @param ?string $createdAt
+     * @return OrderInterface
+     */
+    public function setCreatedAt(?string $createdAt): OrderInterface;
+
+    /**
+     * @return string
+     */
+    public function getUpdatedAt(): ?string;
+
+    /**
+     * @param ?string $updatedAt
+     * @return OrderInterface
+     */
+    public function setUpdatedAt(?string $updatedAt): OrderInterface;
 }

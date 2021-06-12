@@ -17,11 +17,11 @@ interface OrderRepositoryInterface
      * @param string $orderKey
      * @return Order
      */
-    public function getByOrderKey(string $orderKey): Order;
+    public function getByOrderKey(string $orderKey): OrderInterface;
 
     /**
      * @param OrderInterface $order
      * @return Order
      */
-    public function save(OrderInterface $order): Order;
+    public function save(OrderInterface $order): OrderInterface;
 }

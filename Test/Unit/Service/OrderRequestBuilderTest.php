@@ -10,7 +10,7 @@ use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use CM\Payments\Client\Model\Order;
+use CM\Payments\Client\Model\OrderCreate;
 
 class OrderRequestBuilderTest extends UnitTestCase
 {
@@ -35,7 +35,7 @@ class OrderRequestBuilderTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $orderFactoryMock = $this->getMockupFactory(Order::class);
+        $orderFactoryMock = $this->getMockupFactory(OrderCreate::class);
 
         $orderCreateRequestFactoryMock = $this->getMockupFactory(OrderCreateRequest::class);
 

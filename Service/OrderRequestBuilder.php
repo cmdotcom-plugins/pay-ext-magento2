@@ -10,8 +10,8 @@ namespace CM\Payments\Service;
 
 use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
-use CM\Payments\Client\Model\Order as ClientOrder;
-use CM\Payments\Client\Model\OrderFactory as ClientOrderFactory;
+use CM\Payments\Client\Model\OrderCreate as ClientOrder;
+use CM\Payments\Client\Model\OrderCreateFactory as ClientOrderCreateFactory;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Client\Request\OrderCreateRequestFactory;
 use Magento\Framework\Locale\ResolverInterface;
@@ -33,9 +33,9 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
      */
     private $urlBuilder;
     /**
-     * @var ClientOrderFactory
+     * @var ClientOrderCreateFactory
      */
-    private $clientOrderFactory;
+    private $clientOrderCreateFactory;
     /**
      * @var OrderCreateRequestFactory
      */
@@ -47,20 +47,20 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
      * @param ConfigInterface $config
      * @param ResolverInterface $localeResolver
      * @param UrlInterface $urlBuilder
-     * @param ClientOrderFactory $clientOrderFactory
+     * @param ClientOrderCreateFactory $clientOrderCreateFactory
      * @param OrderCreateRequestFactory $orderCreateRequestFactory
      */
     public function __construct(
         ConfigInterface $config,
         ResolverInterface $localeResolver,
         UrlInterface $urlBuilder,
-        ClientOrderFactory $clientOrderFactory,
+        ClientOrderCreateFactory $clientOrderCreateFactory,
         OrderCreateRequestFactory $orderCreateRequestFactory
     ) {
         $this->config = $config;
         $this->localeResolver = $localeResolver;
         $this->urlBuilder = $urlBuilder;
-        $this->clientOrderFactory = $clientOrderFactory;
+        $this->clientOrderCreateFactory = $clientOrderCreateFactory;
         $this->orderCreateRequestFactory = $orderCreateRequestFactory;
     }
 
@@ -70,7 +70,7 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
     public function create(OrderInterface $order): OrderCreateRequest
     {
         /** @var ClientOrder $clientOrder */
-        $clientOrder = $this->clientOrderFactory->create([
+        $clientOrder = $this->clientOrderCreateFactory->create([
             'orderId' => $order->getIncrementId(),
             'amount' => $this->getAmount($order),
             'currency' => $order->getOrderCurrencyCode(),
@@ -86,7 +86,7 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
             ]
         ]);
 
-        return $this->orderCreateRequestFactory->create(['order' => $clientOrder]);
+        return $this->orderCreateRequestFactory->create(['orderCreate' => $clientOrder]);
     }
 
     /**

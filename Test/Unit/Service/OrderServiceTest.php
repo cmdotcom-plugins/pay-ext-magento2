@@ -7,8 +7,10 @@ use CM\Payments\Api\Model\Data\OrderInterface;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Client\Model\Order;
+use CM\Payments\Client\Model\OrderCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
+use CM\Payments\Client\Request\OrderGetRequest;
+use CM\Payments\Client\Request\OrderGetRequestFactory;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Magento\Sales\Api\Data\OrderAddressInterface;
@@ -38,6 +40,10 @@ class OrderServiceTest extends UnitTestCase
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $orderInterfaceFactoryMock;
+    /**
+     * @var OrderGetRequestFactory|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $cmOrderGetRequestFactory;
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
@@ -69,6 +75,10 @@ class OrderServiceTest extends UnitTestCase
             \CM\Payments\Api\Model\Domain\CMOrderInterface::class
         );
 
+        $this->cmOrderGetRequestFactory = $this->getMockupFactory(
+            OrderGetRequest::class
+        );
+
         $this->apiClientMock = $this->getMockBuilder(ApiClientInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -87,7 +97,7 @@ class OrderServiceTest extends UnitTestCase
             'cancelled' => '',
             'error' => ''
         ];
-        $this->orderRequestBuilderMock->method('create')->willReturn(new OrderCreateRequest(new Order(
+        $this->orderRequestBuilderMock->method('create')->willReturn(new OrderCreateRequest(new OrderCreate(
             '001',
             2000,
             'EUR',
@@ -104,7 +114,8 @@ class OrderServiceTest extends UnitTestCase
             $this->orderInterfaceFactoryMock,
             $this->cmOrderRepositoryMock,
             $this->orderRequestBuilderMock,
-            $this->cmOrderInterfaceFactoryMock
+            $this->cmOrderInterfaceFactoryMock,
+            $this->cmOrderGetRequestFactory
         );
     }
 

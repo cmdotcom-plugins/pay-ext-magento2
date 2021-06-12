@@ -85,7 +85,7 @@ class OrderServiceTest extends IntegrationTestCase
 
         $result = $cmOrderRepository->getByOrderKey('2287A1617D93780EF28044B98438BF2F');
 
-        $this->assertSame($magentoOrder->getId(), $result->getOrderId());
+        $this->assertSame((int) $magentoOrder->getId(), $result->getOrderId());
     }
 
     /**
