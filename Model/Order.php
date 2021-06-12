@@ -19,6 +19,9 @@ class Order extends \Magento\Framework\Model\AbstractModel
         $this->_init(ResourceOrder::class);
     }
 
+    /**
+     * @return string[]
+     */
     public function getIdentities()
     {
         return [self::CACHE_TAG . '_' . $this->getId()];

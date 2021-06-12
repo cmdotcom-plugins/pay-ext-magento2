@@ -8,14 +8,14 @@ declare(strict_types=1);
 
 namespace CM\Payments\Api\Service;
 
-use CM\Payments\Model\Order;
+use CM\Payments\Api\Model\Domain\CMOrderInterface;
 
 interface OrderServiceInterface
 {
     /**
      * @param string $orderId
      *
-     * @return string
+     * @return CMOrderInterface
      */
-    public function create(string $orderId): string;
+    public function create(string $orderId): CMOrderInterface;
 }

@@ -11,6 +11,7 @@ namespace CM\Payments\Client;
 use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Client\Api\RequestInterface;
+use CM\Payments\Model\Adminhtml\Source\Mode;
 use GuzzleHttp\Client as HttpClient;
 
 class ApiClient implements ApiClientInterface
@@ -37,6 +38,8 @@ class ApiClient implements ApiClientInterface
      *
      * @param RequestInterface $request
      * @return array
+     *
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function execute(RequestInterface $request): array
     {
@@ -77,7 +80,7 @@ class ApiClient implements ApiClientInterface
      */
     private function getBaseApiUrl(): string
     {
-        $url = $this->config->getApiMode() === 'live' ? self::API_URL : self::API_TEST_URL;
+        $url = $this->config->getApiMode() === Mode::PROD ? self::API_URL : self::API_TEST_URL;
 
         return $url . $this->config->getMerchantKey() . '/';
     }

@@ -50,6 +50,14 @@ class Order extends AbstractExtensibleModel implements OrderInterface
     /**
      * @inheritDoc
      */
+    public function getIncrementId(): string
+    {
+        return $this->getData(self::ORDER_INCREMENT_ID);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function setIncrementId(string $incrementId): OrderInterface
     {
         return $this->setData(self::ORDER_INCREMENT_ID, $incrementId);
