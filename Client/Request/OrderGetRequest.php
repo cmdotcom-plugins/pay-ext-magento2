@@ -8,30 +8,30 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Request;
 
+use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
 use CM\Payments\Client\Api\RequestInterface;
-use CM\Payments\Client\Model\OrderCreate;
 
-class OrderCreateRequest implements RequestInterface
+class OrderGetRequest implements RequestInterface
 {
     /**
-     * Order Create Endpoint
+     * Order Get Endpoint
      */
     public const ENDPOINT = 'orders';
 
     /**
-     * @var OrderCreate
+     * @var CMOrder
      */
-    private $orderCreate;
+    private $cmOrder;
 
     /**
-     * OrderCreateRequest constructor.
+     * OrderGetRequest constructor.
      *
-     * @param OrderCreate $orderCreate
+     * @param CMOrder $cmOrder
      */
     public function __construct(
-        OrderCreate $orderCreate
+        CMOrder $cmOrder
     ) {
-        $this->orderCreate = $orderCreate;
+        $this->cmOrder = $cmOrder;
     }
 
     /**
@@ -39,7 +39,7 @@ class OrderCreateRequest implements RequestInterface
      */
     public function getEndpoint(): string
     {
-        return self::ENDPOINT;
+        return  self::ENDPOINT . '/' . $this->cmOrder->getOrderKey();
     }
 
     /**
@@ -47,7 +47,7 @@ class OrderCreateRequest implements RequestInterface
      */
     public function getRequestMethod(): string
     {
-        return RequestInterface::HTTP_POST;
+        return RequestInterface::HTTP_GET;
     }
 
     /**
@@ -55,6 +55,6 @@ class OrderCreateRequest implements RequestInterface
      */
     public function getPayload(): array
     {
-        return $this->orderCreate->toArray();
+        return [];
     }
 }

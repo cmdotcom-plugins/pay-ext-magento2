@@ -10,10 +10,13 @@ namespace CM\Payments\Client\Api;
 
 interface RequestInterface
 {
-    const HTTP_GET = 'GET';
-    const HTTP_POST = 'POST';
-    const HTTP_PUT = 'PUT';
-    const HTTP_DELETE = 'DELETE';
+    /**
+     * Request Methods
+     */
+    public const HTTP_GET = 'GET';
+    public const HTTP_POST = 'POST';
+    public const HTTP_PUT = 'PUT';
+    public const HTTP_DELETE = 'DELETE';
 
     /**
      * Get endpoint
