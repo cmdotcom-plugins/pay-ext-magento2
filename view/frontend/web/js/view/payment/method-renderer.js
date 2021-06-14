@@ -19,6 +19,7 @@ define(
                 component: 'CM_Payments/js/view/payment/method-renderer/cm_payments'
             }
         );
+
         return Component.extend({});
     }
 );

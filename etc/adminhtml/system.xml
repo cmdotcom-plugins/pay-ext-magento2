@@ -94,7 +94,7 @@
                 <field id="profile" translate="label" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Profile</label>
-                    <config_path>payment/cm_payments_methods/profile</config_path>
+                    <config_path>payment/cm_payments_creditcard/profile</config_path>
                     <depends>
                         <field id="active">1</field>
                     </depends>

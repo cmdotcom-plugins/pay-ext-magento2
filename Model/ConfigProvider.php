@@ -14,14 +14,19 @@ use Magento\Framework\View\Asset\Repository as AssetRepository;
 
 class ConfigProvider implements ConfigProviderInterface
 {
+    /**
+     * Method code
+     */
     public const CODE = 'cm_payments';
+
     /**
      * @var AssetRepository
      */
     private $assetRepository;
 
     /**
-     * ConfigProvider constructor.
+     * ConfigProvider constructor
+     *
      * @param AssetRepository $assetRepository
      */
     public function __construct(AssetRepository $assetRepository)
