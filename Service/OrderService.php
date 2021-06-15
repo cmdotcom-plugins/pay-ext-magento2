@@ -17,6 +17,7 @@ use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Exception\EmptyOrderKeyException;
+use CM\Payments\Logger\CMPaymentsLogger;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Client\Request\OrderGetRequest;
@@ -61,6 +62,11 @@ class OrderService implements OrderServiceInterface
     private $orderGetRequestFactory;
 
     /**
+     * @var CMPaymentsLogger
+     */
+    private $logger;
+
+    /**
      * OrderService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
@@ -78,7 +84,8 @@ class OrderService implements OrderServiceInterface
         CMOrderRepositoryInterface $cmOrderRepository,
         OrderRequestBuilderInterface $orderRequestBuilder,
         CMOrderInterfaceFactory $cmOrderInterfaceFactory,
-        OrderGetRequestFactory $orderGetRequestFactory
+        OrderGetRequestFactory $orderGetRequestFactory,
+        CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->orderRepository = $orderRepository;
         $this->apiClient = $apiClient;
@@ -87,6 +94,7 @@ class OrderService implements OrderServiceInterface
         $this->orderRequestBuilder = $orderRequestBuilder;
         $this->cmOrderInterfaceFactory = $cmOrderInterfaceFactory;
         $this->orderGetRequestFactory = $orderGetRequestFactory;
+        $this->logger = $cmPaymentsLogger;
     }
 
     /**
@@ -96,6 +104,11 @@ class OrderService implements OrderServiceInterface
     {
         $order = $this->orderRepository->get($orderId);
         $orderCreateRequest = $this->orderRequestBuilder->create($order);
+
+        $this->logger->info('CM Create order request', [
+            'orderId' => $orderId,
+            'requestPayload' => $orderCreateRequest->getPayload()
+        ]);
 
         $response = $this->apiClient->execute(
             $orderCreateRequest

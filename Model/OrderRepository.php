@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Model;
 
-use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Model\Order as CMOrder;
 use CM\Payments\Model\OrderFactory as CMOrderFactory;
 use CM\Payments\Api\Model\Data\OrderInterface;
