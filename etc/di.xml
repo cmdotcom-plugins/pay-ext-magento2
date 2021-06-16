@@ -6,12 +6,25 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="CM\Payments\Api\Service\OrderServiceInterface" type="CM\Payments\Service\OrderService" />
+    <preference for="CM\Payments\Api\Service\PaymentServiceInterface" type="CM\Payments\Service\PaymentService" />
     <preference for="CM\Payments\Api\Service\OrderRequestBuilderInterface" type="CM\Payments\Service\OrderRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface" type="CM\Payments\Service\PaymentRequestBuilder" />
     <preference for="CM\Payments\Api\Client\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
     <preference for="CM\Payments\Api\Model\OrderRepositoryInterface" type="CM\Payments\Model\OrderRepository" />
+    <preference for="CM\Payments\Api\Model\PaymentRepositoryInterface" type="CM\Payments\Model\PaymentRepository" />
     <preference for="CM\Payments\Api\Model\Data\OrderInterface" type="CM\Payments\Model\Data\Order"/>
+    <preference for="CM\Payments\Api\Model\Data\PaymentInterface" type="CM\Payments\Model\Data\Payment"/>
     <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder"/>
     <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config"/>
+
+    <type name="CM\Payments\Service\PaymentRequestBuilder">
+        <arguments>
+            <argument name="parts" xsi:type="array">
+                <item name="method" xsi:type="object">CM\Payments\Service\Payment\Request\Part\Method</item>
+                <item name="idealDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\IdealDetails</item>
+            </argument>
+        </arguments>
+    </type>
 
     <!-- BEGIN CM Payments Method -->
     <virtualType name="CMPaymentsFacade" type="Magento\Payment\Model\Method\Adapter">
