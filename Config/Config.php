@@ -10,7 +10,9 @@ namespace CM\Payments\Config;
 
 use CM\Payments\Api\Config\ConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
 class Config implements ConfigInterface
 {
@@ -19,9 +21,23 @@ class Config implements ConfigInterface
      */
     private $scopeConfig;
 
-    public function __construct(ScopeConfigInterface $scopeConfig)
-    {
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * Service constructor
+     *
+     * @param ScopeConfigInterface $scopeConfig
+     * @param StoreManagerInterface $storeManager
+     */
+    public function __construct(
+        ScopeConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager
+    ) {
         $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -55,12 +71,30 @@ class Config implements ConfigInterface
     {
         return $this->getValue('payment/cm_payments_methods/profile', $storeId);
     }
+
     /**
      * @inheritDoc
      */
     public function getApiMode($storeId = null): string
     {
         return $this->getValue('payment/cm_payments_methods/mode', $storeId);
+    }
+
+    /**
+     * Checks that payment method is active
+     *
+     * @param string $paymentMethodCode
+     * @return ?bool
+     * @throws NoSuchEntityException
+     */
+    public function isPaymentMethodActive(string $paymentMethodCode): ?bool
+    {
+        return $this->getConfig(
+            'payment/' . $paymentMethodCode . '/active',
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId(),
+            true
+        );
     }
 
     /**
@@ -77,5 +111,25 @@ class Config implements ConfigInterface
         );
 
         return $value ?: '';
+    }
+
+    /**
+     * Get config value by path
+     *
+     * @param string $path
+     * @param string $scopeType
+     * @param string|null $scopeCode
+     * @param bool $isFlag
+     * @return mixed
+     */
+    public function getConfig(
+        string $path,
+        string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        ?string $scopeCode = null,
+        bool $isFlag = false
+    ) {
+        return $isFlag ?
+            $this->scopeConfig->isSetFlag($path, $scopeType, $scopeCode) :
+            $this->scopeConfig->getValue($path, $scopeType, $scopeCode);
     }
 }

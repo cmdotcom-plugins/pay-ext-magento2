@@ -98,7 +98,7 @@ class OrderCreate
      */
     public function toArray(): array
     {
-        return [
+        return array_filter([
             'order_reference' => $this->orderId,
             'description' => 'Order ' . $this->orderId,
             'amount' => $this->amount,
@@ -108,6 +108,6 @@ class OrderCreate
             'country' => $this->country,
             'profile' => $this->paymentProfile,
             'return_urls' => $this->returnUrls
-        ];
+        ]);
     }
 }

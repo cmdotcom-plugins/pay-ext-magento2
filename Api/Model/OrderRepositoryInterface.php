@@ -15,13 +15,13 @@ interface OrderRepositoryInterface
 {
     /**
      * @param string $orderKey
-     * @return Order
+     * @return OrderInterface
      */
     public function getByOrderKey(string $orderKey): OrderInterface;
 
     /**
      * @param OrderInterface $order
-     * @return Order
+     * @return OrderInterface
      */
     public function save(OrderInterface $order): OrderInterface;
 }

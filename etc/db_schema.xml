@@ -32,4 +32,8 @@
             <column name="increment_id"/>
         </index>
     </table>
+
+    <table name="quote" resource="checkout" comment="Sales Flat Quote">
+        <column name="cm_order_key" xsi:type="varchar" length="255" nullable="true" comment="CM Order Key"/>
+    </table>
 </schema>

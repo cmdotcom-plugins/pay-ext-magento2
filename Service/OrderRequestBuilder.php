@@ -16,6 +16,7 @@ use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Client\Request\OrderCreateRequestFactory;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\UrlInterface;
+use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
 class OrderRequestBuilder implements OrderRequestBuilderInterface
@@ -24,18 +25,22 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
      * @var ConfigInterface
      */
     private $config;
+
     /**
      * @var ResolverInterface
      */
     private $localeResolver;
+
     /**
      * @var UrlInterface
      */
     private $urlBuilder;
+
     /**
      * @var ClientOrderCreateFactory
      */
     private $clientOrderCreateFactory;
+
     /**
      * @var OrderCreateRequestFactory
      */
@@ -84,6 +89,26 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
                 'cancelled' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_CANCELLED),
                 'error' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_ERROR)
             ]
+        ]);
+
+        return $this->orderCreateRequestFactory->create(['orderCreate' => $clientOrder]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createByQuote(CartInterface $quote, bool $isEmptyProfile = false): OrderCreateRequest
+    {
+        /** @var ClientOrder $clientOrder */
+        $clientOrder = $this->clientOrderCreateFactory->create([
+            'orderId' => sprintf("Q%'.09d", $quote->getId()),
+            'amount' => (int)($quote->getGrandTotal() * 100),
+            'currency' => $quote->getCurrency()->getQuoteCurrencyCode(),
+            'email' => $quote->getBillingAddress()->getEmail(),
+            'language' => $this->getLanguageCode((int)$quote->getStoreId()),
+            'country' => $quote->getBillingAddress()->getCountryId(),
+            'paymentProfile' => $isEmptyProfile ? '' : $this->config->getPaymentProfile($quote->getStoreId()),
+            'returnUrls' => []
         ]);
 
         return $this->orderCreateRequestFactory->create(['orderCreate' => $clientOrder]);

@@ -9,18 +9,20 @@ declare(strict_types=1);
 namespace CM\Payments\Service;
 
 use CM\Payments\Api\Client\ApiClientInterface;
-use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
-use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
+use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\Data\OrderInterfaceFactory as CMOrderFactory;
+use CM\Payments\Api\Model\Domain\CMOrderInterface;
+use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Exception\EmptyOrderKeyException;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
+use CM\Payments\Client\Request\OrderGetMethodsRequest;
+use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Client\Request\OrderGetRequest;
 use CM\Payments\Client\Request\OrderGetRequestFactory;
+use CM\Payments\Exception\EmptyOrderKeyException;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 
 class OrderService implements OrderServiceInterface
@@ -61,15 +63,21 @@ class OrderService implements OrderServiceInterface
     private $orderGetRequestFactory;
 
     /**
+     * @var OrderGetMethodsRequestFactory
+     */
+    private $orderGetMethodsRequestFactory;
+
+    /**
      * OrderService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
      * @param ApiClientInterface $apiClient
      * @param OrderInterfaceFactory $cmOrderFactory
-     * @param CMOrderRepositoryInterface $CMOrderRepository
-     * @param CMOrderFactory $cmOrderFactory
      * @param CMOrderRepositoryInterface $cmOrderRepository
+     * @param OrderRequestBuilderInterface $orderRequestBuilder
+     * @param CMOrderInterfaceFactory $cmOrderInterfaceFactory
      * @param OrderGetRequestFactory $orderGetRequestFactory
+     * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
@@ -78,7 +86,8 @@ class OrderService implements OrderServiceInterface
         CMOrderRepositoryInterface $cmOrderRepository,
         OrderRequestBuilderInterface $orderRequestBuilder,
         CMOrderInterfaceFactory $cmOrderInterfaceFactory,
-        OrderGetRequestFactory $orderGetRequestFactory
+        OrderGetRequestFactory $orderGetRequestFactory,
+        OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
     ) {
         $this->orderRepository = $orderRepository;
         $this->apiClient = $apiClient;
@@ -87,6 +96,7 @@ class OrderService implements OrderServiceInterface
         $this->orderRequestBuilder = $orderRequestBuilder;
         $this->cmOrderInterfaceFactory = $cmOrderInterfaceFactory;
         $this->orderGetRequestFactory = $orderGetRequestFactory;
+        $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
     }
 
     /**
@@ -124,12 +134,14 @@ class OrderService implements OrderServiceInterface
         $order->getPayment()->setAdditionalInformation($additionalInformation);
         $this->orderRepository->save($order);
 
-        return $this->cmOrderInterfaceFactory->create([
-            'url' => $response['url'],
-            'orderReference' => $orderCreateRequest->getPayload()['order_reference'],
-            'orderKey' => $response['order_key'],
-            'expiresOn' => $response['expires_on'],
-        ]);
+        return $this->cmOrderInterfaceFactory->create(
+            [
+                'url' => $response['url'],
+                'orderReference' => $orderCreateRequest->getPayload()['order_reference'],
+                'orderKey' => $response['order_key'],
+                'expiresOn' => $response['expires_on'],
+            ]
+        );
     }
 
     /**
@@ -143,6 +155,20 @@ class OrderService implements OrderServiceInterface
 
         return $this->apiClient->execute(
             $orderGetRequest
+        );
+    }
+
+    /**
+     * @param string $orderKey
+     * @return array
+     */
+    public function getAvailablePaymentMethods(string $orderKey): array
+    {
+        /** @var OrderGetMethodsRequest $orderGetMethodsRequest */
+        $orderGetMethodsRequest = $this->orderGetMethodsRequestFactory->create(['orderKey' => $orderKey]);
+
+        return $this->apiClient->execute(
+            $orderGetMethodsRequest
         );
     }
 

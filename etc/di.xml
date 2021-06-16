@@ -13,6 +13,7 @@
     <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder"/>
     <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config"/>
 
+    <!-- BEGIN CM Payments Method -->
     <virtualType name="CMPaymentsFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE</argument>
@@ -66,5 +67,101 @@
             </argument>
         </arguments>
     </virtualType>
+    <!-- END CM Payments Method -->
 
+    <!-- BEGIN CM Payments (Credit Card) Method -->
+    <virtualType name="CMPaymentsCreditCardFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_CREDIT_CARD</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMCreditCardValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">CMCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCreditCardValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMCreditCardConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCreditCardConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMCreditCardGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCreditCardGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_CREDIT_CARD</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (Credit Card) Method -->
+
+    <!-- BEGIN CM Payments (iDeal) Method -->
+    <virtualType name="CMPaymentsIdealFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_IDEAL</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMIdealValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">CMCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMIdealValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMIdealConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMIdealConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMIdealGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMIdealGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_IDEAL</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (iDeal) Method -->
+
+    <!-- BEGIN CM Payments (PayPal) Method -->
+    <virtualType name="CMPaymentsPaypalFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_PAYPAL</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMPaypalValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">CMCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMPaypalValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMPaypalConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMPaypalConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMPaypalGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMPaypalGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_PAYPAL</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (PayPal) Method -->
 </config>
