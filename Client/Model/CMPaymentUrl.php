@@ -10,6 +10,7 @@ namespace CM\Payments\Client\Model;
 
 class CMPaymentUrl
 {
+    const PURPOSE_REDIRECT = 'REDIRECT';
     /**
      * @var string
      */

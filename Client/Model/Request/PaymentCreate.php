@@ -28,8 +28,8 @@ class PaymentCreate
      * @param array $idealDetails
      */
     public function __construct(
-        string $method,
-        array $idealDetails
+        string $method = '',
+        array $idealDetails = []
     ) {
         $this->method = $method;
         $this->idealDetails = $idealDetails;

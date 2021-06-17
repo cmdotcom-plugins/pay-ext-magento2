@@ -117,7 +117,7 @@ class Result implements HttpGetActionInterface
     }
 
     /**
-     * @return Redirect
+     * @return RedirectIdeal
      */
     public function redirectToCheckout(): Redirect
     {

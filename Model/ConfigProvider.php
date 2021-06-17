@@ -37,11 +37,11 @@ class ConfigProvider implements ConfigProviderInterface
      * Mapping of CM methods to magento
      */
     public const METHODS_MAPPING = [
-        'visa' => self::CODE_CREDIT_CARD,
-        'mastercard' => self::CODE_CREDIT_CARD,
-        'maestro' => self::CODE_CREDIT_CARD,
-        'ideal' => self::CODE_IDEAL,
-        'paypal_express_checkout' => self::CODE_PAYPAL
+        'VISA' => self::CODE_CREDIT_CARD,
+        'MASTERCARD' => self::CODE_CREDIT_CARD,
+        'MAESTRO' => self::CODE_CREDIT_CARD,
+        'IDEAL' => self::CODE_IDEAL,
+        'PAYPAL_EXPRESS_CHECKOUT' => self::CODE_PAYPAL
     ];
 
     /**
@@ -130,14 +130,20 @@ class ConfigProvider implements ConfigProviderInterface
 
         $availableMethods = $this->getAvailableMethods();
         foreach ($availableMethods as $availableMethod) {
-            $availableMethod = strtolower($availableMethod['method']);
-            $mappedMethodName = self::METHODS_MAPPING[$availableMethod];
+            $availableMethodName = $availableMethod['method'];
+            $mappedMethodName = self::METHODS_MAPPING[$availableMethodName];
             try {
-                if (isset(self::METHODS_MAPPING[$availableMethod])
+                if ($mappedMethodName
                     && $this->configService->isPaymentMethodActive($mappedMethodName)
                 ) {
                     $config['payment'][$mappedMethodName]['image']
-                        = $this->getImage(self::METHODS_MAPPING[$availableMethod]);
+                        = $this->getImage($mappedMethodName);
+
+                    if (isset($availableMethod['ideal_details'])) {
+                        $config['payment'][$mappedMethodName]['issuers']
+                            = $availableMethod['ideal_details']['issuers'];
+                    }
+
                 }
             } catch (Exception $e) {
                 continue;

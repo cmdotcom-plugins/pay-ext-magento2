@@ -59,7 +59,7 @@ class PaymentRequestBuilder implements PaymentRequestBuilderInterface
     /**
      * @inheritDoc
      */
-    public function create(OrderInterface $order): PaymentCreateRequest
+    public function create(OrderInterface $order, string $orderKey): PaymentCreateRequest
     {
         /** @var PaymentCreate $paymentCreate */
         $paymentCreate = $this->clientPaymentCreateFactory->create();
@@ -68,6 +68,9 @@ class PaymentRequestBuilder implements PaymentRequestBuilderInterface
             $paymentCreate = $part->process($order, $paymentCreate);
         }
 
-        return $this->paymentCreateRequestFactory->create(['paymentCreate' => $paymentCreate]);
+        return $this->paymentCreateRequestFactory->create([
+            'orderKey' => $orderKey,
+            'paymentCreate' => $paymentCreate
+        ]);
     }
 }
