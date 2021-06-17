@@ -8,35 +8,54 @@ declare(strict_types=1);
 
 namespace CM\Payments\Api\Config;
 
+use Magento\Framework\Exception\NoSuchEntityException;
+
 interface ConfigInterface
 {
     /**
-     * @param int|null $storeId
-     * @return string
+     * @return string|null
+     * @throws NoSuchEntityException
      */
-    public function getMerchantKey($storeId = null): string;
+    public function getMerchantKey(): ?string;
 
     /**
-     * @param int|null $storeId
-     * @return string
+     * @return string|null
+     * @throws NoSuchEntityException
      */
-    public function getMerchantName($storeId = null): string;
+    public function getMerchantName(): ?string;
 
     /**
-     * @param int|null $storeId
-     * @return string
+     * @return string|null
+     * @throws NoSuchEntityException
      */
-    public function getMerchantPassword($storeId = null): string;
+    public function getMerchantPassword(): ?string;
 
     /**
-     * @param int|null $storeId
-     * @return string
+     * @return string|null
+     * @throws NoSuchEntityException
      */
-    public function getPaymentProfile($storeId = null): string;
+    public function getPaymentProfile(): ?string;
 
     /**
-     * @param int|null $storeId
-     * @return string
+     * @return string|null
+     * @throws NoSuchEntityException
      */
-    public function getApiMode($storeId = null): string;
+    public function getApiMode(): ?string;
+
+    /**
+     * Checks that payment method is active
+     *
+     * @param string $paymentMethodCode
+     * @return ?bool
+     * @throws NoSuchEntityException
+     */
+    public function isPaymentMethodActive(string $paymentMethodCode): ?bool;
+
+    /**
+     * Get Payment Profile for Credit Card Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getCreditCardPaymentProfile(): ?string;
 }

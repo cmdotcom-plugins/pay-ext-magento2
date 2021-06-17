@@ -181,7 +181,7 @@ class ConfigProvider implements ConfigProviderInterface
                         $orderCreateRequest
                     );
 
-                    $quote->setData('order_key', $response['order_key']);
+                    $quote->setData('cm_order_key', $response['order_key']);
                     $this->quoteRepository->save($quote);
                 }
 

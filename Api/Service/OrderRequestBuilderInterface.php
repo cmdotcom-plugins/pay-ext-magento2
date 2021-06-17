@@ -11,12 +11,14 @@ namespace CM\Payments\Api\Service;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Framework\Exception\LocalizedException;
 
 interface OrderRequestBuilderInterface
 {
     /**
      * @param OrderInterface $order
      * @return OrderCreateRequest
+     * @throws LocalizedException
      */
     public function create(OrderInterface $order): OrderCreateRequest;
 
@@ -24,6 +26,7 @@ interface OrderRequestBuilderInterface
      * @param CartInterface $quote
      * @param bool $isEmptyProfile
      * @return OrderCreateRequest
+     * @throws LocalizedException
      */
     public function createByQuote(CartInterface $quote, bool $isEmptyProfile = false): OrderCreateRequest;
 }
