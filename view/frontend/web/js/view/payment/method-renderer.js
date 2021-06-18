@@ -15,11 +15,12 @@ define([
     'use strict';
 
     let defaultComponent = 'CM_Payments/js/view/payment/method-renderer/cm_payments',
+        paypalComponent = 'CM_Payments/js/view/payment/method-renderer/paypal',
         methods = [
             {type: 'cm_payments', component: defaultComponent},
             {type: 'cm_payments_creditcard', component: defaultComponent},
             {type: 'cm_payments_ideal', component: defaultComponent},
-            {type: 'cm_payments_paypal', component: defaultComponent}
+            {type: 'cm_payments_paypal', component: paypalComponent}
         ];
 
     $.each(methods, function (k, method) {

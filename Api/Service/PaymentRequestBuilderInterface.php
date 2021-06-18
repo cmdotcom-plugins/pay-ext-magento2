@@ -15,8 +15,9 @@ interface PaymentRequestBuilderInterface
 {
     /**
      * @param OrderInterface $order
+     * @param string $orderKey
      *
      * @return PaymentCreateRequest
      */
-    public function create(OrderInterface $order): PaymentCreateRequest;
+    public function create(OrderInterface $order, string $orderKey): PaymentCreateRequest;
 }

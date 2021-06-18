@@ -34,7 +34,7 @@ class ConfigProvider implements ConfigProviderInterface
     public const CODE_PAYPAL = 'cm_payments_paypal';
 
     /**
-     * Mapping of CM methods to magento
+     * Mapping of CM methods to Magento
      */
     public const METHODS_MAPPING = [
         'visa' => self::CODE_CREDIT_CARD,
@@ -42,6 +42,13 @@ class ConfigProvider implements ConfigProviderInterface
         'maestro' => self::CODE_CREDIT_CARD,
         'ideal' => self::CODE_IDEAL,
         'paypal_express_checkout' => self::CODE_PAYPAL
+    ];
+
+    /**
+     * Mapping of Magento Payment methods to CM Api Payment methods
+     */
+    public const API_METHODS_MAPPING = [
+        self::CODE_PAYPAL => 'PAYPAL'
     ];
 
     /**
