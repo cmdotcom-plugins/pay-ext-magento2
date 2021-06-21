@@ -15,6 +15,7 @@ define([
     'use strict';
 
     let defaultComponent = 'CM_Payments/js/view/payment/method-renderer/cm_payments',
+        isEnabled = window.checkoutConfig.payment.cm_payments.is_enabled,
         methods = [
             {type: 'cm_payments', component: defaultComponent},
             {type: 'cm_payments_creditcard', component: defaultComponent},
@@ -23,7 +24,9 @@ define([
         ];
 
     $.each(methods, function (k, method) {
-        rendererList.push(method);
+        if (isEnabled) {
+            rendererList.push(method);
+        }
     });
 
     return Component.extend({});
