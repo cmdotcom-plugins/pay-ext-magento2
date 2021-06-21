@@ -10,18 +10,24 @@ namespace CM\Payments\Client\Model;
 
 class CMPaymentUrl
 {
+    /** URL type */
+    public const PURPOSE_REDIRECT = 'REDIRECT';
+
     /**
      * @var string
      */
     private $purpose;
+
     /**
      * @var string
      */
     private $method;
+
     /**
      * @var string
      */
     private $url;
+
     /**
      * @var string
      */
