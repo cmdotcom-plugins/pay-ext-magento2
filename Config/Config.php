@@ -42,10 +42,23 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function isEnabled(): ?bool
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_ENABLED,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId(),
+            true
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getMerchantKey(): ?string
     {
         return $this->getConfig(
-            'payment/cm_payments_general/merchant_key',
+            self::XML_PATH_GENERAL_MERCHANT_KEY,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -57,7 +70,7 @@ class Config implements ConfigInterface
     public function getMerchantName(): ?string
     {
         return $this->getConfig(
-            'payment/cm_payments_general/merchant_name',
+            self::XML_PATH_GENERAL_MERCHANT_NAME,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -69,7 +82,7 @@ class Config implements ConfigInterface
     public function getMerchantPassword(): ?string
     {
         return $this->getConfig(
-            'payment/cm_payments_general/merchant_password',
+            self::XML_PATH_GENERAL_MERCHANT_PASSWORD,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -81,7 +94,7 @@ class Config implements ConfigInterface
     public function getPaymentProfile(): ?string
     {
         return $this->getConfig(
-            'payment/cm_payments_methods/profile',
+            self::XML_PATH_PAYMENT_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -90,10 +103,10 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function getApiMode(): ?string
+    public function getMode(): ?string
     {
         return $this->getConfig(
-            'payment/cm_payments_methods/mode',
+            self::XML_PATH_GENERAL_MODE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -118,7 +131,7 @@ class Config implements ConfigInterface
     public function getCreditCardPaymentProfile(): ?string
     {
         return $this->getConfig(
-            'payment/cm_payments_creditcard/profile',
+            self::XML_PATH_PAYMENT_CREDIT_CARD_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );

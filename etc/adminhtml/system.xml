@@ -52,6 +52,9 @@
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <config_path>payment/cm_payments_general/merchant_key</config_path>
                 </field>
+                <depends>
+                    <field id="cm_payments_general/status/enabled">1</field>
+                </depends>
             </group>
         </section>
         <section id="cm_payments_methods" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label">
@@ -61,12 +64,6 @@
 
             <group id="payment_method_general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General</label>
-                <field id="payment_method_visibility" translate="label" type="select" sortOrder="10" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Show payment methods in checkout</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>payment/cm_payments_methods/visibility</config_path>
-                </field>
                 <field id="payment_method_profile" translate="label" type="text" sortOrder="20" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Payment method profile</label>
