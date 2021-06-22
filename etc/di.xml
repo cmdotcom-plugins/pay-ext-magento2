@@ -177,4 +177,36 @@
         </arguments>
     </virtualType>
     <!-- END CM Payments (PayPal) Method -->
+
+    <!-- BEGIN CM Payments (BanContact) Method -->
+    <virtualType name="CMPaymentsBancontactFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_BANCONTACT</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMBancontactValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">CMCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMBancontactValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMBancontactConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMBancontactConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMBancontactGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMBancontactGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_BANCONTACT</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (BanContact) Method -->
 </config>

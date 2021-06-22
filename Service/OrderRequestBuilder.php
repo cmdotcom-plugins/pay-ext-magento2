@@ -95,10 +95,10 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
         $clientOrder = $this->clientOrderCreateFactory->create([
             'orderId' => $order->getIncrementId(),
             'amount' => $this->getAmount($order),
-            'currency' => $order->getOrderCurrencyCode(),
-            'email' => $order->getBillingAddress()->getEmail(),
+            'currency' => 'EUR',//$order->getOrderCurrencyCode(),
+            'email' => $order->getShippingAddress()->getEmail(),
             'language' => $this->getLanguageCode((int)$order->getStoreId()),
-            'country' => $order->getBillingAddress()->getCountryId(),
+            'country' => $order->getShippingAddress()->getCountryId(),
             'paymentProfile' => $paymentProfile,
             'returnUrls' => [
                 'success' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_SUCCESS),
@@ -121,10 +121,10 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
         $clientOrder = $this->clientOrderCreateFactory->create([
             'orderId' => $orderId,
             'amount' => (int)($quote->getGrandTotal() * 100),
-            'currency' => $quote->getCurrency()->getQuoteCurrencyCode(),
-            'email' => $quote->getBillingAddress()->getEmail(),
+            'currency' => 'EUR', //$quote->getCurrency()->getQuoteCurrencyCode(),
+            'email' => $quote->getShippingAddress()->getEmail(),
             'language' => $this->getLanguageCode((int)$quote->getStoreId()),
-            'country' => $quote->getBillingAddress()->getCountryId(),
+            'country' => 'BE', //$quote->getShippingAddress()->getCountryId(),
             'paymentProfile' => $isEmptyProfile ? '' : $this->config->getPaymentProfile(),
             'returnUrls' => []
         ]);

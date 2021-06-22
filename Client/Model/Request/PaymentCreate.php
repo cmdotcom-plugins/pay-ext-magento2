@@ -28,8 +28,8 @@ class PaymentCreate
      * @param array $idealDetails
      */
     public function __construct(
-        string $method,
-        array $idealDetails
+        string $method = '',
+        array $idealDetails = []
     ) {
         $this->method = $method;
         $this->idealDetails = $idealDetails;
@@ -42,10 +42,14 @@ class PaymentCreate
      */
     public function toArray(): array
     {
-        return [
-            'method' => $this->method,
-            'ideal_details' => $this->idealDetails
+        $data = [
+            'method' => $this->method
         ];
+
+        if ($this->idealDetails) {
+            $data['ideal_details'] =  $this->idealDetails;
+        }
+        return $data;
     }
 
     /**

@@ -33,6 +33,7 @@ class ConfigProvider implements ConfigProviderInterface
     public const CODE_CREDIT_CARD = 'cm_payments_creditcard';
     public const CODE_IDEAL = 'cm_payments_ideal';
     public const CODE_PAYPAL = 'cm_payments_paypal';
+    public const CODE_BANCONTACT = 'cm_payments_bancontact';
 
     /**
      * Mapping of CM methods to magento
@@ -42,7 +43,15 @@ class ConfigProvider implements ConfigProviderInterface
         'mastercard' => self::CODE_CREDIT_CARD,
         'maestro' => self::CODE_CREDIT_CARD,
         'ideal' => self::CODE_IDEAL,
-        'paypal_express_checkout' => self::CODE_PAYPAL
+        'paypal_express_checkout' => self::CODE_PAYPAL,
+        'bancontact' => self::CODE_BANCONTACT
+    ];
+
+    /**
+     * Mapping of Magento Payment methods to CM Api Payment methods
+     */
+    public const API_METHODS_MAPPING = [
+        self::CODE_BANCONTACT => 'BANCONTACT'
     ];
 
     /**
@@ -178,15 +187,13 @@ class ConfigProvider implements ConfigProviderInterface
             try {
                 /** @var Quote $quote */
                 $quote = $this->checkoutSession->getQuote();
-                if (!$quote->getData('cm_order_key')) {
-                    $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote, true);
-                    $response = $this->apiClient->execute(
-                        $orderCreateRequest
-                    );
+                $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote, true);
+                $response = $this->apiClient->execute(
+                    $orderCreateRequest
+                );
 
-                    $quote->setData('cm_order_key', $response['order_key']);
-                    $this->quoteRepository->save($quote);
-                }
+                $quote->setData('cm_order_key', $response['order_key']);
+                $this->quoteRepository->save($quote);
 
                 if ($quote->getData('cm_order_key')) {
                     $this->availableMethods = $this->orderService->getAvailablePaymentMethods(

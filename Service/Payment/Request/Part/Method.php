@@ -9,6 +9,7 @@ namespace CM\Payments\Service\Payment\Request\Part;
 use CM\Payments\Api\Service\Payment\Request\RequestPartInterface;
 use CM\Payments\Client\Model\Request\PaymentCreate;
 use Magento\Sales\Api\Data\OrderInterface;
+use CM\Payments\Model\ConfigProvider;
 
 class Method implements RequestPartInterface
 {
@@ -28,7 +29,6 @@ class Method implements RequestPartInterface
      */
     private function getMethod(OrderInterface $order): string
     {
-        // Todo: map method string to correct cm method param
-        return $order->getPayment()->getMethod();
+        return ConfigProvider::API_METHODS_MAPPING[$order->getPayment()->getMethod()];
     }
 }
