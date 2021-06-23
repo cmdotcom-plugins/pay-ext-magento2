@@ -42,10 +42,14 @@ class PaymentCreate
      */
     public function toArray(): array
     {
-        return [
-            'method' => $this->method,
-            'ideal_details' => $this->idealDetails
+        $data = [
+            'method' => $this->method
         ];
+
+        if ($this->idealDetails) {
+            $data['ideal_details'] =  $this->idealDetails;
+        }
+        return $data;
     }
 
     /**

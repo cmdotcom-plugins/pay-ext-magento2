@@ -29,6 +29,7 @@ class Method implements RequestPartInterface
      */
     private function getMethod(OrderInterface $order): string
     {
-        return array_flip(ConfigProvider::METHODS_MAPPING)[$order->getPayment()->getMethod()];
+        return ConfigProvider::API_METHODS_MAPPING[$order->getPayment()->getMethod()]
+            ?? $order->getPayment()->getMethod();
     }
 }

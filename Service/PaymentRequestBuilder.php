@@ -65,6 +65,9 @@ class PaymentRequestBuilder implements PaymentRequestBuilderInterface
         $paymentCreate = $this->clientPaymentCreateFactory->create();
 
         foreach ($this->parts as $part) {
+            if ($part == 'idealDetails') {
+                continue;
+            }
             $paymentCreate = $part->process($order, $paymentCreate);
         }
 
