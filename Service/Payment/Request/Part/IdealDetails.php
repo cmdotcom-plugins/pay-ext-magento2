@@ -8,6 +8,7 @@ namespace CM\Payments\Service\Payment\Request\Part;
 
 use CM\Payments\Api\Service\Payment\Request\RequestPartInterface;
 use CM\Payments\Client\Model\Request\PaymentCreate;
+use CM\Payments\Model\ConfigProvider;
 use Magento\Sales\Api\Data\OrderInterface;
 
 class IdealDetails implements RequestPartInterface
@@ -17,7 +18,7 @@ class IdealDetails implements RequestPartInterface
      */
     public function process(OrderInterface $order, PaymentCreate $paymentCreate): PaymentCreate
     {
-        if ($order->getPayment()->getMethod() !== 'cm_payments_ideal') {
+        if ($order->getPayment()->getMethod() !== ConfigProvider::CODE_IDEAL) {
             return $paymentCreate;
         }
 

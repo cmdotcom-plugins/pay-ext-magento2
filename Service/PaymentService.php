@@ -11,13 +11,13 @@ namespace CM\Payments\Service;
 use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
+use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
-use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
 use CM\Payments\Client\Api\CMPaymentInterface;
 use CM\Payments\Client\Model\CMPaymentFactory;
-use CM\Payments\Model\Data\Payment as CMPaymentDataFactory;
+use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Exception\EmptyPaymentIdException;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -33,7 +33,7 @@ class PaymentService implements PaymentServiceInterface
      */
     private $cmPaymentFactory;
     /**
-     * @var OrderRequestBuilderInterface
+     * @var PaymentRequestBuilderInterface
      */
     private $paymentRequestBuilder;
     /**
@@ -52,6 +52,10 @@ class PaymentService implements PaymentServiceInterface
      * @var CMPaymentDataFactory
      */
     private $cmPaymentDataFactory;
+    /**
+     * @var CMOrderRepositoryInterface
+     */
+    private $cmOrderRepository;
 
     /**
      * OrderService constructor
@@ -69,7 +73,8 @@ class PaymentService implements PaymentServiceInterface
         CMPaymentDataFactory $cmPaymentDataFactory,
         CMPaymentFactory $cmPaymentFactory,
         CMPaymentUrlFactory $cmPaymentUrlFactory,
-        CMPaymentRepositoryInterface $cmPaymentRepository
+        CMPaymentRepositoryInterface $cmPaymentRepository,
+        CMOrderRepositoryInterface $cmOrderRepository
     ) {
         $this->orderRepository = $orderRepository;
         $this->apiClient = $apiClient;
@@ -78,6 +83,7 @@ class PaymentService implements PaymentServiceInterface
         $this->cmPaymentUrlFactory = $cmPaymentUrlFactory;
         $this->cmPaymentRepository = $cmPaymentRepository;
         $this->cmPaymentDataFactory = $cmPaymentDataFactory;
+        $this->cmOrderRepository = $cmOrderRepository;
     }
 
     /**
@@ -86,7 +92,8 @@ class PaymentService implements PaymentServiceInterface
     public function create(string $orderId): CMPaymentInterface
     {
         $order = $this->orderRepository->get($orderId);
-        $paymentCreateRequest = $this->paymentRequestBuilder->create($order);
+        $cmOrder = $this->cmOrderRepository->getByOrderId((int) $order->getEntityId());
+        $paymentCreateRequest = $this->paymentRequestBuilder->create($order, $cmOrder->getOrderKey());
 
         $response = $this->apiClient->execute(
             $paymentCreateRequest
@@ -100,9 +107,9 @@ class PaymentService implements PaymentServiceInterface
         /** @var CMPaymentDataInterface $cmPayment */
         $cmPayment = $this->cmPaymentDataFactory->create();
         $cmPayment->setOrderId((int)$order->getEntityId());
-        $cmPayment->setOrderKey($response['order_key']);
+        $cmPayment->setOrderKey($cmOrder->getOrderKey());
         $cmPayment->setIncrementId($order->getIncrementId());
-        $cmPayment->setPaymentId($order->getIncrementId());
+        $cmPayment->setPaymentId($response['id']);
 
         $this->cmPaymentRepository->save($cmPayment);
 
@@ -115,19 +122,19 @@ class PaymentService implements PaymentServiceInterface
         $urls = [];
         if (!empty($response['urls'])) {
             foreach ($response['urls'] as $url) {
-                array_push($urls, $this->cmPaymentUrlFactory->create([
+                $urls[] = $this->cmPaymentUrlFactory->create([
                     'purpose' => $url['purpose'],
                     'method' => $url['method'],
                     'url' => $url['url'],
                     'order' => $url['order'],
-                ]));
+                ]);
             }
         }
 
         return $this->cmPaymentFactory->create([
             'id' => $response['id'],
-            'method' => $response['method'],
-            'url' => $urls
+            'status' => $response['status'],
+            'urls' => $urls
         ]);
     }
 }

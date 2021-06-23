@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Model;
 
-use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Model\Order as CMOrder;
 use CM\Payments\Model\OrderFactory as CMOrderFactory;
 use CM\Payments\Api\Model\Data\OrderInterface;
@@ -78,6 +77,22 @@ class OrderRepository implements OrderRepositoryInterface
                 'Could not save the order: %1',
                 $exception->getMessage()
             ));
+        }
+
+        return $orderModel->getDataModel();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByOrderId(int $orderId): OrderInterface
+    {
+        /** @var CMOrder $orderModel */
+        $orderModel = $this->cmOrderFactory->create();
+        $this->resource->load($orderModel, $orderId, 'order_id');
+
+        if (!$orderModel->getId()) {
+            throw new NoSuchEntityException(__('Order with key %1 does not exist.', $orderId));
         }
 
         return $orderModel->getDataModel();

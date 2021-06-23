@@ -177,4 +177,18 @@
         </arguments>
     </virtualType>
     <!-- END CM Payments (PayPal) Method -->
+    <type name="CM\Payments\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+
+    <type name="CM\Payments\Logger\CMPaymentsLogger">
+        <arguments>
+            <argument name="name" xsi:type="string">cm_payments_logger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">CM\Payments\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
