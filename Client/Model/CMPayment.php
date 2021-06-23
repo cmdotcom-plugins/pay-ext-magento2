@@ -55,7 +55,7 @@ class CMPayment implements CMPaymentInterface
     }
 
     /**
-     * @return CMPaymentInterface[]
+     * @return CMPaymentUrl[]
      */
     public function getUrls(): array
     {
