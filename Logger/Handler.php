@@ -15,6 +15,7 @@ class Handler extends Base
      * @var int
      */
     protected $loggerType = Logger::DEBUG;
+
     /**
      * @var string
      */
