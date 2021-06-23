@@ -153,6 +153,14 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="profile" translate="label" type="text" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Profile</label>
+                    <config_path>payment/cm_payments_bancontact/profile</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
             </group>
         </section>
     </system>

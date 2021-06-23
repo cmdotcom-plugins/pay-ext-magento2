@@ -14,15 +14,16 @@ define([
 ) {
     'use strict';
 
-    let defaultComponent = 'CM_Payments/js/view/payment/method-renderer/cm_payments',
-        bancontactComponent = 'CM_Payments/js/view/payment/method-renderer/bancontact',
-        isEnabled = window.checkoutConfig.payment.cm_payments.is_enabled,
+    let isEnabled = window.checkoutConfig.payment.cm_payments.is_enabled,
+        defaultComponent = 'CM_Payments/js/view/payment/method-renderer/cm_payments',
+        idealComponent = 'CM_Payments/js/view/payment/method-renderer/ideal',
+        paypalComponent = 'CM_Payments/js/view/payment/method-renderer/paypal',
         methods = [
             {type: 'cm_payments', component: defaultComponent},
             {type: 'cm_payments_creditcard', component: defaultComponent},
-            {type: 'cm_payments_ideal', component: defaultComponent},
-            {type: 'cm_payments_paypal', component: defaultComponent},
-            {type: 'cm_payments_bancontact', component: bancontactComponent}
+            {type: 'cm_payments_ideal', component: idealComponent},
+            {type: 'cm_payments_paypal', component: paypalComponent},
+            {type: 'cm_payments_bancontact', component: defaultComponent}
         ];
 
     $.each(methods, function (k, method) {

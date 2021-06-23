@@ -22,6 +22,7 @@ use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Client\Request\OrderGetRequest;
 use CM\Payments\Client\Request\OrderGetRequestFactory;
 use CM\Payments\Exception\EmptyOrderKeyException;
+use CM\Payments\Logger\CMPaymentsLogger;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 
@@ -68,6 +69,11 @@ class OrderService implements OrderServiceInterface
     private $orderGetMethodsRequestFactory;
 
     /**
+     * @var CMPaymentsLogger
+     */
+    private $logger;
+
+    /**
      * OrderService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
@@ -78,6 +84,7 @@ class OrderService implements OrderServiceInterface
      * @param CMOrderInterfaceFactory $cmOrderInterfaceFactory
      * @param OrderGetRequestFactory $orderGetRequestFactory
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
+     * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
@@ -87,7 +94,8 @@ class OrderService implements OrderServiceInterface
         OrderRequestBuilderInterface $orderRequestBuilder,
         CMOrderInterfaceFactory $cmOrderInterfaceFactory,
         OrderGetRequestFactory $orderGetRequestFactory,
-        OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
+        OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
+        CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->orderRepository = $orderRepository;
         $this->apiClient = $apiClient;
@@ -97,6 +105,7 @@ class OrderService implements OrderServiceInterface
         $this->cmOrderInterfaceFactory = $cmOrderInterfaceFactory;
         $this->orderGetRequestFactory = $orderGetRequestFactory;
         $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
+        $this->logger = $cmPaymentsLogger;
     }
 
     /**
@@ -106,6 +115,11 @@ class OrderService implements OrderServiceInterface
     {
         $order = $this->orderRepository->get($orderId);
         $orderCreateRequest = $this->orderRequestBuilder->create($order);
+
+        $this->logger->info('CM Create order request', [
+            'orderId' => $orderId,
+            'requestPayload' => $orderCreateRequest->getPayload()
+        ]);
 
         $response = $this->apiClient->execute(
             $orderCreateRequest

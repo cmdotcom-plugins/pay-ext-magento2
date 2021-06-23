@@ -11,6 +11,7 @@ use CM\Payments\Client\Model\OrderCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Client\Request\OrderGetRequest;
 use CM\Payments\Client\Request\OrderGetRequestFactory;
+use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Magento\Sales\Api\Data\OrderAddressInterface;
@@ -37,6 +38,10 @@ class OrderServiceTest extends UnitTestCase
      */
     private $cmOrderRepositoryMock;
     /**
+     * @var CMPaymentsLogger|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $cmPaymentsLogger;
+    /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $orderInterfaceFactoryMock;
@@ -62,6 +67,10 @@ class OrderServiceTest extends UnitTestCase
             ->getMock();
 
         $this->cmOrderRepositoryMock = $this->getMockBuilder(CMOrderRepositoryInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->cmPaymentsLogger = $this->getMockBuilder(CMPaymentsLogger::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -115,7 +124,8 @@ class OrderServiceTest extends UnitTestCase
             $this->cmOrderRepositoryMock,
             $this->orderRequestBuilderMock,
             $this->cmOrderInterfaceFactoryMock,
-            $this->cmOrderGetRequestFactory
+            $this->cmOrderGetRequestFactory,
+            $this->cmPaymentsLogger
         );
     }
 

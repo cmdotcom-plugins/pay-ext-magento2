@@ -31,7 +31,7 @@
         </arguments>
     </type>
 
-    <type name="CM\Payments\Controller\Payment\Method\BancontactRedirect">
+    <type name="CM\Payments\Controller\Payment\Method\PaypalRedirect">
         <arguments>
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
