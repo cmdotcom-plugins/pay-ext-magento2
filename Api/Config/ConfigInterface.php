@@ -13,6 +13,25 @@ use Magento\Framework\Exception\NoSuchEntityException;
 interface ConfigInterface
 {
     /**
+     * XML Paths of configuration settings
+     */
+    public const XML_PATH_GENERAL_ENABLED = 'payment/cm_payments_general/enabled';
+    public const XML_PATH_GENERAL_MERCHANT_KEY = 'payment/cm_payments_general/merchant_key';
+    public const XML_PATH_GENERAL_MERCHANT_NAME = 'payment/cm_payments_general/merchant_name';
+    public const XML_PATH_GENERAL_MERCHANT_PASSWORD = 'payment/cm_payments_general/merchant_password';
+    public const XML_PATH_GENERAL_MODE = 'payment/cm_payments_general/mode';
+    public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
+    public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
+
+    /**
+     * Checks that extension is enabled
+     *
+     * @return ?bool
+     * @throws NoSuchEntityException
+     */
+    public function isEnabled(): ?bool;
+
+    /**
      * @return string|null
      * @throws NoSuchEntityException
      */
@@ -40,7 +59,7 @@ interface ConfigInterface
      * @return string|null
      * @throws NoSuchEntityException
      */
-    public function getApiMode(): ?string;
+    public function getMode(): ?string;
 
     /**
      * Checks that payment method is active

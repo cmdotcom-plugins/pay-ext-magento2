@@ -15,6 +15,7 @@ use CM\Payments\Config\Config as ConfigService;
 use Exception;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\Quote;
@@ -117,12 +118,14 @@ class ConfigProvider implements ConfigProviderInterface
      * Retrieve assoc array of checkout configuration
      *
      * @return array
+     * @throws NoSuchEntityException
      */
     public function getConfig(): array
     {
         $config = [
             'payment' => [
                 $this->getCode() => [
+                    'is_enabled' => $this->configService->isEnabled(),
                     'image' => $this->getImage($this->getCode()),
                 ],
             ],

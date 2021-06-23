@@ -84,6 +84,7 @@ class OrderService implements OrderServiceInterface
      * @param CMOrderInterfaceFactory $cmOrderInterfaceFactory
      * @param OrderGetRequestFactory $orderGetRequestFactory
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
+     * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
@@ -93,8 +94,7 @@ class OrderService implements OrderServiceInterface
         OrderRequestBuilderInterface $orderRequestBuilder,
         CMOrderInterfaceFactory $cmOrderInterfaceFactory,
         OrderGetRequestFactory $orderGetRequestFactory,
-        OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
-        OrderGetRequestFactory $orderGetRequestFactory,
+        OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->orderRepository = $orderRepository;

@@ -14,18 +14,20 @@ define([
 ) {
     'use strict';
 
-    const idealComponent = 'CM_Payments/js/view/payment/method-renderer/ideal';
-    const defaultComponent = 'CM_Payments/js/view/payment/method-renderer/cm_payments';
-
-    const methods = [
-        {type: 'cm_payments', component: defaultComponent},
-        {type: 'cm_payments_creditcard', component: defaultComponent},
-        {type: 'cm_payments_ideal', component: idealComponent},
-        {type: 'cm_payments_paypal', component: defaultComponent}
-    ];
+    let isEnabled = window.checkoutConfig.payment.cm_payments.is_enabled,
+        defaultComponent = 'CM_Payments/js/view/payment/method-renderer/cm_payments',
+        idealComponent = 'CM_Payments/js/view/payment/method-renderer/ideal',
+        methods = [
+            {type: 'cm_payments', component: defaultComponent},
+            {type: 'cm_payments_creditcard', component: defaultComponent},
+            {type: 'cm_payments_ideal', component: idealComponent},
+            {type: 'cm_payments_paypal', component: defaultComponent}
+        ];
 
     $.each(methods, function (k, method) {
-        rendererList.push(method);
+        if (isEnabled) {
+            rendererList.push(method);
+        }
     });
 
     return Component.extend({});
