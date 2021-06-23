@@ -146,7 +146,7 @@ class ConfigProvider implements ConfigProviderInterface
 
                     if (isset($availableMethod['ideal_details'])) {
                         $config['payment'][$mappedMethodName]['issuers']
-                            = $availableMethod['ideal_details']['issuers'];
+                            = $this->prepareIdealIssuers($availableMethod['ideal_details']['issuers']);
                     }
                 }
             } catch (Exception $e) {
@@ -206,5 +206,25 @@ class ConfigProvider implements ConfigProviderInterface
         }
 
         return $this->availableMethods;
+    }
+
+    /**
+     * @param array $issuerList
+     * @return array
+     */
+    private function prepareIdealIssuers(array $issuerList): array
+    {
+        $issuers = [];
+        $resultIssuerList = [];
+        foreach ($issuerList as $issuer) {
+            $issuers[$issuer['id']] = $issuer['name'];
+        }
+        asort($issuers, SORT_NATURAL | SORT_FLAG_CASE);
+
+        foreach ($issuers as $id => $name) {
+            $resultIssuerList[] = ['id' => $id, 'name' => $name];
+        }
+
+        return $resultIssuerList;
     }
 }
