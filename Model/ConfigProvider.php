@@ -131,19 +131,20 @@ class ConfigProvider implements ConfigProviderInterface
         $availableMethods = $this->getAvailableMethods();
         foreach ($availableMethods as $availableMethod) {
             $availableMethodName = $availableMethod['method'];
+
+            if (!isset(self::METHODS_MAPPING[$availableMethodName])) {
+                continue;
+            }
+
             $mappedMethodName = self::METHODS_MAPPING[$availableMethodName];
             try {
-                if ($mappedMethodName
-                    && $this->configService->isPaymentMethodActive($mappedMethodName)
-                ) {
-                    $config['payment'][$mappedMethodName]['image']
-                        = $this->getImage($mappedMethodName);
+                if ($this->configService->isPaymentMethodActive($mappedMethodName)) {
+                    $config['payment'][$mappedMethodName]['image'] = $this->getImage($mappedMethodName);
 
                     if (isset($availableMethod['ideal_details'])) {
                         $config['payment'][$mappedMethodName]['issuers']
                             = $availableMethod['ideal_details']['issuers'];
                     }
-
                 }
             } catch (Exception $e) {
                 continue;
