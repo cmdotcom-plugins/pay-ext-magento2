@@ -138,6 +138,18 @@ class Config implements ConfigInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getBanContactPaymentProfile(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_BANCONTACT_PROFILE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
      * Get config value by path
      *
      * @param string $path

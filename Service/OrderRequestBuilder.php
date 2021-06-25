@@ -88,7 +88,9 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
         $paymentProfile = $this->config->getPaymentProfile();
 
         if ($paymentMethod == ConfigProvider::CODE_CREDIT_CARD) {
-            $paymentProfile = $this->config->getCreditCardPaymentProfile();
+            $paymentProfile = $this->config->getCreditCardPaymentProfile() ?? $this->config->getPaymentProfile();
+        } elseif ($paymentMethod == ConfigProvider::CODE_BANCONTACT) {
+            $paymentProfile = $this->config->getBanContactPaymentProfile() ?? $this->config->getPaymentProfile();
         }
 
         /** @var ClientOrder $clientOrder */
@@ -96,9 +98,9 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
             'orderId' => $order->getIncrementId(),
             'amount' => $this->getAmount($order),
             'currency' => $order->getOrderCurrencyCode(),
-            'email' => $order->getBillingAddress()->getEmail(),
+            'email' => $order->getShippingAddress()->getEmail(),
             'language' => $this->getLanguageCode((int)$order->getStoreId()),
-            'country' => $order->getBillingAddress()->getCountryId(),
+            'country' => $order->getShippingAddress()->getCountryId(),
             'paymentProfile' => $paymentProfile,
             'returnUrls' => [
                 'success' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_SUCCESS),
@@ -117,14 +119,22 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
     public function createByQuote(CartInterface $quote, bool $isEmptyProfile = false): OrderCreateRequest
     {
         $orderId = $this->mathRandom->getUniqueHash('Q_');
+        $customerEmail = $quote->getShippingAddress()->getEmail();
+
+        // TODO: For guest users we have the problem with recognizing of email on some checkout steps (best case is
+        // TODO: to solve this on CM.com side)
+        if ($quote->getCustomerIsGuest()) {
+            $customerEmail = 'guest@gmail.com';
+        }
+
         /** @var ClientOrder $clientOrder */
         $clientOrder = $this->clientOrderCreateFactory->create([
             'orderId' => $orderId,
             'amount' => (int)($quote->getGrandTotal() * 100),
             'currency' => $quote->getCurrency()->getQuoteCurrencyCode(),
-            'email' => $quote->getBillingAddress()->getEmail(),
+            'email' => $customerEmail,
             'language' => $this->getLanguageCode((int)$quote->getStoreId()),
-            'country' => $quote->getBillingAddress()->getCountryId(),
+            'country' => $quote->getShippingAddress()->getCountryId(),
             'paymentProfile' => $isEmptyProfile ? '' : $this->config->getPaymentProfile(),
             'returnUrls' => []
         ]);

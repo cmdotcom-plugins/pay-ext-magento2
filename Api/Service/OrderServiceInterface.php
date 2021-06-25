@@ -25,10 +25,4 @@ interface OrderServiceInterface
      * @return array
      */
     public function get(CMOrder $cmOrder): array;
-
-    /**
-     * @param string $orderKey
-     * @return array
-     */
-    public function getAvailablePaymentMethods(string $orderKey): array;
 }

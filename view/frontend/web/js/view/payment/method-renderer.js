@@ -22,7 +22,8 @@ define([
             {type: 'cm_payments', component: defaultComponent},
             {type: 'cm_payments_creditcard', component: defaultComponent},
             {type: 'cm_payments_ideal', component: idealComponent},
-            {type: 'cm_payments_paypal', component: paypalComponent}
+            {type: 'cm_payments_paypal', component: paypalComponent},
+            {type: 'cm_payments_bancontact', component: defaultComponent}
         ];
 
     $.each(methods, function (k, method) {
