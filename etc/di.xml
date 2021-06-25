@@ -4,9 +4,11 @@
   ~ See LICENSE.txt for license details.
   -->
 
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="CM\Payments\Api\Service\OrderServiceInterface" type="CM\Payments\Service\OrderService" />
     <preference for="CM\Payments\Api\Service\PaymentServiceInterface" type="CM\Payments\Service\PaymentService" />
+    <preference for="CM\Payments\Api\Service\MethodServiceInterface" type="CM\Payments\Service\MethodService" />
     <preference for="CM\Payments\Api\Service\OrderRequestBuilderInterface" type="CM\Payments\Service\OrderRequestBuilder" />
     <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface" type="CM\Payments\Service\PaymentRequestBuilder" />
     <preference for="CM\Payments\Api\Client\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
@@ -209,6 +211,8 @@
         </arguments>
     </virtualType>
     <!-- END CM Payments (BanContact) Method -->
+
+    <!-- BEGIN CM Payments (Logger) -->
     <type name="CM\Payments\Logger\Handler">
         <arguments>
             <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
@@ -223,4 +227,5 @@
             </argument>
         </arguments>
     </type>
+    <!-- END CM Payments (Logger) -->
 </config>

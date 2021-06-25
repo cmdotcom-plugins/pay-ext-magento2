@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace CM\Payments\Service;
 
 use CM\Payments\Api\Client\ApiClientInterface;
-use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
@@ -28,42 +27,52 @@ class PaymentService implements PaymentServiceInterface
      * @var ApiClientInterface
      */
     private $apiClient;
+
     /**
      * @var CMPaymentFactory
      */
     private $cmPaymentFactory;
+
     /**
      * @var PaymentRequestBuilderInterface
      */
     private $paymentRequestBuilder;
+
     /**
      * @var OrderRepositoryInterface
      */
     private $orderRepository;
+
     /**
      * @var CMPaymentUrlFactory
      */
     private $cmPaymentUrlFactory;
+
     /**
      * @var CMPaymentRepositoryInterface
      */
     private $cmPaymentRepository;
+
     /**
      * @var CMPaymentDataFactory
      */
     private $cmPaymentDataFactory;
+
     /**
      * @var CMOrderRepositoryInterface
      */
     private $cmOrderRepository;
 
     /**
-     * OrderService constructor
+     * PaymentService constructor
      *
+     * @param OrderRepositoryInterface $orderRepository
      * @param ApiClientInterface $apiClient
-     * @param OrderInterfaceFactory $cmOrderFactory
-     * @param CMOrderRepositoryInterface $CMOrderRepository
-     * @param CMOrderFactory $cmOrderFactory
+     * @param PaymentRequestBuilderInterface $paymentRequestBuilder
+     * @param CMPaymentDataFactory $cmPaymentDataFactory
+     * @param CMPaymentFactory $cmPaymentFactory
+     * @param CMPaymentUrlFactory $cmPaymentUrlFactory
+     * @param CMPaymentRepositoryInterface $cmPaymentRepository
      * @param CMOrderRepositoryInterface $cmOrderRepository
      */
     public function __construct(

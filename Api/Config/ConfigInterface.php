@@ -22,6 +22,7 @@ interface ConfigInterface
     public const XML_PATH_GENERAL_MODE = 'payment/cm_payments_general/mode';
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
+    public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
 
     /**
      * Checks that extension is enabled
@@ -77,4 +78,12 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getCreditCardPaymentProfile(): ?string;
+
+    /**
+     * Get Payment Profile for BanContact Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getBanContactPaymentProfile(): ?string;
 }

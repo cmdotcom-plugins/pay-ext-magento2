@@ -8,17 +8,14 @@ declare(strict_types=1);
 
 namespace CM\Payments\Model;
 
-use CM\Payments\Api\Client\ApiClientInterface;
-use CM\Payments\Api\Service\OrderRequestBuilderInterface;
-use CM\Payments\Api\Service\OrderServiceInterface;
+use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
-use Exception;
+use CM\Payments\Logger\CMPaymentsLogger;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
-use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
-use Magento\Quote\Api\CartRepositoryInterface;
-use Magento\Quote\Model\Quote;
+use Magento\Quote\Api\Data\CartInterface;
 
 class ConfigProvider implements ConfigProviderInterface
 {
@@ -36,26 +33,6 @@ class ConfigProvider implements ConfigProviderInterface
     public const CODE_BANCONTACT = 'cm_payments_bancontact';
 
     /**
-     * Mapping of CM methods to Magento
-     */
-    public const METHODS_MAPPING = [
-        'VISA' => self::CODE_CREDIT_CARD,
-        'MASTERCARD' => self::CODE_CREDIT_CARD,
-        'MAESTRO' => self::CODE_CREDIT_CARD,
-        'IDEAL' => self::CODE_IDEAL,
-        'PAYPAL_EXPRESS_CHECKOUT' => self::CODE_PAYPAL,
-        'BANCONTACT' => self::CODE_BANCONTACT
-    ];
-
-    /**
-     * Mapping of Magento Payment methods to CM Api Payment methods
-     */
-    public const API_METHODS_MAPPING = [
-        self::CODE_IDEAL => 'IDEAL',
-        self::CODE_PAYPAL => 'PAYPAL'
-    ];
-
-    /**
      * @var AssetRepository
      */
     private $assetRepository;
@@ -66,102 +43,89 @@ class ConfigProvider implements ConfigProviderInterface
     private $checkoutSession;
 
     /**
-     * @var OrderRequestBuilderInterface
-     */
-    private $orderRequestBuilder;
-
-    /**
-     * @var ApiClientInterface
-     */
-    private $apiClient;
-
-    /**
-     * @var OrderServiceInterface
-     */
-    private $orderService;
-
-    /**
-     * @var CartRepositoryInterface
-     */
-    private $quoteRepository;
-
-    /**
      * @var ConfigService
      */
     private $configService;
 
     /**
-     * @var array
+     * @var MethodServiceInterface
      */
-    private $availableMethods = [];
+    private $methodService;
+
+    /**
+     * @var CMPaymentsLogger
+     */
+    private $logger;
 
     /**
      * ConfigProvider constructor
      *
      * @param AssetRepository $assetRepository
      * @param CheckoutSession $checkoutSession
-     * @param OrderRequestBuilderInterface $orderRequestBuilder
-     * @param ApiClientInterface $apiClient ,
-     * @param OrderServiceInterface $orderService
-     * @param CartRepositoryInterface $quoteRepository
      * @param ConfigService $configService
+     * @param MethodServiceInterface $methodService
+     * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
         AssetRepository $assetRepository,
         CheckoutSession $checkoutSession,
-        OrderRequestBuilderInterface $orderRequestBuilder,
-        ApiClientInterface $apiClient,
-        OrderServiceInterface $orderService,
-        CartRepositoryInterface $quoteRepository,
-        ConfigService $configService
+        ConfigService $configService,
+        MethodServiceInterface $methodService,
+        CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->assetRepository = $assetRepository;
         $this->checkoutSession = $checkoutSession;
-        $this->orderRequestBuilder = $orderRequestBuilder;
-        $this->apiClient = $apiClient;
-        $this->orderService = $orderService;
-        $this->quoteRepository = $quoteRepository;
         $this->configService = $configService;
+        $this->methodService = $methodService;
+        $this->logger = $cmPaymentsLogger;
     }
 
     /**
      * Retrieve assoc array of checkout configuration
      *
      * @return array
-     * @throws NoSuchEntityException
      */
     public function getConfig(): array
     {
-        $config = [
-            'payment' => [
-                $this->getCode() => [
-                    'is_enabled' => $this->configService->isEnabled(),
-                    'image' => $this->getImage($this->getCode()),
+        try {
+            $config = [
+                'payment' => [
+                    $this->getCode() => [
+                        'is_enabled' => $this->configService->isEnabled(),
+                        'image' => $this->getImage($this->getCode()),
+                    ],
                 ],
-            ],
-        ];
+            ];
 
-        $availableMethods = $this->getAvailableMethods();
-        foreach ($availableMethods as $availableMethod) {
-            $availableMethodName = $availableMethod['method'];
+            /** @var CartInterface $quote */
+            $quote = $this->checkoutSession->getQuote();
+            $availableProfileMethods = $this->methodService->getAvailablePaymentMethods($quote);
+            foreach ($availableProfileMethods as $code => $availableProfileMethod) {
+                $config['payment'][$code]['image'] = $this->getImage($code);
 
-            if (!isset(self::METHODS_MAPPING[$availableMethodName])) {
-                continue;
-            }
-
-            $mappedMethodName = self::METHODS_MAPPING[$availableMethodName];
-            try {
-                if ($this->configService->isPaymentMethodActive($mappedMethodName)) {
-                    $config['payment'][$mappedMethodName]['image'] = $this->getImage($mappedMethodName);
-
-                    if (isset($availableMethod['ideal_details'])) {
-                        $config['payment'][$mappedMethodName]['issuers']
-                            = $this->prepareIdealIssuers($availableMethod['ideal_details']['issuers']);
-                    }
+                if (isset($availableProfileMethod['ideal_details'])) {
+                    $config['payment'][$code]['issuers']
+                        = $availableProfileMethod['ideal_details']['issuers'];
                 }
-            } catch (Exception $e) {
-                continue;
             }
+
+            // TODO: Remove this when issue with available methods list (CM side) will be solved
+            if (!isset($availableProfileMethod[self::CODE_IDEAL])) {
+                $config['payment'][self::CODE_IDEAL]['image'] = $this->getImage(self::CODE_IDEAL);
+            }
+
+            // TODO: Remove this when issue with available methods list (CM side) will be solved
+            if (!isset($availableProfileMethod[self::CODE_BANCONTACT])) {
+                $config['payment'][self::CODE_BANCONTACT]['image'] = $this->getImage(self::CODE_BANCONTACT);
+            }
+        } catch (LocalizedException $e) {
+            $config = [];
+            $this->logger->info(
+                'CM Get Config for Available Methods request',
+                [
+                    'error' => $e->getMessage(),
+                ]
+            );
         }
 
         return $config;
@@ -182,57 +146,5 @@ class ConfigProvider implements ConfigProviderInterface
     public function getImage(string $code): string
     {
         return $this->assetRepository->getUrl('CM_Payments::images/methods/' . $code . '.svg');
-    }
-
-    /**
-     * Get available CM payments methods
-     *
-     * @return array
-     */
-    private function getAvailableMethods(): array
-    {
-        if (!$this->availableMethods) {
-            try {
-                /** @var Quote $quote */
-                $quote = $this->checkoutSession->getQuote();
-                $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote, true);
-                $response = $this->apiClient->execute(
-                    $orderCreateRequest
-                );
-
-                $quote->setData('cm_order_key', $response['order_key']);
-                $this->quoteRepository->save($quote);
-
-                if ($quote->getData('cm_order_key')) {
-                    $this->availableMethods = $this->orderService->getAvailablePaymentMethods(
-                        $quote->getData('cm_order_key')
-                    );
-                }
-            } catch (Exception $e) {
-                $this->availableMethods = [];
-            }
-        }
-
-        return $this->availableMethods;
-    }
-
-    /**
-     * @param array $issuerList
-     * @return array
-     */
-    private function prepareIdealIssuers(array $issuerList): array
-    {
-        $issuers = [];
-        $resultIssuerList = [];
-        foreach ($issuerList as $issuer) {
-            $issuers[$issuer['id']] = $issuer['name'];
-        }
-        asort($issuers, SORT_NATURAL | SORT_FLAG_CASE);
-
-        foreach ($issuers as $id => $name) {
-            $resultIssuerList[] = ['id' => $id, 'name' => $name];
-        }
-
-        return $resultIssuerList;
     }
 }

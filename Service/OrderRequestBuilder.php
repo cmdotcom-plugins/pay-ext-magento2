@@ -88,14 +88,16 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
         $paymentProfile = $this->config->getPaymentProfile();
 
         if ($paymentMethod == ConfigProvider::CODE_CREDIT_CARD) {
-            $paymentProfile = $this->config->getCreditCardPaymentProfile();
+            $paymentProfile = $this->config->getCreditCardPaymentProfile() ?? $this->config->getPaymentProfile();
+        } elseif ($paymentMethod == ConfigProvider::CODE_BANCONTACT) {
+            $paymentProfile = $this->config->getBanContactPaymentProfile() ?? $this->config->getPaymentProfile();
         }
 
         /** @var ClientOrder $clientOrder */
         $clientOrder = $this->clientOrderCreateFactory->create([
             'orderId' => $order->getIncrementId(),
             'amount' => $this->getAmount($order),
-            'currency' => 'EUR',//$order->getOrderCurrencyCode(),
+            'currency' => $order->getOrderCurrencyCode(),
             'email' => $order->getShippingAddress()->getEmail(),
             'language' => $this->getLanguageCode((int)$order->getStoreId()),
             'country' => $order->getShippingAddress()->getCountryId(),
@@ -117,14 +119,22 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
     public function createByQuote(CartInterface $quote, bool $isEmptyProfile = false): OrderCreateRequest
     {
         $orderId = $this->mathRandom->getUniqueHash('Q_');
+        $customerEmail = $quote->getShippingAddress()->getEmail();
+
+        // TODO: For guest users we have the problem with recognizing of email on some checkout steps (best case is
+        // TODO: to solve this on CM.com side)
+        if ($quote->getCustomerIsGuest()) {
+            $customerEmail = 'guest@gmail.com';
+        }
+
         /** @var ClientOrder $clientOrder */
         $clientOrder = $this->clientOrderCreateFactory->create([
             'orderId' => $orderId,
             'amount' => (int)($quote->getGrandTotal() * 100),
-            'currency' => 'EUR', //$quote->getCurrency()->getQuoteCurrencyCode(),
-            'email' => $quote->getShippingAddress()->getEmail(),
+            'currency' => $quote->getCurrency()->getQuoteCurrencyCode(),
+            'email' => $customerEmail,
             'language' => $this->getLanguageCode((int)$quote->getStoreId()),
-            'country' => 'BE', //$quote->getShippingAddress()->getCountryId(),
+            'country' => $quote->getShippingAddress()->getCountryId(),
             'paymentProfile' => $isEmptyProfile ? '' : $this->config->getPaymentProfile(),
             'returnUrls' => []
         ]);

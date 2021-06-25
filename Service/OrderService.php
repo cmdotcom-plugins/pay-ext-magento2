@@ -173,20 +173,6 @@ class OrderService implements OrderServiceInterface
     }
 
     /**
-     * @param string $orderKey
-     * @return array
-     */
-    public function getAvailablePaymentMethods(string $orderKey): array
-    {
-        /** @var OrderGetMethodsRequest $orderGetMethodsRequest */
-        $orderGetMethodsRequest = $this->orderGetMethodsRequestFactory->create(['orderKey' => $orderKey]);
-
-        return $this->apiClient->execute(
-            $orderGetMethodsRequest
-        );
-    }
-
-    /**
      * Update the order status if the order state is Order::STATE_PROCESSING
      *
      * @param Order $order
