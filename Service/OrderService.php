@@ -10,15 +10,12 @@ namespace CM\Payments\Service;
 
 use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
-use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\Data\OrderInterfaceFactory as CMOrderFactory;
 use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Client\Request\OrderGetMethodsRequest;
-use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Client\Request\OrderGetRequest;
 use CM\Payments\Client\Request\OrderGetRequestFactory;
 use CM\Payments\Exception\EmptyOrderKeyException;
@@ -64,11 +61,6 @@ class OrderService implements OrderServiceInterface
     private $orderGetRequestFactory;
 
     /**
-     * @var OrderGetMethodsRequestFactory
-     */
-    private $orderGetMethodsRequestFactory;
-
-    /**
      * @var CMPaymentsLogger
      */
     private $logger;
@@ -78,23 +70,21 @@ class OrderService implements OrderServiceInterface
      *
      * @param OrderRepositoryInterface $orderRepository
      * @param ApiClientInterface $apiClient
-     * @param OrderInterfaceFactory $cmOrderFactory
+     * @param CMOrderFactory $cmOrderFactory
      * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param OrderRequestBuilderInterface $orderRequestBuilder
      * @param CMOrderInterfaceFactory $cmOrderInterfaceFactory
      * @param OrderGetRequestFactory $orderGetRequestFactory
-     * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         ApiClientInterface $apiClient,
-        OrderInterfaceFactory $cmOrderFactory,
+        CMOrderFactory $cmOrderFactory,
         CMOrderRepositoryInterface $cmOrderRepository,
         OrderRequestBuilderInterface $orderRequestBuilder,
         CMOrderInterfaceFactory $cmOrderInterfaceFactory,
         OrderGetRequestFactory $orderGetRequestFactory,
-        OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->orderRepository = $orderRepository;
@@ -104,7 +94,6 @@ class OrderService implements OrderServiceInterface
         $this->orderRequestBuilder = $orderRequestBuilder;
         $this->cmOrderInterfaceFactory = $cmOrderInterfaceFactory;
         $this->orderGetRequestFactory = $orderGetRequestFactory;
-        $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
         $this->logger = $cmPaymentsLogger;
     }
 
@@ -116,10 +105,13 @@ class OrderService implements OrderServiceInterface
         $order = $this->orderRepository->get($orderId);
         $orderCreateRequest = $this->orderRequestBuilder->create($order);
 
-        $this->logger->info('CM Create order request', [
-            'orderId' => $orderId,
-            'requestPayload' => $orderCreateRequest->getPayload()
-        ]);
+        $this->logger->info(
+            'CM Create order request',
+            [
+                'orderId' => $orderId,
+                'requestPayload' => $orderCreateRequest->getPayload()
+            ]
+        );
 
         $response = $this->apiClient->execute(
             $orderCreateRequest

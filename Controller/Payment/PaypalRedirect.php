@@ -101,9 +101,6 @@ class PaypalRedirect implements HttpGetActionInterface
 
             return $this->redirectFactory->create()
                 ->setUrl($url);
-
-
-            return $this->redirectFactory->create()->setUrl($cmOrder->getUrl());
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage());
             return $this->redirectToCheckoutCart(__('Something went wrong while creating the order.'));
