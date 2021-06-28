@@ -101,7 +101,7 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
             'email' => $order->getShippingAddress()->getEmail(),
             'language' => $this->getLanguageCode((int)$order->getStoreId()),
             'country' => $order->getShippingAddress()->getCountryId(),
-            'paymentProfile' => $paymentProfile,
+            'paymentProfile' => $paymentProfile ?: '',
             'returnUrls' => [
                 'success' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_SUCCESS),
                 'pending' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_PENDING),
