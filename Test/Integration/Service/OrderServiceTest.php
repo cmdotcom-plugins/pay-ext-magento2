@@ -12,6 +12,7 @@ use CM\Payments\Service\OrderRequestBuilder;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\OrderRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -57,6 +58,7 @@ class OrderServiceTest extends IntegrationTestCase
         ]);
 
         $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
         $order = $this->orderService->create($magentoOrder->getId());
         $this->assertSame(
@@ -80,6 +82,8 @@ class OrderServiceTest extends IntegrationTestCase
         ]);
 
         $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
         $this->orderService->create($magentoOrder->getId());
 
         /** @var OrderRepositoryInterface $cmOrderRepository */
@@ -103,5 +107,22 @@ class OrderServiceTest extends IntegrationTestCase
         $orderList = $repository->getList($searchCriteria)->getItems();
 
         return array_shift($orderList);
+    }
+
+    /**
+     * @param OrderInterface $magentoOrder
+     * @return OrderInterface
+     */
+    private function addCurrencyToOrder(OrderInterface $magentoOrder): OrderInterface
+    {
+        /** @var OrderInterface $magentoOrder */
+        $magentoOrder
+            ->setOrderCurrencyCode('USD')
+            ->setBaseCurrencyCode('USD');
+
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        return $magentoOrder;
     }
 }
