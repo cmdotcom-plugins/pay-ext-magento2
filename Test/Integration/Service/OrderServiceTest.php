@@ -7,7 +7,6 @@ use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Client\Request\OrderGetRequestFactory;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Service\OrderRequestBuilder;
@@ -110,8 +109,7 @@ class OrderServiceTest extends IntegrationTestCase
                 'cmOrderRepository' => $this->objectManager->create(CMOrderRepositoryInterface::class),
                 'orderRequestBuilder' => $this->objectManager->create(OrderRequestBuilder::class),
                 'cmOrderInterfaceFactory' => $this->objectManager->create(CMOrderInterfaceFactory::class),
-                'orderGetRequestFactory' => $this->objectManager->create(CMOrderInterfaceFactory::class),
-                'orderGetMethodsRequestFactory' => $this->objectManager->create(OrderGetMethodsRequestFactory::class),
+                'orderGetRequestFactory' => $this->objectManager->create(OrderGetRequestFactory::class),
                 'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments'])
             ]
         );
