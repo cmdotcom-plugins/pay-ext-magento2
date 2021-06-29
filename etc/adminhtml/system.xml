@@ -96,6 +96,41 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                    <config_path>payment/cm_payments_creditcard/allowspecific</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="50" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_creditcard/specificcountry</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Minimum Order Total</label>
+                    <config_path>payment/cm_payments_creditcard/min_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="max_order_total" translate="label" type="text" sortOrder="70" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Maximum Order Total</label>
+                    <config_path>payment/cm_payments_creditcard/max_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
             </group>
 
             <group id="cm_payments_ideal" translate="label" type="text" sortOrder="30" showInDefault="1"
@@ -115,6 +150,41 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                    <config_path>payment/cm_payments_ideal/allowspecific</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="50" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_ideal/specificcountry</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Minimum Order Total</label>
+                    <config_path>payment/cm_payments_ideal/min_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="max_order_total" translate="label" type="text" sortOrder="70" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Maximum Order Total</label>
+                    <config_path>payment/cm_payments_ideal/max_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
             </group>
 
             <group id="cm_payments_paypal" translate="label" type="text" sortOrder="40" showInDefault="1"
@@ -130,6 +200,41 @@
                        showInStore="1">
                     <label>Title</label>
                     <config_path>payment/cm_payments_paypal/title</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                    <config_path>payment/cm_payments_paypal/allowspecific</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="50" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_paypal/specificcountry</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Minimum Order Total</label>
+                    <config_path>payment/cm_payments_paypal/min_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="max_order_total" translate="label" type="text" sortOrder="70" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Maximum Order Total</label>
+                    <config_path>payment/cm_payments_paypal/max_order_total</config_path>
                     <depends>
                         <field id="active">1</field>
                     </depends>
@@ -157,6 +262,41 @@
                        showInWebsite="1" showInStore="1">
                     <label>Profile</label>
                     <config_path>payment/cm_payments_bancontact/profile</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                    <config_path>payment/cm_payments_bancontact/allowspecific</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="50" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_bancontact/specificcountry</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Minimum Order Total</label>
+                    <config_path>payment/cm_payments_bancontact/min_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="max_order_total" translate="label" type="text" sortOrder="70" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Maximum Order Total</label>
+                    <config_path>payment/cm_payments_bancontact/max_order_total</config_path>
                     <depends>
                         <field id="active">1</field>
                     </depends>

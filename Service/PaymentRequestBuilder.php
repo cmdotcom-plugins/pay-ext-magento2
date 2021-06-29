@@ -23,18 +23,21 @@ class PaymentRequestBuilder implements PaymentRequestBuilderInterface
      * @var ConfigInterface
      */
     private $config;
+
     /**
      * @var ClientPaymentCreateFactory
      */
     private $clientPaymentCreateFactory;
+
     /**
      * @var PaymentCreateRequestFactory
      */
     private $paymentCreateRequestFactory;
+
     /**
      * @var RequestPartInterface[]
      */
-    private array $parts;
+    private $parts;
 
     /**
      * PaymentRequestBuilder constructor
@@ -71,9 +74,11 @@ class PaymentRequestBuilder implements PaymentRequestBuilderInterface
             $paymentCreate = $part->process($order, $paymentCreate);
         }
 
-        return $this->paymentCreateRequestFactory->create([
-            'orderKey' => $orderKey,
-            'paymentCreate' => $paymentCreate
-        ]);
+        return $this->paymentCreateRequestFactory->create(
+            [
+                'orderKey' => $orderKey,
+                'paymentCreate' => $paymentCreate
+            ]
+        );
     }
 }
