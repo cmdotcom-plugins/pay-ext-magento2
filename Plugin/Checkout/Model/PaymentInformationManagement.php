@@ -18,12 +18,11 @@ use CM\Payments\Model\ConfigProvider;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterfaceFactory;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
-use Magento\Checkout\Api\Data\ShippingInformationInterface;
-use Magento\Checkout\Api\ShippingInformationManagementInterface;
+use Magento\Checkout\Api\PaymentInformationManagementInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
 
-class ShippingInformationManagement
+class PaymentInformationManagement
 {
     /**
      * @var ConfigService
@@ -56,7 +55,7 @@ class ShippingInformationManagement
     private $paymentDetailsExtensionFactory;
 
     /**
-     * ShippingInformationManagement constructor
+     * PaymentInformationManagement constructor
      *
      * @param ConfigService $configService
      * @param CartRepositoryInterface $quoteRepository
@@ -82,18 +81,16 @@ class ShippingInformationManagement
     }
 
     /**
-     * @param ShippingInformationManagementInterface $subject
+     * @param PaymentInformationManagementInterface $subject
      * @param PaymentDetailsInterface $paymentDetails
      * @param int $cartId
-     * @param ShippingInformationInterface $addressInformation
      * @return PaymentDetailsInterface
      * @throws NoSuchEntityException
      */
-    public function afterSaveAddressInformation(
-        ShippingInformationManagementInterface $subject,
+    public function afterGetPaymentInformation(
+        PaymentInformationManagementInterface $subject,
         PaymentDetailsInterface $paymentDetails,
-        $cartId,
-        ShippingInformationInterface $addressInformation
+        $cartId
     ): PaymentDetailsInterface {
         if ($this->configService->isEnabled()) {
             $quote = $this->quoteRepository->getActive($cartId);

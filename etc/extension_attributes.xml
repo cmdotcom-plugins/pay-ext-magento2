@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @category    Hammer
+ * @copyright   Copyright (c) 2020 Weidenhammer Systems Corporation
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Api/etc/extension_attributes.xsd">
+    <extension_attributes for="Magento\Checkout\Api\Data\PaymentDetailsInterface">
+        <attribute code="cm_payments_ideal" type="CM\Payments\Api\Model\Data\PaymentMethodAdditionalDataInterface" />
+    </extension_attributes>
+</config>

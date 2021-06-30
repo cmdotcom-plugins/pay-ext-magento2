@@ -6,8 +6,13 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+    <type name="Magento\Checkout\Api\ShippingInformationManagementInterface">
         <plugin name="cm_payments_checkout_model_shipping_information_management_plugin"
                 type="CM\Payments\Plugin\Checkout\Model\ShippingInformationManagement" sortOrder="100" />
+    </type>
+
+    <type name="Magento\Checkout\Api\PaymentInformationManagementInterface">
+        <plugin name="cm_payments_checkout_model_payment_information_management_plugin"
+                type="CM\Payments\Plugin\Checkout\Model\PaymentInformationManagement" sortOrder="100" />
     </type>
 </config>

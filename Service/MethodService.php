@@ -143,8 +143,8 @@ class MethodService implements MethodServiceInterface
         }
         asort($issuers, SORT_NATURAL | SORT_FLAG_CASE);
 
-        foreach ($issuers as $id => $name) {
-            $resultIssuerList[] = ['id' => $id, 'name' => $name];
+        foreach ($issuers as $code => $title) {
+            $resultIssuerList[] = ['code' => $code, 'title' => $title];
         }
 
         return $resultIssuerList;

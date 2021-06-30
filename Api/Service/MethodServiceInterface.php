@@ -14,6 +14,16 @@ use Magento\Quote\Api\Data\CartInterface;
 interface MethodServiceInterface
 {
     /**
+     * Methods List
+     */
+    public const METHODS = [
+        ConfigProvider::CODE_CREDIT_CARD,
+        ConfigProvider::CODE_IDEAL,
+        ConfigProvider::CODE_PAYPAL,
+        ConfigProvider::CODE_BANCONTACT
+    ];
+
+    /**
      * Mapping of CM methods to Magento
      */
     public const METHODS_MAPPING = [
