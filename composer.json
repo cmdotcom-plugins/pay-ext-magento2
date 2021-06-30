@@ -1,5 +1,6 @@
 {
     "name": "cm/payments",
+    "version": "0.0.1",
     "description": "CM Payment module for Magento 2",
     "type": "magento2-module",
     "keywords": [
@@ -20,6 +21,11 @@
         "files": [ "registration.php" ],
         "psr-4": {
             "CM\\Payments\\": ""
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-feature/direct-flow": "0.0.x-dev"
         }
     }
 }
