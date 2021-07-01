@@ -16,9 +16,9 @@
     <preference for="CM\Payments\Api\Model\PaymentRepositoryInterface" type="CM\Payments\Model\PaymentRepository" />
     <preference for="CM\Payments\Api\Model\Data\OrderInterface" type="CM\Payments\Model\Data\Order"/>
     <preference for="CM\Payments\Api\Model\Data\PaymentInterface" type="CM\Payments\Model\Data\Payment"/>
-    <preference for="CM\Payments\Api\Model\Data\PaymentMethodAdditionalDataInterface"
-                type="CM\Payments\Model\Data\PaymentMethodAdditionalData"/>
-    <preference for="CM\Payments\Api\Model\Data\IssuerInterface" type="CM\Payments\Model\Data\Issuer"/>
+    <preference for="CM\Payments\Api\Data\PaymentMethodAdditionalDataInterface"
+                type="CM\Payments\Model\PaymentMethodAdditionalData"/>
+    <preference for="CM\Payments\Api\Data\IssuerInterface" type="CM\Payments\Model\Issuer"/>
     <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder"/>
     <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config"/>
 

@@ -6,9 +6,10 @@
 
 declare(strict_types=1);
 
-namespace CM\Payments\Model\Data;
+namespace CM\Payments\Model;
 
-use CM\Payments\Api\Model\Data\IssuerInterface;
+use CM\Payments\Api\Data\IssuerInterface;
+use CM\Payments\Api\Data\IssuerExtensionInterface;
 use Magento\Framework\Model\AbstractExtensibleModel;
 
 class Issuer extends AbstractExtensibleModel implements IssuerInterface
@@ -43,5 +44,22 @@ class Issuer extends AbstractExtensibleModel implements IssuerInterface
     public function setTitle(string $title): IssuerInterface
     {
         return $this->setData(self::TITLE, $title);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getExtensionAttributes(): ?IssuerExtensionInterface
+    {
+        return $this->_getExtensionAttributes();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setExtensionAttributes(
+        IssuerExtensionInterface $extensionAttributes
+    ): IssuerInterface {
+        return $this->_setExtensionAttributes($extensionAttributes);
     }
 }

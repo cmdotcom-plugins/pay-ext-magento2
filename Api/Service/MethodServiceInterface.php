@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace CM\Payments\Api\Service;
 
 use CM\Payments\Model\ConfigProvider;
+use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Quote\Api\Data\CartInterface;
 
 interface MethodServiceInterface
@@ -48,4 +49,14 @@ interface MethodServiceInterface
      * @return array
      */
     public function getAvailablePaymentMethods(CartInterface $quote): array;
+
+    /**
+     * @param CartInterface $quote
+     * @param PaymentDetailsInterface $paymentDetails
+     * @return PaymentDetailsInterface
+     */
+    public function addMethodAdditionalData(
+        CartInterface $quote,
+        PaymentDetailsInterface $paymentDetails
+    ): PaymentDetailsInterface;
 }
