@@ -101,7 +101,7 @@ class PaymentService implements PaymentServiceInterface
     public function create(string $orderId): CMPaymentInterface
     {
         $order = $this->orderRepository->get($orderId);
-        $cmOrder = $this->cmOrderRepository->getByOrderId((int) $order->getEntityId());
+        $cmOrder = $this->cmOrderRepository->getByOrderId((int)$order->getEntityId());
         $paymentCreateRequest = $this->paymentRequestBuilder->create($order, $cmOrder->getOrderKey());
 
         $response = $this->apiClient->execute(

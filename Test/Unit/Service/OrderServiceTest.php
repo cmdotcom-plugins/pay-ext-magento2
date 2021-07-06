@@ -1,4 +1,10 @@
 <?php
+/**
+ * Copyright © CM.com. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+
+declare(strict_types=1);
 
 namespace CM\Payments\Test\Unit\Service;
 
@@ -23,6 +29,7 @@ use Exception;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order as SalesOrder;
 use Magento\Sales\Model\OrderRepository;
 
 class OrderServiceTest extends UnitTestCase
@@ -157,13 +164,13 @@ class OrderServiceTest extends UnitTestCase
         $this->orderRequestBuilderMock->method('create')->willReturn(
             new OrderCreateRequest(
                 new OrderCreate(
-                    '001',
+                    '000000001',
                     2000,
                     'EUR',
-                    'test@test.nl',
-                    'nl',
-                    'NL',
-                    'test',
+                    self::ADDRESS_DATA['email_address'],
+                    self::LANGUAGE,
+                    self::ADDRESS_DATA['country_code'],
+                    self::PAYMENT_PROFILE,
                     $returnUrls
                 )
             )
@@ -186,25 +193,28 @@ class OrderServiceTest extends UnitTestCase
      */
     private function getOrderMock()
     {
-        $billingAddressMock = $this->getMockBuilder(OrderAddressInterface::class)
-            ->getMockForAbstractClass();
-
-        $billingAddressMock->method('getEmail')->willReturn('test@test.nl');
-        $billingAddressMock->method('getCountryId')->willReturn('NL');
+        $shippingAddressMock = $this->createConfiguredMock(
+            OrderAddressInterface::class,
+            [
+                'getEmail' => static::ADDRESS_DATA['email_address'],
+                'getCountryId' => static::ADDRESS_DATA['country_code']
+            ]
+        );
 
         $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
             ->getMockForAbstractClass();
         $paymentMock->method('getAdditionalInformation')->willReturn([]);
         $paymentMock->method('setAdditionalInformation')->willReturnSelf();
 
-        $orderMock = $this->getMockBuilder(\Magento\Sales\Api\Data\OrderInterface::class)
-            ->getMockForAbstractClass();
+        $orderMock = $this->getMockBuilder(SalesOrder::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $orderMock->method('getEntityId')->willReturn('1');
-        $orderMock->method('getIncrementId')->willReturn('001');
+        $orderMock->method('getIncrementId')->willReturn('000000001');
         $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
         $orderMock->method('getStoreId')->willReturn(1);
-        $orderMock->method('getBillingAddress')->willReturn($billingAddressMock);
+        $orderMock->method('getBillingAddress')->willReturn($shippingAddressMock);
         $orderMock->method('getGrandTotal')->willReturn(50.99);
         $orderMock->method('getPayment')->willReturn($paymentMock);
 

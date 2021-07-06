@@ -1,4 +1,10 @@
 <?php
+/**
+ * Copyright © CM.com. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+
+declare(strict_types=1);
 
 namespace CM\Payments\Test\Unit\Service;
 
@@ -13,12 +19,28 @@ use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
+use Magento\Sales\Model\Order;
 
 class OrderRequestBuilderTest extends UnitTestCase
 {
+    /**
+     * @var \Magento\Framework\Locale\ResolverInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
     private $resolverMock;
+
+    /**
+     * @var \CM\Payments\Service\OrderRequestBuilder
+     */
     private $orderRequestBuilder;
+
+    /**
+     * @var \Magento\Framework\UrlInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
     private $urlMock;
+
+    /**
+     * @var \CM\Payments\Api\Config\ConfigInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
     private $configMock;
 
     public function testCreateOrderRequestBuilder()
@@ -28,7 +50,7 @@ class OrderRequestBuilderTest extends UnitTestCase
         $orderMock = $this->getOrderMock();
         $orderRequest = $this->orderRequestBuilder->create($orderMock);
 
-        $this->assertSame('001', $orderRequest->getPayload()['order_reference']);
+        $this->assertSame('000000001', $orderRequest->getPayload()['order_reference']);
         $this->assertSame(5099, $orderRequest->getPayload()['amount']);
         $this->assertSame('NL', $orderRequest->getPayload()['country']);
         $this->assertSame('nl', $orderRequest->getPayload()['language']);
@@ -39,20 +61,21 @@ class OrderRequestBuilderTest extends UnitTestCase
      */
     private function getOrderMock(): OrderInterface
     {
-        $shippingAddressMock = $this->getMockBuilder(OrderAddressInterface::class)
-            ->getMockForAbstractClass();
+        $shippingAddressMock = $this->createConfiguredMock(
+            OrderAddressInterface::class,
+            [
+                'getEmail' => static::ADDRESS_DATA['email_address'],
+                'getCountryId' => static::ADDRESS_DATA['country_code']
+            ]
+        );
 
-        $shippingAddressMock->method('getEmail')->willReturn('test@test.nl');
-        $shippingAddressMock->method('getCountryId')->willReturn('NL');
-
-        $orderMock = $this->getMockBuilder(OrderInterface::class)
-            ->getMockForAbstractClass();
+        $orderMock = $this->createMock(Order::class);
 
         $paymentMock = $this->createMock(OrderPaymentInterface::class);
         $paymentMock->method('getMethod')->willReturn('cm_payments_creditcard');
 
         $orderMock->method('getEntityId')->willReturn('1');
-        $orderMock->method('getIncrementId')->willReturn('001');
+        $orderMock->method('getIncrementId')->willReturn('000000001');
         $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
         $orderMock->method('getStoreId')->willReturn(1);
         $orderMock->method('getShippingAddress')->willReturn($shippingAddressMock);
