@@ -17,4 +17,16 @@ interface PaymentRepositoryInterface
      * @return PaymentInterface
      */
     public function save(PaymentInterface $payment): PaymentInterface;
+
+    /**
+     * @param string $orderKey
+     * @return PaymentInterface
+     */
+    public function getByOrderKey(string $orderKey): PaymentInterface;
+
+    /**
+     * @param string $paymentId
+     * @return PaymentInterface
+     */
+    public function getByPaymentId(string $paymentId): PaymentInterface;
 }

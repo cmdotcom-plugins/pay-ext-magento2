@@ -22,10 +22,5 @@
         "psr-4": {
             "CM\\Payments\\": ""
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-feature/direct-flow": "0.0.x-dev"
-        }
     }
 }

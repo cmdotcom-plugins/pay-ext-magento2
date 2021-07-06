@@ -80,21 +80,29 @@ class PaymentServiceTest extends UnitTestCase
      */
     private $cmOrderRepositoryMock;
 
-    public function testCreatePayment()
+    public function testCreateIdealPayment()
     {
-        $this->apiClientMock->method('execute')->willReturn(
+        $this->apiClientMock->expects($this->once())->method('execute')->willReturn(
             [
-                'order_key' => '0287A1617D93780EF28044B98438BF2F',
-                //phpcs:ignore
-                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
-                'expires_on' => '2021-07-12T08:10:57Z'
+                'id' => 'pid4911257676t',
+                'status' => 'REDIRECTED_FOR_AUTHORIZATION',
+                'urls' => [
+                    0 => [
+                        'purpose' => 'REDIRECT',
+                        'method' => 'GET',
+                        //phpcs:ignore
+                        'url' => 'https://test.docdatapayments.com/ps_sim/idealbanksimulator.jsf?trxid=1625579689224&ec=4911257676&returnUrl=https%3A%2F%2Ftestsecure.docdatapayments.com%2Fps%2FreturnFromAuthorization%3FpaymentReference%3D49112576765AD00EC846B52EAED61E9FC2530CFF90%26checkDigitId%3D49112576765AD00EC846B52EAED61E9FC2530CFF90',
+                        'order' => 1,
+                    ],
+                ]
             ]
         );
 
-        $this->assertSame(
-        //phpcs:ignore
-            'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
-            $this->paymentService->create('1')->getUrl()
+        $order = $this->getOrderMock();
+        $payment = $this->paymentService->create((string)$order->getEntityId());
+
+        $this->assertNotNull(
+            $payment->getId()
         );
     }
 
@@ -189,6 +197,7 @@ class PaymentServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $orderMock->method('getEntityId')->willReturn('1');
         $orderMock->method('getIncrementId')->willReturn('000000001');
         $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
         $orderMock->method('getStoreId')->willReturn(1);

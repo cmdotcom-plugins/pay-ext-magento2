@@ -10,13 +10,12 @@ namespace CM\Payments\Model;
 
 use CM\Payments\Api\Model\Data\PaymentInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface;
-use CM\Payments\Client\Model\CMPayment;
 use CM\Payments\Model\PaymentFactory as CMPaymentFactory;
-use CM\Payments\Api\Model\DataPaymentInterface;
 use CM\Payments\Model\ResourceModel\Payment as ResourcePayment;
 use Exception;
 use Magento\Framework\Api\ExtensibleDataObjectConverter;
 use Magento\Framework\Exception\CouldNotSaveException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class PaymentRepository implements PaymentRepositoryInterface
 {
@@ -56,7 +55,7 @@ class PaymentRepository implements PaymentRepositoryInterface
      * Save payment
      *
      * @param PaymentInterface $payment
-     * @return mixed
+     * @return PaymentInterface
      * @throws CouldNotSaveException
      */
     public function save(PaymentInterface $payment): PaymentInterface
@@ -67,16 +66,55 @@ class PaymentRepository implements PaymentRepositoryInterface
             PaymentInterface::class
         );
 
-        /** @var CMPayment $paymentModel */
         $paymentModel = $this->cmPaymentFactory->create()->setData($paymentData);
 
         try {
             $this->resource->save($paymentModel);
         } catch (Exception $exception) {
-            throw new CouldNotSaveException(__(
-                'Could not save the order: %1',
-                $exception->getMessage()
-            ));
+            throw new CouldNotSaveException(
+                __(
+                    'Could not save the order: %1',
+                    $exception->getMessage()
+                )
+            );
+        }
+
+        return $paymentModel->getDataModel();
+    }
+
+    /**
+     * Get Payment by Order Key
+     *
+     * @param string $orderKey
+     * @return PaymentInterface
+     * @throws NoSuchEntityException
+     */
+    public function getByOrderKey(string $orderKey): PaymentInterface
+    {
+        $paymentModel = $this->cmPaymentFactory->create();
+        $this->resource->load($paymentModel, $orderKey, 'order_key');
+
+        if (!$paymentModel->getId()) {
+            throw new NoSuchEntityException(__('Payment with order key %1 does not exist.', $orderKey));
+        }
+
+        return $paymentModel->getDataModel();
+    }
+
+    /**
+     * Get Payment by Payment Id
+     *
+     * @param string $paymentId
+     * @return PaymentInterface
+     * @throws NoSuchEntityException
+     */
+    public function getByPaymentId(string $paymentId): PaymentInterface
+    {
+        $paymentModel = $this->cmPaymentFactory->create();
+        $this->resource->load($paymentModel, $paymentId, 'payment_id');
+
+        if (!$paymentModel->getId()) {
+            throw new NoSuchEntityException(__('Payment with payment id %1 does not exist.', $paymentId));
         }
 
         return $paymentModel->getDataModel();
