@@ -12,10 +12,8 @@ use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
 use CM\Payments\Logger\CMPaymentsLogger;
 use Magento\Checkout\Model\ConfigProviderInterface;
-use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
-use Magento\Quote\Api\Data\CartInterface;
 
 class ConfigProvider implements ConfigProviderInterface
 {
@@ -38,19 +36,9 @@ class ConfigProvider implements ConfigProviderInterface
     private $assetRepository;
 
     /**
-     * @var CheckoutSession
-     */
-    private $checkoutSession;
-
-    /**
      * @var ConfigService
      */
     private $configService;
-
-    /**
-     * @var MethodServiceInterface
-     */
-    private $methodService;
 
     /**
      * @var CMPaymentsLogger
@@ -61,22 +49,16 @@ class ConfigProvider implements ConfigProviderInterface
      * ConfigProvider constructor
      *
      * @param AssetRepository $assetRepository
-     * @param CheckoutSession $checkoutSession
      * @param ConfigService $configService
-     * @param MethodServiceInterface $methodService
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
         AssetRepository $assetRepository,
-        CheckoutSession $checkoutSession,
         ConfigService $configService,
-        MethodServiceInterface $methodService,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->assetRepository = $assetRepository;
-        $this->checkoutSession = $checkoutSession;
         $this->configService = $configService;
-        $this->methodService = $methodService;
         $this->logger = $cmPaymentsLogger;
     }
 
@@ -97,26 +79,12 @@ class ConfigProvider implements ConfigProviderInterface
                 ],
             ];
 
-            /** @var CartInterface $quote */
-            $quote = $this->checkoutSession->getQuote();
-            $availableProfileMethods = $this->methodService->getAvailablePaymentMethods($quote);
-            foreach ($availableProfileMethods as $code => $availableProfileMethod) {
+            foreach (MethodServiceInterface::METHODS as $code) {
                 $config['payment'][$code]['image'] = $this->getImage($code);
 
-                if (isset($availableProfileMethod['ideal_details'])) {
-                    $config['payment'][$code]['issuers']
-                        = $availableProfileMethod['ideal_details']['issuers'];
+                if ($code == self::CODE_IDEAL) {
+                    $config['payment'][$code]['issuers'] = [];
                 }
-            }
-
-            // TODO: Remove this when issue with available methods list (CM side) will be solved
-            if (!isset($availableProfileMethod[self::CODE_IDEAL])) {
-                $config['payment'][self::CODE_IDEAL]['image'] = $this->getImage(self::CODE_IDEAL);
-            }
-
-            // TODO: Remove this when issue with available methods list (CM side) will be solved
-            if (!isset($availableProfileMethod[self::CODE_BANCONTACT])) {
-                $config['payment'][self::CODE_BANCONTACT]['image'] = $this->getImage(self::CODE_BANCONTACT);
             }
         } catch (LocalizedException $e) {
             $config = [];

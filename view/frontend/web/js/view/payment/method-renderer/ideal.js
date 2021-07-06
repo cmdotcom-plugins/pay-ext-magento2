@@ -2,6 +2,7 @@
  * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
+
 define([
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/action/redirect-on-success',
@@ -44,6 +45,7 @@ define([
 
         /**
          * Get issuer list
+         *
          * @returns {*|*[]}
          */
         getIssuers: function () {
@@ -51,6 +53,8 @@ define([
         },
 
         /**
+         * Get selected issuer
+         *
          * @returns string
          */
         getSelectedIssuer: function () {
