@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Request;
 
-use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
 use CM\Payments\Client\Api\RequestInterface;
 
 class OrderGetRequest implements RequestInterface
@@ -19,19 +18,19 @@ class OrderGetRequest implements RequestInterface
     public const ENDPOINT = 'orders';
 
     /**
-     * @var CMOrder
+     * @var string
      */
-    private $cmOrder;
+    private $orderKey;
 
     /**
      * OrderGetRequest constructor.
      *
-     * @param CMOrder $cmOrder
+     * @param string $orderKey
      */
     public function __construct(
-        CMOrder $cmOrder
+        string $orderKey
     ) {
-        $this->cmOrder = $cmOrder;
+        $this->orderKey = $orderKey;
     }
 
     /**
@@ -39,7 +38,7 @@ class OrderGetRequest implements RequestInterface
      */
     public function getEndpoint(): string
     {
-        return  self::ENDPOINT . '/' . $this->cmOrder->getOrderKey();
+        return  self::ENDPOINT . '/' . $this->orderKey;
     }
 
     /**
