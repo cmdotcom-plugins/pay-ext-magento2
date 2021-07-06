@@ -14,16 +14,46 @@ use CM\Payments\Client\Model\Response\Payment\Payment;
 
 class OrderDetail implements OrderDetailInterface
 {
-    private string $orderReference;
-    private string $description;
-    private int $amount;
-    private string $email;
-    private string $language;
-    private string $country;
-    private string $profile;
-    private string $timestamp;
-    private string $expires_on;
-    private ?array $consideredSafe;
+    /**
+     * string
+     */
+    private $orderReference;
+    /**
+     * string
+     */
+    private $description;
+    /**
+     * int
+     */
+    private $amount;
+    /**
+     * string
+     */
+    private $email;
+    /**
+     * string
+     */
+    private $language;
+    /**
+     * string
+     */
+    private $country;
+    /**
+     * string
+     */
+    private $profile;
+    /**
+     * string
+     */
+    private $timestamp;
+    /**
+     * string
+     */
+    private $expires_on;
+    /**
+     * array
+     */
+    private $consideredSafe;
     /**
      * @var Payment[]
      */

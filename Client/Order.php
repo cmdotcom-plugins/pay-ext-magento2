@@ -18,7 +18,10 @@ use GuzzleHttp\Exception\RequestException;
 
 class Order implements OrderInterface
 {
-    private ApiClientInterface $apiClient;
+    /**
+     * ApiClientInterface
+     */
+    private $apiClient;
 
     /**
      * Order constructor.

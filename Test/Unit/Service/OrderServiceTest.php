@@ -160,6 +160,7 @@ class OrderServiceTest extends UnitTestCase
         $billingAddressMock->method('getCountryId')->willReturn('NL');
 
         $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
+            ->setMethods(['getAdditionalInformation', 'setAdditionalInformation'])
             ->getMockForAbstractClass();
         $paymentMock->method('getAdditionalInformation')->willReturn([]);
         $paymentMock->method('setAdditionalInformation')->willReturnSelf();
