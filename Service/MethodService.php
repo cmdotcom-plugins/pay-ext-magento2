@@ -9,14 +9,20 @@ declare(strict_types=1);
 namespace CM\Payments\Service;
 
 use CM\Payments\Api\Client\ApiClientInterface;
+use CM\Payments\Api\Data\IssuerInterface;
+use CM\Payments\Api\Data\IssuerInterfaceFactory;
+use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterface;
+use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
-use CM\Payments\Client\Model\CMPaymentFactory;
-use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Client\Request\OrderGetMethodsRequest;
 use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Config\Config as ConfigService;
 use CM\Payments\Logger\CMPaymentsLogger;
+use CM\Payments\Model\ConfigProvider;
+use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
+use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterfaceFactory;
+use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Api\Data\CartInterface;
 
@@ -43,6 +49,21 @@ class MethodService implements MethodServiceInterface
     private $orderGetMethodsRequestFactory;
 
     /**
+     * @var PaymentMethodAdditionalDataInterfaceFactory
+     */
+    private $paymentMethodAdditionalDataFactory;
+
+    /**
+     * @var IssuerInterfaceFactory
+     */
+    private $issuerFactory;
+
+    /**
+     * @var PaymentDetailsExtensionInterfaceFactory
+     */
+    private $paymentDetailsExtensionFactory;
+
+    /**
      * @var CMPaymentsLogger
      */
     private $logger;
@@ -54,6 +75,9 @@ class MethodService implements MethodServiceInterface
      * @param ApiClientInterface $apiClient
      * @param OrderRequestBuilderInterface $orderRequestBuilder
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
+     * @param PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory
+     * @param IssuerInterfaceFactory $issuerFactory
+     * @param PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
@@ -61,13 +85,71 @@ class MethodService implements MethodServiceInterface
         ApiClientInterface $apiClient,
         OrderRequestBuilderInterface $orderRequestBuilder,
         OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
+        PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory,
+        IssuerInterfaceFactory $issuerFactory,
+        PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->configService = $configService;
         $this->apiClient = $apiClient;
         $this->orderRequestBuilder = $orderRequestBuilder;
         $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
+        $this->paymentMethodAdditionalDataFactory = $paymentMethodAdditionalDataFactory;
+        $this->issuerFactory = $issuerFactory;
+        $this->paymentDetailsExtensionFactory = $paymentDetailsExtensionFactory;
         $this->logger = $cmPaymentsLogger;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addMethodAdditionalData(
+        CartInterface $quote,
+        PaymentDetailsInterface $paymentDetails
+    ): PaymentDetailsInterface {
+        $availablePaymentMethods = $paymentDetails->getPaymentMethods();
+        $availableProfileMethods = $this->getAvailablePaymentMethods($quote);
+        $issuers = [];
+
+        $paymentDetailsExtension = $paymentDetails->getExtensionAttributes();
+        if ($paymentDetailsExtension == null) {
+            /** @var PaymentDetailsExtensionInterface $paymentDetailsExtension */
+            $paymentDetailsExtension = $this->paymentDetailsExtensionFactory->create();
+        }
+
+        foreach ($availablePaymentMethods as $id => $paymentMethod) {
+            if (strpos($paymentMethod->getCode(), ConfigProvider::CODE . '_') === false) {
+                continue;
+            }
+
+            if (!isset($availableProfileMethods[$paymentMethod->getCode()])) {
+                unset($availablePaymentMethods[$id]);
+            }
+
+            if ($paymentMethod->getCode() == ConfigProvider::CODE_IDEAL) {
+                if (isset($availableProfileMethods[$paymentMethod->getCode()])) {
+                    $methodData = $availableProfileMethods[$paymentMethod->getCode()];
+                    if (!empty($methodData['ideal_details']['issuers'])) {
+                        foreach ($methodData['ideal_details']['issuers'] as $issuer) {
+                            /** @var IssuerInterface $issuerObject */
+                            $issuerObject = $this->issuerFactory->create();
+                            $issuerObject->addData($issuer);
+                            $issuers[] = $issuerObject;
+                        }
+                    }
+                }
+
+                /** @var PaymentMethodAdditionalDataInterface $paymentMethodAdditionalData */
+                $paymentMethodAdditionalData = $this->paymentMethodAdditionalDataFactory->create();
+                $paymentMethodAdditionalData->setIssuers($issuers);
+                $paymentDetailsExtension->setData($paymentMethod->getCode(), $paymentMethodAdditionalData);
+            }
+        }
+
+        $paymentDetails->setExtensionAttributes($paymentDetailsExtension);
+        $paymentDetails->setPaymentMethods($availablePaymentMethods);
+
+        return $paymentDetails;
     }
 
     /**
@@ -143,8 +225,8 @@ class MethodService implements MethodServiceInterface
         }
         asort($issuers, SORT_NATURAL | SORT_FLAG_CASE);
 
-        foreach ($issuers as $id => $name) {
-            $resultIssuerList[] = ['id' => $id, 'name' => $name];
+        foreach ($issuers as $code => $title) {
+            $resultIssuerList[] = ['code' => $code, 'title' => $title];
         }
 
         return $resultIssuerList;
