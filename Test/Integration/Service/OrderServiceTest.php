@@ -2,15 +2,19 @@
 
 namespace CM\Payments\Test\Integration\Service;
 
-use CM\Payments\Api\Client\ApiClientInterface;
+use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
+use CM\Payments\Exception\EmptyOrderKeyException;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Service\OrderRequestBuilder;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -33,10 +37,13 @@ class OrderServiceTest extends IntegrationTestCase
         parent::setUp();
 
         $this->clientMock = $this->createMock(ApiClientInterface::class);
+        $orderClient = $this->objectManager->create(\CM\Payments\Client\Order::class, [
+            'apiClient' => $this->clientMock,
+        ]);
 
         $this->orderService = $this->objectManager->create(OrderService::class, [
             'orderRepository' => $this->objectManager->create(OrderRepository::class),
-            'apiClient' => $this->clientMock,
+            'orderClient' => $orderClient,
             'orderInterfaceFactory' => $this->objectManager->create(OrderInterfaceFactory::class),
             'cmOrderRepository' => $this->objectManager->create(\CM\Payments\Model\OrderRepository::class),
             'orderRequestBuilder' => $this->objectManager->create(OrderRequestBuilder::class),
@@ -66,6 +73,43 @@ class OrderServiceTest extends IntegrationTestCase
             'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
             $order->getUrl()
         );
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testCreateOrderRequestException()
+    {
+
+        $this->expectException(RequestException::class);
+
+        $this->clientMock->expects($this->once())->method('execute')->willThrowException(
+            new RequestException(
+                json_encode(['messages' => 'Property country must match \"[A-Z]{2}\"']),
+                new Request('GET', 'test'),
+                new Response(400)
+            )
+        );
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
+        $this->orderService->create($magentoOrder->getId());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testCreateOrderEmptyOrderKey()
+    {
+        $this->expectException(EmptyOrderKeyException::class);
+
+        $this->clientMock->expects($this->once())->method('execute')->willReturn([]);
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
+        $this->orderService->create($magentoOrder->getId());
     }
 
     /**

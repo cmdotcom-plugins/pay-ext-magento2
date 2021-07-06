@@ -94,7 +94,7 @@ class Redirect implements HttpGetActionInterface
      *
      * @return \Magento\Framework\Controller\Result\Redirect
      */
-    public function redirectToCheckoutCart(Phrase $message): \Magento\Framework\Controller\Result\Redirect
+    private function redirectToCheckoutCart(Phrase $message): \Magento\Framework\Controller\Result\Redirect
     {
         $this->checkoutSession->restoreQuote();
 

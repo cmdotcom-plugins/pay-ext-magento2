@@ -2,14 +2,12 @@
 
 namespace CM\Payments\Test\Unit\Service;
 
-use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Model\Data\OrderInterface;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Model\OrderCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
-use CM\Payments\Client\Request\OrderGetRequest;
 use CM\Payments\Client\Request\OrderGetRequestFactory;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Service\OrderService;
@@ -26,9 +24,9 @@ class OrderServiceTest extends UnitTestCase
      */
     private $orderRepositoryMock;
     /**
-     * @var ApiClientInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var \CM\Payments\Client\Order
      */
-    private $apiClientMock;
+    private $orderMock;
     /**
      * @var OrderServiceInterface
      */
@@ -45,10 +43,6 @@ class OrderServiceTest extends UnitTestCase
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $orderInterfaceFactoryMock;
-    /**
-     * @var OrderGetRequestFactory|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $cmOrderGetRequestFactory;
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
@@ -84,11 +78,7 @@ class OrderServiceTest extends UnitTestCase
             \CM\Payments\Api\Model\Domain\CMOrderInterface::class
         );
 
-        $this->cmOrderGetRequestFactory = $this->getMockupFactory(
-            OrderGetRequest::class
-        );
-
-        $this->apiClientMock = $this->getMockBuilder(ApiClientInterface::class)
+        $this->orderMock = $this->getMockBuilder(\CM\Payments\Client\Order::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -119,24 +109,23 @@ class OrderServiceTest extends UnitTestCase
 
         $this->orderService = new OrderService(
             $this->orderRepositoryMock,
-            $this->apiClientMock,
+            $this->orderMock,
             $this->orderInterfaceFactoryMock,
             $this->cmOrderRepositoryMock,
             $this->orderRequestBuilderMock,
             $this->cmOrderInterfaceFactoryMock,
-            $this->cmOrderGetRequestFactory,
             $this->cmPaymentsLogger
         );
     }
 
     public function testCreateOrder()
     {
-        $this->apiClientMock->method('execute')->willReturn([
+        $this->orderMock->method('create')->willReturn(new \CM\Payments\Client\Model\Response\OrderCreate([
             'order_key' => '0287A1617D93780EF28044B98438BF2F',
             //phpcs:ignore
             'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
             'expires_on' => '2021-07-12T08:10:57Z'
-        ]);
+        ]));
 
         $this->assertSame(
             //phpcs:ignore
@@ -147,12 +136,12 @@ class OrderServiceTest extends UnitTestCase
 
     public function testCreateOrderShouldThrowErrorWhenOrderKeyIsEmpty()
     {
-        $this->apiClientMock->method('execute')->willReturn([
+        $this->orderMock->method('create')->willReturn(new \CM\Payments\Client\Model\Response\OrderCreate([
             'order_key' => '',
             //phpcs:ignore
             'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
             'expires_on' => '2021-07-12T08:10:57Z'
-        ]);
+        ]));
 
         $this->expectException(\Exception::class);
 

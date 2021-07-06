@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client;
 
-use CM\Payments\Api\Client\ApiClientInterface;
+use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Client\Api\RequestInterface;
 use CM\Payments\Model\AdminHtml\Source\Mode;

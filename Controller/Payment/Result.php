@@ -110,7 +110,7 @@ class Result implements HttpGetActionInterface
                 ->setPath('checkout/onepage/success');
         } catch (Exception $exception) {
             $this->logger->error($exception);
-            $this->messageManager->addErrorMessage($exception->getMessage());
+            $this->messageManager->addErrorMessage(__('Something went wrong with processing the order.'));
 
             return $this->redirectToCheckout();
         }
@@ -119,7 +119,7 @@ class Result implements HttpGetActionInterface
     /**
      * @return Redirect
      */
-    public function redirectToCheckout(): Redirect
+    private function redirectToCheckout(): Redirect
     {
         $this->checkoutSession->restoreQuote();
 

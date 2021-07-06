@@ -14,6 +14,12 @@ use CM\Payments\Api\Model\Data\OrderInterface;
 interface OrderRepositoryInterface
 {
     /**
+     * @param string $incrementId
+     * @return OrderInterface
+     */
+    public function getByIncrementId(string $incrementId): OrderInterface;
+
+    /**
      * @param string $orderKey
      * @return Order
      */

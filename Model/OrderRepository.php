@@ -83,8 +83,26 @@ class OrderRepository implements OrderRepositoryInterface
     }
 
     /**
-     * Get Order by Order Key
-     *
+     * @param string $incrementId
+     * @return OrderInterface
+     * @throws NoSuchEntityException
+     */
+    public function getByIncrementId(string $incrementId): OrderInterface
+    {
+        /** @var CMOrder $orderModel */
+        $orderModel = $this->cmOrderFactory->create();
+        $this->resource->load($orderModel, $incrementId, 'increment_id');
+
+        if (!$orderModel->getId()) {
+            throw new NoSuchEntityException(__('Order with key %1 does not exist.', $incrementId));
+        }
+
+        return $orderModel->getDataModel();
+    }
+
+    /**
+     * @param string $orderKey
+     * @return OrderInterface
      * @throws NoSuchEntityException
      */
     public function getByOrderKey(string $orderKey): OrderInterface
