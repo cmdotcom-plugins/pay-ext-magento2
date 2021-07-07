@@ -25,6 +25,10 @@ jobs:
       - name: Start Docker
         run: docker run --detach --name magento-project-community-edition michielgerritsen/magento-project-community-edition:${{ matrix.PHP_VERSION }}-magento${{ matrix.MAGENTO_VERSION }}
 
+      # Create separate branch and remove version from `composer.json`.
+      - name: Create branch for Composer and remove version from composer.json
+        run: git checkout -b unit-test-branch && sed -i '/version/d' ./composer.json
+
       # If your code is not in the root but in a subdirecty you need to change this command.
       # Example: If your code is in the `src` folder then you need to do this:
       # run: docker cp $(pwd)/src magento-project-community-edition:/data/extensions/
