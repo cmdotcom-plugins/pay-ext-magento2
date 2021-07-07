@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Test\Integration\Service;
 
-use CM\Payments\Api\Client\ApiClientInterface;
+use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
@@ -43,7 +43,6 @@ class PaymentServiceTest extends IntegrationTestCase
     private $paymentService;
 
     /**
-     *
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testCreateIdealPayment()

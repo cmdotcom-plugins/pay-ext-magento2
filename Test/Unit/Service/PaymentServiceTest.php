@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Test\Unit\Service;
 
-use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Model\Data\OrderInterface;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
@@ -17,6 +16,7 @@ use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInter
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
+use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Model\CMPayment;
 use CM\Payments\Client\Model\CMPaymentFactory;
 use CM\Payments\Client\Model\CMPaymentUrl;
@@ -106,6 +106,39 @@ class PaymentServiceTest extends UnitTestCase
         );
     }
 
+    /**
+     * @return OrderInterface
+     */
+    private function getOrderMock()
+    {
+        $shippingAddressMock = $this->createConfiguredMock(
+            OrderAddressInterface::class,
+            [
+                'getEmail' => static::ADDRESS_DATA['email_address'],
+                'getCountryId' => static::ADDRESS_DATA['country_code']
+            ]
+        );
+
+        $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
+            ->getMockForAbstractClass();
+        $paymentMock->method('getAdditionalInformation')->willReturn([]);
+        $paymentMock->method('setAdditionalInformation')->willReturnSelf();
+
+        $orderMock = $this->getMockBuilder(SalesOrder::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $orderMock->method('getEntityId')->willReturn('1');
+        $orderMock->method('getIncrementId')->willReturn('000000001');
+        $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
+        $orderMock->method('getStoreId')->willReturn(1);
+        $orderMock->method('getShippingAddress')->willReturn($shippingAddressMock);
+        $orderMock->method('getGrandTotal')->willReturn(99.99);
+        $orderMock->method('getPayment')->willReturn($paymentMock);
+
+        return $orderMock;
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -173,38 +206,5 @@ class PaymentServiceTest extends UnitTestCase
             $this->cmPaymentRepositoryMock,
             $this->cmOrderRepositoryMock
         );
-    }
-
-    /**
-     * @return OrderInterface
-     */
-    private function getOrderMock()
-    {
-        $shippingAddressMock = $this->createConfiguredMock(
-            OrderAddressInterface::class,
-            [
-                'getEmail' => static::ADDRESS_DATA['email_address'],
-                'getCountryId' => static::ADDRESS_DATA['country_code']
-            ]
-        );
-
-        $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
-            ->getMockForAbstractClass();
-        $paymentMock->method('getAdditionalInformation')->willReturn([]);
-        $paymentMock->method('setAdditionalInformation')->willReturnSelf();
-
-        $orderMock = $this->getMockBuilder(SalesOrder::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $orderMock->method('getEntityId')->willReturn('1');
-        $orderMock->method('getIncrementId')->willReturn('000000001');
-        $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
-        $orderMock->method('getStoreId')->willReturn(1);
-        $orderMock->method('getShippingAddress')->willReturn($shippingAddressMock);
-        $orderMock->method('getGrandTotal')->willReturn(99.99);
-        $orderMock->method('getPayment')->willReturn($paymentMock);
-
-        return $orderMock;
     }
 }
