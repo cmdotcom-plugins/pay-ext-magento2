@@ -81,7 +81,7 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
             'returnUrls' => [
                 'success' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_SUCCESS),
                 'pending' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_PENDING),
-                'cancelled' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_CANCELLED),
+                'canceled' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_CANCELLED),
                 'error' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_ERROR)
             ]
         ]);
