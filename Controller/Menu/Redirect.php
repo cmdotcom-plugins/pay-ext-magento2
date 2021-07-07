@@ -9,20 +9,22 @@ declare(strict_types=1);
 namespace CM\Payments\Controller\Menu;
 
 use CM\Payments\Api\Service\OrderServiceInterface;
+use CM\Payments\Logger\CMPaymentsLogger;
 use Exception;
+use Magento\Framework\App\Action\Context;
 use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\Phrase;
-use Psr\Log\LoggerInterface;
 
-class Redirect implements HttpGetActionInterface
+class Redirect extends Action implements HttpGetActionInterface
 {
     /**
      * @var MessageManagerInterface
      */
-    private $messageManager;
+    protected $messageManager;
     /**
      * @var Session
      */
@@ -36,30 +38,34 @@ class Redirect implements HttpGetActionInterface
      */
     private $orderService;
     /**
-     * @var LoggerInterface
+     * @var CMPaymentsLogger
      */
     private $logger;
 
     /**
      * Redirect constructor.
+     * @param Context $context
      * @param MessageManagerInterface $messageManager
      * @param Session $checkoutSession
      * @param RedirectFactory $redirectFactory
      * @param OrderServiceInterface $orderService
-     * @param LoggerInterface $logger
+     * @param CMPaymentsLogger $logger,
      */
     public function __construct(
+        Context $context,
         MessageManagerInterface $messageManager,
         Session $checkoutSession,
         RedirectFactory $redirectFactory,
         OrderServiceInterface $orderService,
-        LoggerInterface $logger
+        CMPaymentsLogger $logger
     ) {
         $this->messageManager = $messageManager;
         $this->checkoutSession = $checkoutSession;
         $this->redirectFactory = $redirectFactory;
         $this->orderService = $orderService;
         $this->logger = $logger;
+
+        parent::__construct($context);
     }
 
     /**
@@ -75,6 +81,7 @@ class Redirect implements HttpGetActionInterface
             $this->logger->debug($orderId);
             $this->logger->debug($order->getEntityId());
             if (!$orderId) {
+                $this->logger->error('No order id found.', ['orderId' => $orderId]);
                 return $this->redirectToCheckoutCart(__('No order id found.'));
             }
 

@@ -11,6 +11,8 @@ namespace CM\Payments\Controller\Payment;
 use CM\Payments\Client\Model\OrderCreate;
 use Exception;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
@@ -19,7 +21,7 @@ use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Sales\Api\OrderManagementInterface;
 use Psr\Log\LoggerInterface;
 
-class Result implements HttpGetActionInterface
+class Result extends Action implements HttpGetActionInterface
 {
     /**
      * @var CheckoutSession
@@ -39,7 +41,7 @@ class Result implements HttpGetActionInterface
     /**
      * @var MessageManagerInterface
      */
-    private $messageManager;
+    protected $messageManager;
 
     /**
      * @var OrderManagementInterface
@@ -53,7 +55,8 @@ class Result implements HttpGetActionInterface
 
     /**
      * Result constructor
-     *
+
+     * @param Context $context
      * @param RequestInterface $request,
      * @param MessageManagerInterface $messageManager,
      * @param CheckoutSession $checkoutSession
@@ -62,6 +65,7 @@ class Result implements HttpGetActionInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
+        Context $context,
         RequestInterface $request,
         MessageManagerInterface $messageManager,
         CheckoutSession $checkoutSession,
@@ -75,6 +79,8 @@ class Result implements HttpGetActionInterface
         $this->redirectFactory = $redirectFactory;
         $this->orderManagement = $orderManagement;
         $this->logger = $logger;
+
+        parent::__construct($context);
     }
 
     /**

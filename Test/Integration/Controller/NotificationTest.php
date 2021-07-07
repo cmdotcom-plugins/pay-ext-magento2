@@ -1,4 +1,8 @@
 <?php
+/**
+ * Copyright © CM.com. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
 
 namespace CM\Payments\Test\Integration\Controller\Checkout;
 
@@ -29,7 +33,8 @@ class NotificationTest extends AbstractController
 
         $this->dispatch('cmpayments/payment/notification');
 
-        $this->assertEquals(404, $this->getResponse()->getStatusCode());
+        $this->assertEquals(400, $this->getResponse()->getStatusCode());
+        $this->assertEquals(json_encode(['message' => __('No such entity')]), $this->getResponse()->getBody());
     }
 
     public function testNotificationUpdate()
