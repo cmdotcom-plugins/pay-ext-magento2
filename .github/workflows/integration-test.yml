@@ -32,7 +32,7 @@ jobs:
 
       # Replace <VENDOR> and <MODULE> with the name in your `composer.json`.
       - name: Install the extension in Magento
-        run: docker exec magento-project-community-edition composer require cm/payments:"dev-${GITHUB_SHA} as 1.x-dev"
+        run: docker exec magento-project-community-edition composer require cm/payments:dev-integration-test-branch
 
       # This step is optional but good to include in your pipeline.
       - name: Run setup:di:compile
