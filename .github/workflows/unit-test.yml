@@ -37,7 +37,7 @@ jobs:
 
       # Replace <VENDOR> and <MODULE> with the name in your `composer.json`.
       - name: Install the extension in Magento
-        run: docker exec magento-project-community-edition composer require cm/payments:"dev-${GITHUB_SHA} as 1.x-dev"
+        run: docker exec magento-project-community-edition composer require cm/payments:dev-unit-test-branch"
 
       # Only the tests in your repository will be run, the default Magento tests are not included in this.
       - name: Run tests
