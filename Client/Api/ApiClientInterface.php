@@ -6,14 +6,13 @@
 
 declare(strict_types=1);
 
-namespace CM\Payments\Api\Client;
-
-use CM\Payments\Client\Api\RequestInterface;
+namespace CM\Payments\Client\Api;
 
 interface ApiClientInterface
 {
     /**
      * Execute a request against the CM Payments Api.
+     * @throws GuzzleException
      */
     public function execute(RequestInterface $request): array;
 }

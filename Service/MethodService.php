@@ -8,13 +8,13 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
-use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Data\IssuerInterface;
 use CM\Payments\Api\Data\IssuerInterfaceFactory;
 use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterface;
 use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
+use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Request\OrderGetMethodsRequest;
 use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Config\Config as ConfigService;

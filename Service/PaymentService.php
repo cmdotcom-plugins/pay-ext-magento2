@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
-use CM\Payments\Api\Client\ApiClientInterface;
+use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
@@ -101,7 +101,7 @@ class PaymentService implements PaymentServiceInterface
     public function create(string $orderId): CMPaymentInterface
     {
         $order = $this->orderRepository->get($orderId);
-        $cmOrder = $this->cmOrderRepository->getByOrderId((int) $order->getEntityId());
+        $cmOrder = $this->cmOrderRepository->getByOrderId((int)$order->getEntityId());
         $paymentCreateRequest = $this->paymentRequestBuilder->create($order, $cmOrder->getOrderKey());
 
         $response = $this->apiClient->execute(

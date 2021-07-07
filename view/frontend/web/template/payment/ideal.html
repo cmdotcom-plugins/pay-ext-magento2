@@ -11,7 +11,7 @@
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
         <label data-bind="attr: {'for': getCode()}" class="label">
             <!-- ko if: getImage() -->
-            <img data-bind="attr: {src: getImage()}" class="payment-icon"/>
+            <img data-bind="attr: {src: getImage()}" class="payment-icon" width="50" height="50"/>
             <!--/ko-->
             <span data-bind="text: getTitle()"></span>
         </label>
