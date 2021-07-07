@@ -77,7 +77,6 @@ class OrderServiceTest extends IntegrationTestCase
     }
 
     /**
-     *
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testSaveOrderReferenceInDatabase()

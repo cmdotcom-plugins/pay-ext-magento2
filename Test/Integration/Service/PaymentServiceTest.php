@@ -43,6 +43,7 @@ class PaymentServiceTest extends IntegrationTestCase
     private $paymentService;
 
     /**
+     *
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testCreateIdealPayment()
@@ -63,7 +64,7 @@ class PaymentServiceTest extends IntegrationTestCase
             ]
         );
 
-        $magentoOrder = $this->loadOrderById('000000001');
+        $magentoOrder = $this->loadOrderById('100000001');
         $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
         $payment = $this->paymentService->create($magentoOrder->getId());
@@ -77,7 +78,7 @@ class PaymentServiceTest extends IntegrationTestCase
      */
     public function testSavePaymentInDatabase()
     {
-        $magentoOrder = $this->loadOrderById('000000001');
+        $magentoOrder = $this->loadOrderById('100000001');
         $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
         $this->clientMock->expects($this->once())->method('execute')->willReturn(
@@ -140,8 +141,8 @@ class PaymentServiceTest extends IntegrationTestCase
     {
         /** @var OrderInterface $magentoOrder */
         $magentoOrder
-            ->setOrderCurrencyCode('USD')
-            ->setBaseCurrencyCode('USD');
+            ->setOrderCurrencyCode('EUR')
+            ->setBaseCurrencyCode('EUR');
 
         $repository = $this->objectManager->get(OrderRepositoryInterface::class);
         $repository->save($magentoOrder);
