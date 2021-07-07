@@ -48,11 +48,7 @@ class OrderTransactionServiceTest extends IntegrationTestCase
         ]);
 
         $this->orderTransactionService = $this->objectManager->create(OrderTransactionService::class, [
-            'orderRepository' => $this->objectManager->create(OrderRepository::class),
-            'cmOrderRepository' => $this->objectManager->create(\CM\Payments\Model\OrderRepository::class),
-            'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments']),
-            'orderClient' => $orderClient,
-            'eventManager' => $this->objectManager->create(ManagerInterface::class),
+            'orderClient' => $orderClient
         ]);
 
         $magentoOrder = $this->loadOrderById('100000001');

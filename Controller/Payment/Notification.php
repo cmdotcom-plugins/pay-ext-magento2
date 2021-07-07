@@ -9,6 +9,9 @@ declare(strict_types=1);
 namespace CM\Payments\Controller\Payment;
 
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
+use CM\Payments\Logger\CMPaymentsLogger;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
@@ -17,9 +20,8 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Psr\Log\LoggerInterface;
 
-class Notification implements HttpGetActionInterface, CsrfAwareActionInterface
+class Notification extends Action implements HttpGetActionInterface, CsrfAwareActionInterface
 {
     /**
      * @var RequestInterface
@@ -30,7 +32,7 @@ class Notification implements HttpGetActionInterface, CsrfAwareActionInterface
      */
     private $resultJsonFactory;
     /**
-     * @var LoggerInterface
+     * @var CMPaymentsLogger
      */
     private $logger;
     /**
@@ -41,21 +43,25 @@ class Notification implements HttpGetActionInterface, CsrfAwareActionInterface
     /**
      * Notification constructor.
      *
+     * @param Context $context
      * @param RequestInterface $request
      * @param JsonFactory $resultJsonFactory
      * @param OrderTransactionServiceInterface $orderTransactionService
-     * @param LoggerInterface $logger
+     * @param CMPaymentsLogger $logger
      */
     public function __construct(
+        Context $context,
         RequestInterface $request,
         JsonFactory $resultJsonFactory,
         OrderTransactionServiceInterface $orderTransactionService,
-        LoggerInterface $logger
+        CMPaymentsLogger $logger
     ) {
         $this->request = $request;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->logger = $logger;
         $this->orderTransactionService = $orderTransactionService;
+
+        parent::__construct($context);
     }
 
     /**
@@ -80,7 +86,8 @@ class Notification implements HttpGetActionInterface, CsrfAwareActionInterface
 
             return $resultPage;
         } catch (NoSuchEntityException $e) {
-            $resultPage->setHttpResponseCode(404);
+            $resultPage->setData(['message' => __('No such entity')]);
+            $resultPage->setHttpResponseCode(400);
 
             return $resultPage;
         }

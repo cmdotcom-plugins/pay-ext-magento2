@@ -29,7 +29,8 @@ class NotificationTest extends AbstractController
 
         $this->dispatch('cmpayments/payment/notification');
 
-        $this->assertEquals(404, $this->getResponse()->getStatusCode());
+        $this->assertEquals(400, $this->getResponse()->getStatusCode());
+        $this->assertEquals(json_encode(['message' => __('No such entity')]), $this->getResponse()->getBody());
     }
 
     public function testNotificationUpdate()
