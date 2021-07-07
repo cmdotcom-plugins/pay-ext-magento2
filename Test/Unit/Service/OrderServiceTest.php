@@ -4,7 +4,6 @@
  * See LICENSE.txt for license details.
  */
 
-
 declare(strict_types=1);
 
 namespace CM\Payments\Test\Unit\Service;
