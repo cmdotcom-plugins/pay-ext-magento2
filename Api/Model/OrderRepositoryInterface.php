@@ -14,6 +14,12 @@ use Magento\Framework\Exception\NoSuchEntityException;
 interface OrderRepositoryInterface
 {
     /**
+     * @param string $incrementId
+     * @return OrderInterface
+     */
+    public function getByIncrementId(string $incrementId): OrderInterface;
+
+    /**
      * @param string $orderKey
      * @return OrderInterface
      *

@@ -49,6 +49,7 @@ class PaymentCreate
         if ($this->idealDetails) {
             $data['ideal_details'] =  $this->idealDetails;
         }
+
         return $data;
     }
 
