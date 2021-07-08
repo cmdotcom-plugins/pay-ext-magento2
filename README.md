@@ -51,7 +51,7 @@ php bin/magento setup:static-content:deploy
    2. **General settings:**  Enter the Test and/or API key of your webshop. You received the API credentials by email from CM Payments (register link).
    3. **General settings:** set payment method profile that is configured in the CM Portal 
    4. **Payment methods:** Configure each payment method you would like to offer in your webshop
-   5. **Magento: ** refresh the caches after saving the configuration
+   5. **Magento:** refresh the caches after saving the configuration
 
 ## About CM Payments
 
@@ -61,26 +61,26 @@ https://www.cm.com/payments
 
 Payments via Menu
 
-- \* iDEAL, iDEAL QR
-- \* Banktransfer
-- \* Credit Cards (American Express, Mastercard, Maestro, Visa, V-Pay)
-- \* Bancontact, Bancontact Mobile
-- \* Sofortüberweisung, EBanking
-- \* Paysafecard
-- \* ELV
-- \* Giropay
-- \* KBC, CBC
-- \* Belfius Pay Button
-- \* ING Home Pay
-- \* Giftcards
-- \* Point of Sale
-- \* Apple Pay, Apple Business Chat
-- \* Google Pay
-- \* PayPal
-- \* Sepa Direct Debit
-- \* Afterpay
-- \* Klarna
-- \* Przelewy24, BLIK
+- iDEAL, iDEAL QR
+- Banktransfer
+- Credit Cards (American Express, Mastercard, Maestro, Visa, V-Pay)
+- Bancontact, Bancontact Mobile
+- Sofortüberweisung, EBanking
+- Paysafecard
+- ELV
+- Giropay
+- KBC, CBC
+- Belfius Pay Button
+- ING Home Pay
+- Giftcards
+- Point of Sale
+- Apple Pay, Apple Business Chat
+- Google Pay
+- PayPal
+- Sepa Direct Debit
+- Afterpay
+- Klarna
+- Przelewy24, BLIK
 
 ## Requirements
 
