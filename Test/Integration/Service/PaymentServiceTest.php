@@ -16,6 +16,8 @@ use CM\Payments\Api\Service\PaymentServiceInterface;
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Model\CMPaymentFactory;
 use CM\Payments\Client\Model\CMPaymentUrlFactory;
+use CM\Payments\Client\Payment;
+use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Service\PaymentRequestBuilder;
 use CM\Payments\Service\PaymentService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
@@ -156,18 +158,24 @@ class PaymentServiceTest extends IntegrationTestCase
         parent::setUp();
 
         $this->clientMock = $this->createMock(ApiClientInterface::class);
+        $paymentClient = $this->objectManager->create(
+            Payment::class,
+            [
+                'apiClient' => $this->clientMock,
+            ]
+        );
 
         $this->paymentService = $this->objectManager->create(
             PaymentService::class,
             [
                 'orderRepository' => $this->objectManager->create(OrderRepository::class),
-                'apiClient' => $this->clientMock,
+                'paymentClient' => $paymentClient,
                 'paymentRequestBuilder' => $this->objectManager->create(PaymentRequestBuilder::class),
                 'cmPaymentDataFactory' => $this->objectManager->create(CMPaymentDataFactory::class),
                 'cmPaymentFactory' => $this->objectManager->create(CMPaymentFactory::class),
-                'cmPaymentUrlFactory' => $this->objectManager->create(CMPaymentUrlFactory::class),
                 'cmPaymentRepository' => $this->objectManager->create(CMPaymentRepositoryInterface::class),
-                'cmOrderRepository' => $this->objectManager->create(CMOrderRepositoryInterface::class)
+                'cmOrderRepository' => $this->objectManager->create(CMOrderRepositoryInterface::class),
+                'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments'])
             ]
         );
     }

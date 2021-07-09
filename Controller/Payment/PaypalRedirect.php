@@ -93,16 +93,21 @@ class PaypalRedirect implements HttpGetActionInterface
             }
 
             $cmOrder = $this->orderService->create($order->getEntityId());
+            if (!$cmOrder->getOrderReference()) {
+                throw new LocalizedException(__('The order was not placed properly.'));
+            }
+
             $cmPayment = $this->paymentService->create($order->getEntityId());
-            $url = $this->getUrl($cmPayment->getUrls());
-            if (empty($url)) {
+            $redirectUrl = $cmPayment->getRedirectUrl();
+            if (!$redirectUrl) {
                 throw new LocalizedException(__('No redirect url found in payment response'));
             }
 
             return $this->redirectFactory->create()
-                ->setUrl($url);
+                ->setUrl($redirectUrl);
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage());
+
             return $this->redirectToCheckoutCart(__('Something went wrong while creating the order.'));
         }
     }
@@ -121,21 +126,5 @@ class PaypalRedirect implements HttpGetActionInterface
 
         return $this->redirectFactory->create()
             ->setPath('checkout/cart');
-    }
-
-    /**
-     * @param CMPaymentUrl[] $paymentUrls
-     *
-     * @return string
-     */
-    private function getUrl(array $paymentUrls): string
-    {
-        foreach ($paymentUrls as $paymentUrl) {
-            if ($paymentUrl->getPurpose() === CMPaymentUrl::PURPOSE_REDIRECT) {
-                return $paymentUrl->getUrl();
-            }
-        }
-
-        return '';
     }
 }
