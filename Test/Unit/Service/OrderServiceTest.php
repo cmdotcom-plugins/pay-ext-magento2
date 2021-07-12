@@ -43,7 +43,7 @@ class OrderServiceTest extends UnitTestCase
     private $orderRepositoryMock;
 
     /**
-     * @var ClientApiOrder
+     * @var ClientApiOrder|\PHPUnit\Framework\MockObject\MockObject
      */
     private $orderClientMock;
 

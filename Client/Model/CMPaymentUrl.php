@@ -34,14 +34,19 @@ class CMPaymentUrl
     private $order;
 
     /**
-     * CMPaymentUrl constructor.
+     * CMPaymentUrl constructor
+     *
      * @param string $purpose
      * @param string $method
      * @param string $url
      * @param string $order
      */
-    public function __construct(string $purpose, string $method, string $url, string $order)
-    {
+    public function __construct(
+        string $purpose,
+        string $method,
+        string $url,
+        string $order
+    ) {
         $this->purpose = $purpose;
         $this->method = $method;
         $this->url = $url;

@@ -8,6 +8,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="CM\Payments\Client\Api\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
     <preference for="CM\Payments\Client\Api\OrderInterface" type="CM\Payments\Client\Order" />
+    <preference for="CM\Payments\Client\Api\PaymentInterface" type="CM\Payments\Client\Payment" />
     <preference for="CM\Payments\Api\Service\OrderServiceInterface" type="CM\Payments\Service\OrderService" />
     <preference for="CM\Payments\Api\Service\OrderTransactionServiceInterface" type="CM\Payments\Service\OrderTransactionService" />
     <preference for="CM\Payments\Api\Service\PaymentServiceInterface" type="CM\Payments\Service\PaymentService" />

@@ -16,13 +16,12 @@ use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInter
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
-use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Model\CMPayment;
 use CM\Payments\Client\Model\CMPaymentFactory;
-use CM\Payments\Client\Model\CMPaymentUrl;
-use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Client\Model\Request\PaymentCreate;
+use CM\Payments\Client\Payment as ClientApiPayment;
 use CM\Payments\Client\Request\PaymentCreateRequest;
+use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
 use CM\Payments\Model\Data\Payment as CMPaymentData;
 use CM\Payments\Service\PaymentService;
@@ -46,9 +45,9 @@ class PaymentServiceTest extends UnitTestCase
     private $orderRepositoryMock;
 
     /**
-     * @var ApiClientInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var ClientApiPayment|\PHPUnit\Framework\MockObject\MockObject
      */
-    private $apiClientMock;
+    private $paymentClientMock;
 
     /**
      * @var PaymentRequestBuilderInterface|\PHPUnit\Framework\MockObject\MockObject
@@ -66,11 +65,6 @@ class PaymentServiceTest extends UnitTestCase
     private $cmPaymentFactoryMock;
 
     /**
-     * @var CMPaymentUrlFactory|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private $cmPaymentUrlFactoryMock;
-
-    /**
      * @var  CMPaymentRepositoryInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $cmPaymentRepositoryMock;
@@ -80,22 +74,29 @@ class PaymentServiceTest extends UnitTestCase
      */
     private $cmOrderRepositoryMock;
 
+    /**
+     * @var CMPaymentsLogger|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $cmPaymentsLoggerMock;
+
     public function testCreateIdealPayment()
     {
-        $this->apiClientMock->expects($this->once())->method('execute')->willReturn(
-            [
-                'id' => 'pid4911257676t',
-                'status' => 'REDIRECTED_FOR_AUTHORIZATION',
-                'urls' => [
-                    0 => [
-                        'purpose' => 'REDIRECT',
-                        'method' => 'GET',
-                        //phpcs:ignore
-                        'url' => 'https://test.docdatapayments.com/ps_sim/idealbanksimulator.jsf?trxid=1625579689224&ec=4911257676&returnUrl=https%3A%2F%2Ftestsecure.docdatapayments.com%2Fps%2FreturnFromAuthorization%3FpaymentReference%3D49112576765AD00EC846B52EAED61E9FC2530CFF90%26checkDigitId%3D49112576765AD00EC846B52EAED61E9FC2530CFF90',
-                        'order' => 1,
-                    ],
+        $this->paymentClientMock->expects($this->once())->method('create')->willReturn(
+            new \CM\Payments\Client\Model\Response\PaymentCreate(
+                [
+                    'id' => 'pid4911257676t',
+                    'status' => 'REDIRECTED_FOR_AUTHORIZATION',
+                    'urls' => [
+                        0 => [
+                            'purpose' => 'REDIRECT',
+                            'method' => 'GET',
+                            //phpcs:ignore
+                            'url' => 'https://test.docdatapayments.com/ps_sim/idealbanksimulator.jsf?trxid=1625579689224&ec=4911257676&returnUrl=https%3A%2F%2Ftestsecure.docdatapayments.com%2Fps%2FreturnFromAuthorization%3FpaymentReference%3D49112576765AD00EC846B52EAED61E9FC2530CFF90%26checkDigitId%3D49112576765AD00EC846B52EAED61E9FC2530CFF90',
+                            'order' => 1,
+                        ],
+                    ]
                 ]
-            ]
+            )
         );
 
         $order = $this->getOrderMock();
@@ -147,7 +148,7 @@ class PaymentServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->apiClientMock = $this->getMockBuilder(ApiClientInterface::class)
+        $this->paymentClientMock = $this->getMockBuilder(ClientApiPayment::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -164,10 +165,6 @@ class PaymentServiceTest extends UnitTestCase
             CMPayment::class
         );
 
-        $this->cmPaymentUrlFactoryMock = $this->getMockupFactory(
-            CMPaymentUrl::class
-        );
-
         $this->cmPaymentRepositoryMock = $this->getMockBuilder(CMPaymentRepositoryInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -177,6 +174,10 @@ class PaymentServiceTest extends UnitTestCase
             ->getMock();
 
         $this->cmOrderRepositoryMock = $this->getMockBuilder(CMOrderRepositoryInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->cmPaymentsLoggerMock = $this->getMockBuilder(CMPaymentsLogger::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -198,13 +199,13 @@ class PaymentServiceTest extends UnitTestCase
 
         $this->paymentService = new PaymentService(
             $this->orderRepositoryMock,
-            $this->apiClientMock,
+            $this->paymentClientMock,
             $this->paymentRequestBuilderMock,
             $this->cmPaymentDataFactoryMock,
             $this->cmPaymentFactoryMock,
-            $this->cmPaymentUrlFactoryMock,
             $this->cmPaymentRepositoryMock,
-            $this->cmOrderRepositoryMock
+            $this->cmOrderRepositoryMock,
+            $this->cmPaymentsLoggerMock
         );
     }
 }

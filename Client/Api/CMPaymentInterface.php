@@ -23,6 +23,11 @@ interface CMPaymentInterface
     public function getStatus(): string;
 
     /**
+     * @return ?string
+     */
+    public function getRedirectUrl(): ?string;
+
+    /**
      * @return CMPaymentUrl[]
      */
     public function getUrls(): array;
