@@ -1,14 +1,14 @@
-# CM Payments Magento 2 module
+# CM.com Payments Magento 2 module
 
 ## Get started
 
-Before you begin to integrate Magento with the CM payments platform, make sure that you have performed the following steps: 
+Before you begin to integrate Magento with the CM.com payments platform, make sure that you have performed the following steps: 
 
-1. Sign up for a test account with CM Payments at https://www.cm.com/register/?app=81e52ab7-4cfc-4b89-8ae8-f5be73bab15d&product=PAYMENTMETHODS
+1. Sign up for a test account with CM.com Payments at https://www.cm.com/register/?app=81e52ab7-4cfc-4b89-8ae8-f5be73bab15d&product=PAYMENTMETHODS
 2. Create a payment method profile in the CM Portal
 3. Install and configure the magento module
 
-## Installation & Update the CM Payments Magento 2 plugin
+## Installation & Update the CM.com Payments Magento 2 plugin
 
 1. Installation by Composer
 
@@ -46,18 +46,18 @@ php bin/magento setup:static-content:deploy
 ```
 
 3. Configuration
-   To configure the CM Payments extension you can go to your Magento® 2 admin portal, to **Stores** > **Configuration** > **CM Payments**
+   To configure the CM.com Payments extension you can go to your Magento® 2 admin portal, to **Stores** > **Configuration** > **CM.com Payments**
    1. **General settings:** Set ‘Enabled’ to ‘Yes’
-   2. **General settings:**  Enter the Test and/or API key of your webshop. You received the API credentials by email from CM Payments (register link).
+   2. **General settings:**  Enter the Test and/or API key of your webshop. You received the API credentials by email from CM.com Payments (register link).
    3. **General settings:** set payment method profile that is configured in the CM Portal 
    4. **Payment methods:** Configure each payment method you would like to offer in your webshop
    5. **Magento:** refresh the caches after saving the configuration
 
-## About CM Payments
+## About CM.com Payments
 
 https://www.cm.com/payments
 
-## Supported CM Payments Methods
+## Supported CM.com Payments Methods
 
 Payments via Menu
 

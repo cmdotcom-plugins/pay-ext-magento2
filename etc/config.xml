@@ -12,7 +12,7 @@
                 <model>CMPaymentsFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
-                <title>CM Payments</title>
+                <title>CM.com Payments</title>
                 <currency>EUR</currency>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
