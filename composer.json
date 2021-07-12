@@ -1,0 +1,26 @@
+{
+    "name": "cm/payments",
+    "description": "CM.com Payment module for Magento 2",
+    "type": "magento2-module",
+    "version": "0.1.0",
+    "keywords": [
+        "cm",
+        "cmpayments"
+    ],
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],
+    "require": {
+        "php": ">=7.3",
+        "magento/framework": ">=102.0.0",
+        "cmpayments/guzzle-psp-authentication-middleware": "^1.0",
+        "guzzlehttp/guzzle": "^6.3 || ^7.0"
+    },
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "CM\\Payments\\": ""
+        }
+    }
+}
