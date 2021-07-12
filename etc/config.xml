@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright © CM.com. All rights reserved.
+  ~ See LICENSE.txt for license details.
+  -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <cm_payments>
+                <active>1</active>
+                <model>CMPaymentsFacade</model>
+                <order_status>pending</order_status>
+                <payment_action>initialize</payment_action>
+                <title>CM.com Payments</title>
+                <currency>EUR</currency>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_use_internal>1</can_use_internal>
+                <can_refund>1</can_refund>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <is_gateway>1</is_gateway>
+                <sort_order>1</sort_order>
+                <allowspecific>0</allowspecific>
+                <allow_specific_currency>0</allow_specific_currency>
+                <allow_specific_shipping_method>0</allow_specific_shipping_method>
+                <allow_specific_customer_group>0</allow_specific_customer_group>
+                <allow_amount>0</allow_amount>
+                <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
+                <transaction_type>redirect</transaction_type>
+                <group>cm</group>
+            </cm_payments>
+            <cm_payments_general>
+                <merchant_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <merchant_password backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <mode>test</mode>
+            </cm_payments_general>
+        </payment>
+    </default>
+</config>

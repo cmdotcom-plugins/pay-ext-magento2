@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright © CM.com. All rights reserved.
+  ~ See LICENSE.txt for license details.
+  -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="cm_payments" sortOrder="210" translate="label" class="cm_payments-tab">
+            <label>CM.com Payments</label>
+        </tab>
+
+        <section id="cm_payments_general" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+            <label>General</label>
+            <tab>cm_payments</tab>
+            <resource>CM_Payments::config</resource>
+
+            <group id="status" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Status</label>
+                <field id="enabled" translate="label" type="select" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/cm_payments_general/enabled</config_path>
+                </field>
+            </group>
+
+            <group id="api_details" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>API Details</label>
+                <field id="mode" translate="label" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Api mode (test|production</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\Mode</source_model>
+                    <config_path>payment/cm_payments_general/mode</config_path>
+                </field>
+                <field id="merchant_name" translate="label" type="text" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Merchant Name</label>
+                    <config_path>payment/cm_payments_general/merchant_name</config_path>
+                </field>
+                <field id="merchant_password" translate="label" type="obscure" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Merchant Password</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <config_path>payment/cm_payments_general/merchant_password</config_path>
+                </field>
+                <field id="merchant_key" translate="label" type="obscure" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Merchant Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <config_path>payment/cm_payments_general/merchant_key</config_path>
+                </field>
+            </group>
+        </section>
+        <section id="cm_payments_methods" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20" translate="label">
+            <label>Payment Methods</label>
+            <tab>cm_payments</tab>
+            <resource>CM_Payments::config</resource>
+
+            <group id="payment_method_general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="payment_method_visibility" translate="label" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Show payment methods in checkout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/cm_payments_methods/visibility</config_path>
+                </field>
+                <field id="payment_method_profile" translate="label" type="text" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment method profile</label>
+                    <config_path>payment/cm_payments_methods/profile</config_path>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
