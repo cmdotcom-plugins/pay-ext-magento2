@@ -51,6 +51,18 @@ class PaymentRequestBuilderTest extends UnitTestCase
         );
     }
 
+    public function testCreatePaypalPaymentRequestBuilder()
+    {
+        $orderMock = $this->getOrderMock(ConfigProvider::CODE_PAYPAL);
+        $orderKey = '0287A1617D93780EF28044B98438BF2F';
+        $paymentRequest = $this->paymentRequestBuilder->create($orderMock, $orderKey);
+
+        $this->assertSame(
+            MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_PAYPAL],
+            $paymentRequest->getPayload()['method']
+        );
+    }
+
     /**
      * @param string $paymentMethod
      * @return OrderInterface

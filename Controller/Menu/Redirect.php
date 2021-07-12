@@ -25,25 +25,30 @@ class Redirect extends Action implements HttpGetActionInterface
      * @var MessageManagerInterface
      */
     protected $messageManager;
+
     /**
      * @var Session
      */
     private $checkoutSession;
+
     /**
      * @var RedirectFactory
      */
     private $redirectFactory;
+
     /**
      * @var OrderServiceInterface
      */
     private $orderService;
+
     /**
      * @var CMPaymentsLogger
      */
     private $logger;
 
     /**
-     * Redirect constructor.
+     * Redirect constructor
+     *
      * @param Context $context
      * @param MessageManagerInterface $messageManager
      * @param Session $checkoutSession

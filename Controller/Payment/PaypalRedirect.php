@@ -10,9 +10,10 @@ namespace CM\Payments\Controller\Payment;
 
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
-use CM\Payments\Client\Model\CMPaymentUrl;
 use Exception;
 use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
@@ -21,12 +22,12 @@ use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\Phrase;
 use Psr\Log\LoggerInterface;
 
-class PaypalRedirect implements HttpGetActionInterface
+class PaypalRedirect extends Action implements HttpGetActionInterface
 {
     /**
      * @var MessageManagerInterface
      */
-    private $messageManager;
+    protected $messageManager;
 
     /**
      * @var Session
@@ -56,6 +57,7 @@ class PaypalRedirect implements HttpGetActionInterface
     /**
      * PaypalRedirect constructor
      *
+     * @param Context $context
      * @param MessageManagerInterface $messageManager
      * @param Session $checkoutSession
      * @param RedirectFactory $redirectFactory
@@ -64,6 +66,7 @@ class PaypalRedirect implements HttpGetActionInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
+        Context $context,
         MessageManagerInterface $messageManager,
         Session $checkoutSession,
         RedirectFactory $redirectFactory,
@@ -77,6 +80,8 @@ class PaypalRedirect implements HttpGetActionInterface
         $this->orderService = $orderService;
         $this->paymentService = $paymentService;
         $this->logger = $logger;
+
+        parent::__construct($context);
     }
 
     /**

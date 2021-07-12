@@ -13,20 +13,22 @@ use CM\Payments\Api\Service\PaymentServiceInterface;
 use CM\Payments\Exception\NoRedirectUrlProvidedException;
 use Exception;
 use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\Phrase;
+use Magento\Framework\App\Action\Action;
 use Psr\Log\LoggerInterface;
 
-class IdealRedirect implements HttpGetActionInterface
+class IdealRedirect extends Action implements HttpGetActionInterface
 {
     /**
      * @var MessageManagerInterface
      */
-    private $messageManager;
+    protected $messageManager;
 
     /**
      * @var Session
@@ -56,6 +58,7 @@ class IdealRedirect implements HttpGetActionInterface
     /**
      * Redirect constructor
      *
+     * @param Context $context
      * @param MessageManagerInterface $messageManager
      * @param Session $checkoutSession
      * @param RedirectFactory $redirectFactory
@@ -64,6 +67,7 @@ class IdealRedirect implements HttpGetActionInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
+        Context $context,
         MessageManagerInterface $messageManager,
         Session $checkoutSession,
         RedirectFactory $redirectFactory,
@@ -77,6 +81,8 @@ class IdealRedirect implements HttpGetActionInterface
         $this->orderService = $orderService;
         $this->paymentService = $paymentService;
         $this->logger = $logger;
+
+        parent::__construct($context);
     }
 
     /**

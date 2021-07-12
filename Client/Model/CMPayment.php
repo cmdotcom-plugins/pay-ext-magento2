@@ -28,7 +28,7 @@ class CMPayment implements CMPaymentInterface
     private $redirectUrl;
 
     /**
-     * @var CMPaymentInterface[]
+     * @var CMPaymentUrl[]
      */
     private $urls;
 
@@ -38,7 +38,7 @@ class CMPayment implements CMPaymentInterface
      * @param string $id
      * @param string $status
      * @param ?string $redirectUrl
-     * @param CMPaymentInterface[] $urls
+     * @param CMPaymentUrl[] $urls
      */
     public function __construct(
         string $id,
