@@ -18,49 +18,60 @@ class OrderDetail implements OrderDetailInterface
      * string
      */
     private $orderReference;
+
     /**
      * string
      */
     private $description;
+
     /**
      * int
      */
     private $amount;
+
     /**
      * string
      */
     private $email;
+
     /**
      * string
      */
     private $language;
+
     /**
      * string
      */
     private $country;
+
     /**
      * string
      */
     private $profile;
+
     /**
      * string
      */
     private $timestamp;
+
     /**
      * string
      */
     private $expires_on;
+
     /**
      * array
      */
     private $consideredSafe;
+
     /**
      * @var Payment[]
      */
     private $payments;
 
     /**
-     * OrderDetail constructor.
+     * OrderDetail constructor
+     *
      * @param array $orderDetail
      */
     public function __construct(
@@ -69,9 +80,7 @@ class OrderDetail implements OrderDetailInterface
         $this->orderReference = $orderDetail['order_reference'];
         $this->description = $orderDetail['description'];
         $this->amount = $orderDetail['amount'];
-        ;
         $this->email = $orderDetail['email'];
-        ;
         $this->language = $orderDetail['language'];
         $this->country = $orderDetail['country'];
         $this->profile = $orderDetail['profile'];

@@ -16,25 +16,39 @@ class CMPayment implements CMPaymentInterface
      * @var string
      */
     private $id;
+
     /**
      * @var string
      */
     private $status;
+
     /**
-     * @var CMPaymentInterface[]
+     * @var ?string
+     */
+    private $redirectUrl;
+
+    /**
+     * @var CMPaymentUrl[]
      */
     private $urls;
 
     /**
-     * CMPayment constructor.
+     * CMPayment constructor
+     *
      * @param string $id
      * @param string $status
-     * @param CMPaymentInterface[] $urls
+     * @param ?string $redirectUrl
+     * @param CMPaymentUrl[] $urls
      */
-    public function __construct(string $id, string $status, array $urls = [])
-    {
+    public function __construct(
+        string $id,
+        string $status,
+        ?string $redirectUrl,
+        array $urls = []
+    ) {
         $this->id = $id;
         $this->status = $status;
+        $this->redirectUrl = $redirectUrl;
         $this->urls = $urls;
     }
 
@@ -52,6 +66,14 @@ class CMPayment implements CMPaymentInterface
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    /**
+     * @return ?string
+     */
+    public function getRedirectUrl(): ?string
+    {
+        return $this->redirectUrl;
     }
 
     /**
