@@ -1,6 +1,6 @@
 {
     "name": "cm/payments",
-    "description": "CM Payment module for Magento 2",
+    "description": "CM.com Payment module for Magento 2",
     "type": "magento2-module",
     "keywords": [
         "cm",
