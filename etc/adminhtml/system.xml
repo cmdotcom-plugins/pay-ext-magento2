@@ -8,7 +8,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
         <tab id="cm_payments" sortOrder="210" translate="label" class="cm_payments-tab">
-            <label>CM Payments</label>
+            <label>CM.com Payments</label>
         </tab>
 
         <section id="cm_payments_general" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
