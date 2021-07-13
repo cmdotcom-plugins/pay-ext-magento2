@@ -63,7 +63,7 @@ class PaymentRequestBuilderTest extends UnitTestCase
         );
     }
 
-    public function testCreateBancontactPaymentRequestBuilder()
+    public function testCreateBanContactPaymentRequestBuilder()
     {
         $orderMock = $this->getOrderMock(ConfigProvider::CODE_BANCONTACT);
         $orderKey = '0287A1617D93780EF28044B98438BF2F';
@@ -71,6 +71,18 @@ class PaymentRequestBuilderTest extends UnitTestCase
 
         $this->assertSame(
             MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_BANCONTACT],
+            $paymentRequest->getPayload()['method']
+        );
+    }
+
+    public function testCreateCreditCardPaymentRequestBuilder()
+    {
+        $orderMock = $this->getOrderMock(ConfigProvider::CODE_CREDIT_CARD);
+        $orderKey = '0287A1617D93780EF28044B98438BF2F';
+        $paymentRequest = $this->paymentRequestBuilder->create($orderMock, $orderKey);
+
+        $this->assertSame(
+            MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_CREDIT_CARD],
             $paymentRequest->getPayload()['method']
         );
     }
