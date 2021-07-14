@@ -8,45 +8,11 @@ declare(strict_types=1);
 
 namespace CM\Payments\Block\Adminhtml\System\Config\Fieldset;
 
-use Magento\Backend\Block\Context;
-use Magento\Backend\Model\Auth\Session;
 use Magento\Config\Block\System\Config\Form\Fieldset;
 use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Framework\View\Helper\Js;
-use Magento\Framework\View\Helper\SecureHtmlRenderer;
 
 class Info extends Fieldset
 {
-    /**
-     * @var SecureHtmlRenderer
-     */
-    private $secureRenderer;
-
-    /**
-     * @param Context $context
-     * @param Session $authSession
-     * @param Js $jsHelper
-     * @param array $data
-     * @param SecureHtmlRenderer $secureRenderer
-     */
-    public function __construct(
-        Context $context,
-        Session $authSession,
-        Js $jsHelper,
-        SecureHtmlRenderer $secureRenderer,
-        array $data = []
-    ) {
-        parent::__construct(
-            $context,
-            $authSession,
-            $jsHelper,
-            $data,
-            $secureRenderer
-        );
-
-        $this->secureRenderer = $secureRenderer;
-    }
-
     /**
      * Add custom css class
      *
@@ -72,18 +38,15 @@ class Info extends Fieldset
             ' disabled="disabled"' .
             ' class="button action-configure' .
             ' disabled' .
-            '" id="' . $htmlId . '-head" >' .
+            '" id="' . $htmlId . '-head" onclick="cmPaymentsOpenSolution.call(this, \'' .
+            $htmlId .
+            "', '" .
+            $this->getUrl(
+                'adminhtml/system_config/edit/section/cm_payments_general'
+            ) . '\'); return false;">' .
             '<span class="state-closed">' . __(
                 'Configure'
             ) . '</span></button>';
-
-        $html .= $this->secureRenderer->renderEventListenerAsTag(
-            'onclick',
-            "window.location.href='"
-            . $this->getUrl('adminhtml/system_config/edit/section/cm_payments_general')
-            . "';event.preventDefault();",
-            'button#' . $htmlId . '-head'
-        );
 
         $html .= '</div>';
         $html .= '<div class="heading"><strong>' . $element->getLegend() . '</strong>';
@@ -117,5 +80,23 @@ class Info extends Fieldset
     protected function _isCollapseState($element)
     {
         return false;
+    }
+
+    /**
+     * Return extra Js
+     *
+     * @param AbstractElement $element
+     * @return string
+     */
+    protected function _getExtraJs($element)
+    {
+        $script = "require(['jquery'], function(jQuery){
+            window.cmPaymentsOpenSolution = function (id, url) {
+                window.location.href = url;
+                event.preventDefault();
+            }
+        });";
+
+        return $this->_jsHelper->getScript($script);
     }
 }
