@@ -90,12 +90,10 @@ class Info extends Fieldset
      */
     protected function _getExtraJs($element)
     {
-        $script = "require(['jquery'], function(jQuery){
-            window.cmPaymentsOpenSolution = function (id, url) {
-                window.location.href = url;
-                event.preventDefault();
-            }
-        });";
+        $script = "window.cmPaymentsOpenSolution = function (id, url) {
+            window.location.href = url;
+            event.preventDefault();
+        }";
 
         return $this->_jsHelper->getScript($script);
     }
