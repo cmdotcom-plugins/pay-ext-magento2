@@ -71,11 +71,18 @@
         <arguments>
             <argument name="validators" xsi:type="array">
                 <item name="country" xsi:type="string">CMCountryValidator</item>
+                <item name="currency" xsi:type="string">CMCurrencyValidator</item>
             </argument>
         </arguments>
     </virtualType>
 
     <virtualType name="CMCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
         <arguments>
             <argument name="config" xsi:type="object">CMGenericConfig</argument>
         </arguments>
@@ -139,11 +146,18 @@
         <arguments>
             <argument name="validators" xsi:type="array">
                 <item name="country" xsi:type="string">CMCreditCardCountryValidator</item>
+                <item name="currency" xsi:type="string">CMCreditCardCurrencyValidator</item>
             </argument>
         </arguments>
     </virtualType>
 
     <virtualType name="CMCreditCardCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMCreditCardGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCreditCardCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
         <arguments>
             <argument name="config" xsi:type="object">CMCreditCardGenericConfig</argument>
         </arguments>
@@ -183,11 +197,18 @@
         <arguments>
             <argument name="validators" xsi:type="array">
                 <item name="country" xsi:type="string">CMIdealCountryValidator</item>
+                <item name="currency" xsi:type="string">CMCIdealCurrencyValidator</item>
             </argument>
         </arguments>
     </virtualType>
 
     <virtualType name="CMIdealCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMIdealGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCIdealCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
         <arguments>
             <argument name="config" xsi:type="object">CMIdealGenericConfig</argument>
         </arguments>
@@ -227,11 +248,18 @@
         <arguments>
             <argument name="validators" xsi:type="array">
                 <item name="country" xsi:type="string">CMPaypalCountryValidator</item>
+                <item name="currency" xsi:type="string">CMPaypalCurrencyValidator</item>
             </argument>
         </arguments>
     </virtualType>
 
     <virtualType name="CMPaypalCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMPaypalGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMPaypalCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
         <arguments>
             <argument name="config" xsi:type="object">CMPaypalGenericConfig</argument>
         </arguments>
@@ -271,11 +299,18 @@
         <arguments>
             <argument name="validators" xsi:type="array">
                 <item name="country" xsi:type="string">CMBanContactCountryValidator</item>
+                <item name="currency" xsi:type="string">CMBanContactCurrencyValidator</item>
             </argument>
         </arguments>
     </virtualType>
 
     <virtualType name="CMBanContactCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMBanContactGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMBanContactCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
         <arguments>
             <argument name="config" xsi:type="object">CMBanContactGenericConfig</argument>
         </arguments>

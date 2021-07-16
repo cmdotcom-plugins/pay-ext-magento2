@@ -115,6 +115,25 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\AllSpecificCurrencies</source_model>
+                    <config_path>payment/cm_payments_creditcard/allow_specific_currency</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specific_currency" translate="label" type="multiselect" sortOrder="52" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\Currency</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_creditcard/specific_currency</config_path>
+                    <depends>
+                        <field id="allow_specific_currency">1</field>
+                    </depends>
+                </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Minimum Order Total</label>
@@ -169,6 +188,25 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\AllSpecificCurrencies</source_model>
+                    <config_path>payment/cm_payments_ideal/allow_specific_currency</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specific_currency" translate="label" type="multiselect" sortOrder="52" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\Currency</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_ideal/specific_currency</config_path>
+                    <depends>
+                        <field id="allow_specific_currency">1</field>
+                    </depends>
+                </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Minimum Order Total</label>
@@ -221,6 +259,25 @@
                     <config_path>payment/cm_payments_paypal/specificcountry</config_path>
                     <depends>
                         <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\AllSpecificCurrencies</source_model>
+                    <config_path>payment/cm_payments_paypal/allow_specific_currency</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specific_currency" translate="label" type="multiselect" sortOrder="52" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\Currency</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_paypal/specific_currency</config_path>
+                    <depends>
+                        <field id="allow_specific_currency">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
@@ -283,6 +340,25 @@
                     <config_path>payment/cm_payments_bancontact/specificcountry</config_path>
                     <depends>
                         <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\AllSpecificCurrencies</source_model>
+                    <config_path>payment/cm_payments_paypal/allow_specific_currency</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specific_currency" translate="label" type="multiselect" sortOrder="52" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\Currency</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_paypal/specific_currency</config_path>
+                    <depends>
+                        <field id="allow_specific_currency">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
