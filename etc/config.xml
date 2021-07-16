@@ -52,7 +52,7 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
-                <group>cm_payments_creditcard</group>
+                <group>cm</group>
             </cm_payments_creditcard>
             <cm_payments_ideal>
                 <active>0</active>
@@ -75,7 +75,7 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
-                <group>cm_payments_ideal</group>
+                <group>cm</group>
             </cm_payments_ideal>
             <cm_payments_paypal>
                 <active>0</active>
@@ -98,7 +98,7 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
-                <group>cm_payments_paypal</group>
+                <group>cm</group>
             </cm_payments_paypal>
             <cm_payments_bancontact>
                 <active>0</active>
@@ -121,7 +121,7 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
-                <group>cm_payments_bancontact</group>
+                <group>cm</group>
             </cm_payments_bancontact>
             <cm_payments_general>
                 <latest_version>v1.0.0</latest_version>
