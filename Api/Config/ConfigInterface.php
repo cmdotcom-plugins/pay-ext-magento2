@@ -16,6 +16,7 @@ interface ConfigInterface
      * XML Paths of configuration settings
      */
     public const XML_PATH_GENERAL_ENABLED = 'payment/cm_payments_general/enabled';
+    public const XML_PATH_GENERAL_CURRENT_VERSION = 'payment/cm_payments_general/current_version';
     public const XML_PATH_GENERAL_MERCHANT_KEY = 'payment/cm_payments_general/merchant_key';
     public const XML_PATH_GENERAL_MERCHANT_NAME = 'payment/cm_payments_general/merchant_name';
     public const XML_PATH_GENERAL_MERCHANT_PASSWORD = 'payment/cm_payments_general/merchant_password';
@@ -33,30 +34,48 @@ interface ConfigInterface
     public function isEnabled(): ?bool;
 
     /**
+     * Get Current Version
+     *
+     * @return string|null
+     * @throws NoSuchEntityException
+     */
+    public function getCurrentVersion(): ?string;
+
+    /**
+     * Get Merchant Key
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */
     public function getMerchantKey(): ?string;
 
     /**
+     * Get Merchant Name
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */
     public function getMerchantName(): ?string;
 
     /**
+     * Get Merchant Password
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */
     public function getMerchantPassword(): ?string;
 
     /**
+     * Get Payment Profile
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */
     public function getPaymentProfile(): ?string;
 
     /**
+     * Get mode
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */

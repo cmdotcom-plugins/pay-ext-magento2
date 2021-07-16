@@ -1,0 +1,20 @@
+<?php
+/**
+ * Copyright © CM.com. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+
+use CM\Payments\Block\Adminhtml\System\Config\Button\CheckLatestVersion;
+use Magento\Framework\Escaper;
+
+/**
+ * @var CheckLatestVersion $block
+ * @var Escaper $escaper
+ */
+?>
+<div class="cmpayments-result-version-wrapper"
+     data-cmpayments-endpoint-url="<?= $escaper->escapeUrl($block->getLatestVersionCheckUrl()) ?>">
+    <span><?= $escaper->escapeHtml($block->getCurrentVersion()); ?></span>
+    <?= $block->getButtonHtml() ?>
+    <div id="cmpayments-result-version"></div>
+</div>

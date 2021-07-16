@@ -55,6 +55,18 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function getCurrentVersion(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_CURRENT_VERSION,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getMerchantKey(): ?string
     {
         return $this->getConfig(
