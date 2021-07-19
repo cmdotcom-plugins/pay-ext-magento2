@@ -12,7 +12,7 @@ use Magento\Framework\Escaper;
  * @var Escaper $escaper
  */
 ?>
-<div class="cmpayments-result-version-wrapper"
+<div class="cmpayments-result-version-wrapper" data-mage-init='{"CM_Payments/js/system/version": {}}'
      data-cmpayments-endpoint-url="<?= $escaper->escapeUrl($block->getLatestVersionCheckUrl()) ?>">
     <span><?= $escaper->escapeHtml($block->getCurrentVersion()); ?></span>
     <?= $block->getButtonHtml() ?>

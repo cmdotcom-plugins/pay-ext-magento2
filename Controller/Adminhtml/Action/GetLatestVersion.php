@@ -6,16 +6,15 @@
 
 declare(strict_types=1);
 
-namespace Mollie\Payment\Controller\Adminhtml\Action;
+namespace CM\Payments\Controller\Adminhtml\Action;
 
 use CM\Payments\Api\Config\ConfigInterface;
-use Exception;
+use CM\Payments\Api\Service\VersionServiceInterface;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json as JsonResult;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
 
 class GetLatestVersion extends Action
 {
@@ -25,70 +24,56 @@ class GetLatestVersion extends Action
     private $jsonResultFactory;
 
     /**
-     * @var JsonSerializer
-     */
-    private $jsonSerializer;
-
-    /**
      * @var ConfigInterface
      */
     private $config;
+
+    /**
+     * @var VersionServiceInterface
+     */
+    private $versionService;
 
     /**
      * GetLatestVersion constructor
      *
      * @param Context $context
      * @param JsonResultFactory $jsonResultFactory
-     * @param JsonSerializer $jsonSerializer
      * @param ConfigInterface $config
+     * @param VersionServiceInterface $versionService
      */
     public function __construct(
         Context $context,
         JsonResultFactory $jsonResultFactory,
-        JsonSerializer $jsonSerializer,
-        ConfigInterface $config
+        ConfigInterface $config,
+        VersionServiceInterface $versionService
     ) {
         parent::__construct($context);
 
         $this->jsonResultFactory = $jsonResultFactory;
-        $this->jsonSerializer = $jsonSerializer;
         $this->config = $config;
+        $this->versionService = $versionService;
     }
 
     /**
      * @return JsonResult
      * @throws NoSuchEntityException
      */
-    public function execute()
+    public function execute(): JsonResult
     {
+        /** @var JsonResult $jsonResult */
         $jsonResult = $this->jsonResultFactory->create();
-        $result = $this->getLatestVersion();
-        $current = $latest = $this->config->getCurrentVersion();
-        if ($result) {
-            $data = $this->jsonSerializer->unserialize($result);
-            $versions = array_keys($data);
-            $latest = reset($versions);
-            foreach ($data as $version => $changes) {
-                if ('v' . $version == $current) {
-                    break;
-                }
-            }
+
+        $latestVersion = $this->versionService->getLatestVersion();
+        $currentVersion = $this->config->getCurrentVersion();
+        if (!$latestVersion) {
+            $latestVersion = $currentVersion;
         }
 
         $data = [
-            'current_version' => $current,
-            'last_version' => $latest
+            'currentVersion' => $currentVersion,
+            'latestVersion' => $latestVersion
         ];
 
         return $jsonResult->setData(['result' => $data]);
-    }
-
-    private function getLatestVersion()
-    {
-        try {
-            return [];
-        } catch (Exception $exception) {
-            return '';
-        }
     }
 }

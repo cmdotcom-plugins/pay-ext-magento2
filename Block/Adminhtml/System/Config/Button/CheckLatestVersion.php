@@ -28,7 +28,6 @@ class CheckLatestVersion extends Field
      */
     private $config;
 
-
     /**
      * CheckLatestVersion constructor
      *
@@ -80,7 +79,7 @@ class CheckLatestVersion extends Field
      */
     public function getLatestVersionCheckUrl(): string
     {
-        return $this->getUrl('cmpayment/action/getLatestVersion');
+        return $this->getUrl('cmpayments/action/getLatestVersion');
     }
 
     /**
@@ -88,7 +87,7 @@ class CheckLatestVersion extends Field
      */
     public function getButtonHtml(): string
     {
-        $buttonData = ['id' => 'cm_payments_button_version', 'label' => __('Check the Latest Version')];
+        $buttonData = ['id' => 'cmpayments_button_version', 'label' => __('Check the Latest Version')];
         try {
             $button = $this->getLayout()->createBlock(
                 Button::class
