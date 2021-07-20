@@ -35,25 +35,32 @@ class CurrencyValidator extends AbstractValidator
      */
     public function validate(array $validationSubject)
     {
-        $isValid = true;
         $storeId = $validationSubject['storeId'];
 
-        if ((int)$this->config->getValue('allow_specific_currency', $storeId) === 1) {
-            $specificCurrency = $this->config->getValue('specific_currency', $storeId);
-            if (!empty($specificCurrency)) {
-                $availableCurrencies = explode(
-                    ',',
-                    $specificCurrency
-                );
-
-                if (!empty($availableCurrencies)) {
-                    if (!in_array($validationSubject['currency'], $availableCurrencies)) {
-                        $isValid = false;
-                    }
-                }
-            }
+        if ((int)$this->config->getValue('allow_specific_currency', $storeId) !== 1) {
+            return $this->createResult(true);
         }
 
-        return $this->createResult($isValid);
+        $availableCurrencies = $this->getAvailableCurrencies($storeId);
+        if (!empty($availableCurrencies) && !in_array($validationSubject['currency'], $availableCurrencies)) {
+            return $this->createResult(false);
+        }
+
+        return $this->createResult(true);
+    }
+
+    /**
+     * @param string $storeId
+     *
+     * @return string[]
+     */
+    private function getAvailableCurrencies(string $storeId): array
+    {
+        $specificCurrency = $this->config->getValue('specific_currency', $storeId);
+        if (empty($specificCurrency)) {
+            return [];
+        }
+
+        return explode(',', $specificCurrency);
     }
 }
