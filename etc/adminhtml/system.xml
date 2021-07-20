@@ -31,7 +31,7 @@
                 <label>API Details</label>
                 <field id="mode" translate="label" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Api mode (test|production</label>
+                    <label>Api mode (test|live)</label>
                     <source_model>CM\Payments\Model\AdminHtml\Source\Mode</source_model>
                     <config_path>payment/cm_payments_general/mode</config_path>
                 </field>

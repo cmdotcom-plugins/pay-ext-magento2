@@ -99,7 +99,7 @@ class ApiClient implements ApiClientInterface
      */
     private function getBaseApiUrl(): string
     {
-        $url = $this->config->getMode() === Mode::PROD ? self::API_URL : self::API_TEST_URL;
+        $url = $this->config->getMode() === Mode::LIVE ? self::API_URL : self::API_TEST_URL;
 
         return $url . $this->config->getMerchantKey() . '/';
     }
