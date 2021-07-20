@@ -1,7 +1,7 @@
 parameters:
     level: 1
-        reportUnmatchedIgnoredErrors: false
-        ignoreErrors:
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
         - '#Variable \$block might not be defined.#'
         - '#Undefined variable: \$block#'
         - '#Variable \$escaper might not be defined.#'
