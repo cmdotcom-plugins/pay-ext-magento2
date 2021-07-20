@@ -12,7 +12,9 @@ use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Api\OrderInterface;
 use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Client\Model\Response\OrderDetail;
+use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Client\Request\OrderCreateRequest;
+use CM\Payments\Client\Request\OrderGetMethodsRequest;
 use CM\Payments\Client\Request\OrderGetRequest;
 use GuzzleHttp\Exception\RequestException;
 
@@ -47,6 +49,22 @@ class Order implements OrderInterface
         );
 
         return new OrderDetail($response);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMethods(string $orderKey): array
+    {
+        $orderGetRequest = new OrderGetMethodsRequest($orderKey);
+
+        $response = $this->apiClient->execute(
+            $orderGetRequest
+        );
+
+        return array_map(function ($method) {
+            return new PaymentMethod($method);
+        }, $response);
     }
 
     /**

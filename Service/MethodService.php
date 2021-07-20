@@ -14,8 +14,8 @@ use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterface;
 use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
-use CM\Payments\Client\Api\ApiClientInterface;
-use CM\Payments\Client\Request\OrderGetMethodsRequest;
+use CM\Payments\Client\Api\OrderInterface as OrderClientInterface;
+use CM\Payments\Client\Model\Response\Method\IdealIssuer;
 use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Config\Config as ConfigService;
 use CM\Payments\Logger\CMPaymentsLogger;
@@ -34,9 +34,9 @@ class MethodService implements MethodServiceInterface
     private $configService;
 
     /**
-     * @var ApiClientInterface
+     * @var OrderClientInterface
      */
-    private $apiClient;
+    private $orderClient;
 
     /**
      * @var OrderRequestBuilderInterface
@@ -72,7 +72,7 @@ class MethodService implements MethodServiceInterface
      * MethodService constructor
      *
      * @param ConfigService $configService
-     * @param ApiClientInterface $apiClient
+     * @param OrderClientInterface $orderClient
      * @param OrderRequestBuilderInterface $orderRequestBuilder
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
      * @param PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory
@@ -82,7 +82,7 @@ class MethodService implements MethodServiceInterface
      */
     public function __construct(
         ConfigService $configService,
-        ApiClientInterface $apiClient,
+        OrderClientInterface $orderClient,
         OrderRequestBuilderInterface $orderRequestBuilder,
         OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
         PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory,
@@ -91,7 +91,7 @@ class MethodService implements MethodServiceInterface
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->configService = $configService;
-        $this->apiClient = $apiClient;
+        $this->orderClient = $orderClient;
         $this->orderRequestBuilder = $orderRequestBuilder;
         $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
         $this->paymentMethodAdditionalDataFactory = $paymentMethodAdditionalDataFactory;
@@ -160,26 +160,19 @@ class MethodService implements MethodServiceInterface
         $availableMethods = [];
         try {
             $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote, true);
-            $response = $this->apiClient->execute(
+            $response = $this->orderClient->create(
                 $orderCreateRequest
             );
 
-            if (!empty($response['order_key'])) {
-                $quote->setData('cm_order_key', $response['order_key']);
+            if (!empty($response->getOrderKey())) {
+                $quote->setData('cm_order_key', $response->getOrderKey());
 
-                /** @var OrderGetMethodsRequest $orderGetMethodsRequest */
-                $orderGetMethodsRequest = $this->orderGetMethodsRequestFactory->create(
-                    [
-                        'orderKey' => $response['order_key']
-                    ]
-                );
-
-                $availableProfileMethods = $this->apiClient->execute(
-                    $orderGetMethodsRequest
+                $availableProfileMethods = $this->orderClient->getMethods(
+                    $response->getOrderKey()
                 );
 
                 foreach ($availableProfileMethods as $availableProfileMethod) {
-                    $availableProfileMethodCode = $availableProfileMethod['method'];
+                    $availableProfileMethodCode = $availableProfileMethod->getMethod();
 
                     if (!isset(self::METHODS_MAPPING[$availableProfileMethodCode])) {
                         continue;
@@ -188,9 +181,9 @@ class MethodService implements MethodServiceInterface
                     $mappedMethodCode = self::METHODS_MAPPING[$availableProfileMethodCode];
                     if ($this->configService->isPaymentMethodActive($mappedMethodCode)) {
                         $methodData = [];
-                        if (isset($availableProfileMethod['ideal_details'])) {
+                        if (!empty($availableProfileMethod->getIdealIssuers())) {
                             $methodData['ideal_details']['issuers']
-                                = $this->prepareIdealIssuers($availableProfileMethod['ideal_details']['issuers']);
+                                = $this->prepareIdealIssuers($availableProfileMethod->getIdealIssuers());
                         }
 
                         $availableMethods[$mappedMethodCode] = $methodData;
@@ -214,14 +207,14 @@ class MethodService implements MethodServiceInterface
     }
 
     /**
-     * @param array $issuerList
+     * @param IdealIssuer[] $issuerList
      * @return array
      */
     private function prepareIdealIssuers(array $issuerList): array
     {
         $issuers = $resultIssuerList = [];
         foreach ($issuerList as $issuer) {
-            $issuers[$issuer['id']] = $issuer['name'];
+            $issuers[$issuer->getId()] = $issuer->getName();
         }
         asort($issuers, SORT_NATURAL | SORT_FLAG_CASE);
 
