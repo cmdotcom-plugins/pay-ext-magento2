@@ -4,15 +4,16 @@
  * See LICENSE.txt for license details.
  */
 
-use CM\Payments\Block\Adminhtml\System\Config\Button\CheckLatestVersion;
-use Magento\Framework\Escaper;
-
 /**
- * @var CheckLatestVersion $block
- * @var Escaper $escaper
+ * @see \CM\Payments\Block\Adminhtml\System\Config\Button\CheckLatestVersion
+ * @var \CM\Payments\Block\Adminhtml\System\Config\Button\CheckLatestVersion $block
+ *
+ * @see \Magento\Framework\Escaper
+ * @var \Magento\Framework\Escaper $escaper
  */
 ?>
-<div class="cmpayments-result-version-wrapper" data-mage-init='{"CM_Payments/js/system/version": {}}'
+<div class="cmpayments-result-version-wrapper"
+     data-mage-init='{"CM_Payments/js/system/version": {}}'
      data-cmpayments-endpoint-url="<?= $escaper->escapeUrl($block->getLatestVersionCheckUrl()) ?>">
     <span><?= $escaper->escapeHtml($block->getCurrentVersion()); ?></span>
     <?= $block->getButtonHtml() ?>
