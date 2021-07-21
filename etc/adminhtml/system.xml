@@ -28,29 +28,50 @@
 
             <group id="api_details" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="1">
+                <frontend_model>CM\Payments\Block\Adminhtml\System\Config\Fieldset\ApiDetails</frontend_model>
                 <label>API Details</label>
                 <field id="mode" translate="label" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Api mode (test|live)</label>
-                    <source_model>CM\Payments\Model\AdminHtml\Source\Mode</source_model>
+                    <source_model>CM\Payments\Model\Adminhtml\Source\Mode</source_model>
                     <config_path>payment/cm_payments_general/mode</config_path>
                 </field>
-                <field id="merchant_name" translate="label" type="text" sortOrder="10" showInDefault="1"
+                <field id="live_merchant_name" translate="label" type="text" sortOrder="10" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Merchant Name</label>
-                    <config_path>payment/cm_payments_general/merchant_name</config_path>
+                    <label>Live Merchant Name</label>
+                    <config_path>payment/cm_payments_general/live_merchant_name</config_path>
                 </field>
-                <field id="merchant_password" translate="label" type="obscure" sortOrder="20" showInDefault="1"
+                <field id="live_merchant_password" translate="label" type="obscure" sortOrder="20" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Merchant Password</label>
+                    <label>Live Merchant Password</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <config_path>payment/cm_payments_general/merchant_password</config_path>
+                    <config_path>payment/cm_payments_general/live_merchant_password</config_path>
                 </field>
-                <field id="merchant_key" translate="label" type="obscure" sortOrder="30" showInDefault="1"
+                <field id="live_merchant_key" translate="label" type="obscure" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Merchant Key</label>
+                    <label>Live Merchant Key</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <config_path>payment/cm_payments_general/merchant_key</config_path>
+                    <config_path>payment/cm_payments_general/live_merchant_key</config_path>
+                </field>
+                <depends>
+                    <field id="cm_payments_general/status/enabled">1</field>
+                </depends>
+                <field id="test_merchant_name" translate="label" type="text" sortOrder="10" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Test Merchant Name</label>
+                    <config_path>payment/cm_payments_general/test_merchant_name</config_path>
+                </field>
+                <field id="test_merchant_password" translate="label" type="obscure" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Test Merchant Password</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <config_path>payment/cm_payments_general/test_merchant_password</config_path>
+                </field>
+                <field id="test_merchant_key" translate="label" type="obscure" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Test Merchant Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <config_path>payment/cm_payments_general/test_merchant_key</config_path>
                 </field>
                 <depends>
                     <field id="cm_payments_general/status/enabled">1</field>

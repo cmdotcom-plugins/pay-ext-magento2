@@ -12,6 +12,7 @@ use CM\Payments\Api\Config\ConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use CM\Payments\Model\Adminhtml\Source\Mode;
 
 class Config implements ConfigInterface
 {
@@ -57,8 +58,15 @@ class Config implements ConfigInterface
      */
     public function getMerchantKey(): ?string
     {
+        $mode = $this->getMode();
+        $configPath = self::XML_PATH_GENERAL_TEST_MERCHANT_KEY;
+
+        if ($mode == Mode::LIVE) {
+            $configPath = self::XML_PATH_GENERAL_LIVE_MERCHANT_KEY;
+        }
+
         return $this->getConfig(
-            self::XML_PATH_GENERAL_MERCHANT_KEY,
+            $configPath,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -69,8 +77,15 @@ class Config implements ConfigInterface
      */
     public function getMerchantName(): ?string
     {
+        $mode = $this->getMode();
+        $configPath = self::XML_PATH_GENERAL_TEST_MERCHANT_NAME;
+
+        if ($mode == Mode::LIVE) {
+            $configPath = self::XML_PATH_GENERAL_LIVE_MERCHANT_NAME;
+        }
+
         return $this->getConfig(
-            self::XML_PATH_GENERAL_MERCHANT_NAME,
+            $configPath,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -81,8 +96,15 @@ class Config implements ConfigInterface
      */
     public function getMerchantPassword(): ?string
     {
+        $mode = $this->getMode();
+        $configPath = self::XML_PATH_GENERAL_TEST_MERCHANT_PASSWORD;
+
+        if ($mode == Mode::LIVE) {
+            $configPath = self::XML_PATH_GENERAL_LIVE_MERCHANT_PASSWORD;
+        }
+
         return $this->getConfig(
-            self::XML_PATH_GENERAL_MERCHANT_PASSWORD,
+            $configPath,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );

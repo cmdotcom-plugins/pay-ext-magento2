@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace CM\Payments\Model\AdminHtml\Source;
+namespace CM\Payments\Model\Adminhtml\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
