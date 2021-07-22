@@ -9,10 +9,10 @@ declare(strict_types=1);
 namespace CM\Payments\Config;
 
 use CM\Payments\Api\Config\ConfigInterface;
+use CM\Payments\Model\Adminhtml\Source\Mode;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
-use CM\Payments\Model\Adminhtml\Source\Mode;
 
 class Config implements ConfigInterface
 {
@@ -54,6 +54,26 @@ class Config implements ConfigInterface
     }
 
     /**
+     * Get config value by path
+     *
+     * @param string $path
+     * @param string $scopeType
+     * @param string|null $scopeCode
+     * @param bool $isFlag
+     * @return mixed
+     */
+    private function getConfig(
+        string $path,
+        string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        ?string $scopeCode = null,
+        bool $isFlag = false
+    ) {
+        return $isFlag ?
+            $this->scopeConfig->isSetFlag($path, $scopeType, $scopeCode) :
+            $this->scopeConfig->getValue($path, $scopeType, $scopeCode);
+    }
+
+    /**
      * @inheritDoc
      */
     public function getMerchantKey(): ?string
@@ -67,6 +87,18 @@ class Config implements ConfigInterface
 
         return $this->getConfig(
             $configPath,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMode(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_MODE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -125,18 +157,6 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function getMode(): ?string
-    {
-        return $this->getConfig(
-            self::XML_PATH_GENERAL_MODE,
-            ScopeInterface::SCOPE_STORES,
-            (string)$this->storeManager->getStore()->getId()
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function isPaymentMethodActive(string $paymentMethodCode): ?bool
     {
         return $this->getConfig(
@@ -169,25 +189,5 @@ class Config implements ConfigInterface
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
-    }
-
-    /**
-     * Get config value by path
-     *
-     * @param string $path
-     * @param string $scopeType
-     * @param string|null $scopeCode
-     * @param bool $isFlag
-     * @return mixed
-     */
-    private function getConfig(
-        string $path,
-        string $scopeType = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-        ?string $scopeCode = null,
-        bool $isFlag = false
-    ) {
-        return $isFlag ?
-            $this->scopeConfig->isSetFlag($path, $scopeType, $scopeCode) :
-            $this->scopeConfig->getValue($path, $scopeType, $scopeCode);
     }
 }

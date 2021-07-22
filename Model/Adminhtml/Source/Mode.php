@@ -21,16 +21,16 @@ class Mode implements OptionSourceInterface
     /**
      * Options array
      *
-     * @var array
+     * @var ?array
      */
-    public array $options = [];
+    public ?array $options = null;
 
     /**
      * Test/Live Key Array
      *
      * @return array
      */
-    public function toOptionArray(): array
+    public function toOptionArray()
     {
         if (!$this->options) {
             $this->options = [
