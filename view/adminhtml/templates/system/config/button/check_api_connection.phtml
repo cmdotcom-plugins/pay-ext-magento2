@@ -1,0 +1,38 @@
+<?php
+/**
+ * Copyright © CM.com. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+
+/**
+ * @see \CM\Payments\Block\Adminhtml\System\Config\Button\CheckApiConnection
+ * @var \CM\Payments\Block\Adminhtml\System\Config\Button\CheckApiConnection $block
+ *
+ * @see \Magento\Framework\Escaper
+ * @var \Magento\Framework\Escaper $escaper
+ */
+?>
+
+<div class="cmpayments-result-check-api-connection-wrapper" data-bind="scope:'сmpayments-check-api-connection'">
+    <?= $block->getButtonHtml(); ?>
+    <div class="cmpayments-check-api-connection-result"></div>
+</div>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "сmpayments-check-api-connection": {
+                    "component": "CM_Payments/js/system/action/check-api-connection",
+                    "config": {
+                        "wrapperContainerSelector": ".cmpayments-result-check-api-connection-wrapper",
+                        "modeContainerSelector": "#cm_payments_general_api_details_mode",
+                        "checkApiConnectionUrl": "<?= $escaper->escapeUrl($block->getApiConnectionCheckUrl()) ?>",
+                        "resultContainerSelector": ".cmpayments-check-api-connection-result"
+                    }
+                }
+            }
+        }
+    }
+}
+</script>
