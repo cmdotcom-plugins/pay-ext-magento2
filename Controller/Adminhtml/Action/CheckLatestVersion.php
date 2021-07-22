@@ -16,7 +16,7 @@ use Magento\Framework\Controller\Result\Json as JsonResult;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 
-class GetLatestVersion extends Action
+class CheckLatestVersion extends Action
 {
     /**
      * @var JsonResultFactory
@@ -65,9 +65,6 @@ class GetLatestVersion extends Action
 
         $latestVersion = $this->versionService->getLatestVersion();
         $currentVersion = $this->config->getCurrentVersion();
-        if (!$latestVersion) {
-            $latestVersion = $currentVersion;
-        }
 
         $data = [
             'currentVersion' => $currentVersion,

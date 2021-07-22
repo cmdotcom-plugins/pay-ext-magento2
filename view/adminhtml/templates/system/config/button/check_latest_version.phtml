@@ -12,10 +12,26 @@
  * @var \Magento\Framework\Escaper $escaper
  */
 ?>
-<div class="cmpayments-result-version-wrapper"
-     data-mage-init='{"CM_Payments/js/system/version": {}}'
-     data-cmpayments-endpoint-url="<?= $escaper->escapeUrl($block->getLatestVersionCheckUrl()) ?>">
+<div class="cmpayments-result-version-wrapper" data-bind="scope:'сmpayments-check-latest-version'">
     <span><?= $escaper->escapeHtml($block->getCurrentVersion()); ?></span>
     <?= $block->getButtonHtml() ?>
-    <div id="cmpayments-result-version"></div>
+    <div class="cmpayments-result-version"></div>
 </div>
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Magento_Ui/js/core/app": {
+            "components": {
+                "сmpayments-check-latest-version": {
+                    "component": "CM_Payments/js/system/action/check-latest-version",
+                    "config": {
+                        "wrapperContainerSelector": ".cmpayments-result-version-wrapper",
+                        "checkLatestVersionUrl": "<?= $escaper->escapeUrl($block->getCheckLatestVersionUrl()) ?>",
+                        "resultContainerSelector": ".cmpayments-result-version"
+                    }
+                }
+            }
+        }
+    }
+}
+</script>

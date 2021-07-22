@@ -77,9 +77,9 @@ class CheckLatestVersion extends Field
     /**
      * @return string
      */
-    public function getLatestVersionCheckUrl(): string
+    public function getCheckLatestVersionUrl(): string
     {
-        return $this->getUrl('cmpayments/action/getLatestVersion');
+        return $this->getUrl('cmpayments/action/checkLatestVersion');
     }
 
     /**
@@ -87,7 +87,11 @@ class CheckLatestVersion extends Field
      */
     public function getButtonHtml(): string
     {
-        $buttonData = ['id' => 'cmpayments_button_version', 'label' => __('Check the Latest Version')];
+        $buttonData = [
+            'class' => 'cmpayments_button_version',
+            'label' => __('Check the Latest Version'),
+            'data_attribute' => ['bind' => 'click: checkLatestVersion']
+        ];
         try {
             $button = $this->getLayout()->createBlock(
                 Button::class
