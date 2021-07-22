@@ -21,9 +21,9 @@ class Mode implements OptionSourceInterface
     /**
      * Options array
      *
-     * @var ?array
+     * @var array
      */
-    public ?array $options = null;
+    public $options = null;
 
     /**
      * Test/Live Key Array
