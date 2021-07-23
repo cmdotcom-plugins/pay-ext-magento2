@@ -3,9 +3,14 @@
  * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
-namespace CM\Payments\Model\AdminHtml\Source;
 
-class AllSpecificCurrencies implements \Magento\Framework\Option\ArrayInterface
+declare(strict_types=1);
+
+namespace CM\Payments\Model\Adminhtml\Source;
+
+use Magento\Framework\Data\OptionSourceInterface;
+
+class AllSpecificCurrencies implements OptionSourceInterface
 {
     /**
      * {@inheritdoc}
