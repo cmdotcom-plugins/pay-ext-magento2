@@ -12,6 +12,8 @@ define([
     $,
     alert
 ) {
+    'use strict';
+
     return Component.extend({
         wrapperContainerSelector: null,
         checkLatestVersionUrl: null,
