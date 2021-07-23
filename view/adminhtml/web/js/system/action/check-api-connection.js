@@ -12,16 +12,21 @@ define([
     $,
     alert
 ) {
+    'use strict';
+
     return Component.extend({
         wrapperContainerSelector: null,
         modeContainerSelector: null,
         checkApiConnectionUrl: null,
         resultContainerSelector: null,
 
+        /**
+         * Check API Connection function
+         */
         checkApiConnection: function () {
             let mode = $(this.modeContainerSelector).val(),
                 merchant_name = $('#cm_payments_general_api_details_' + mode + '_merchant_name').val(),
-                merchant_password =  $('#cm_payments_general_api_details_' + mode + '_merchant_password').val(),
+                merchant_password = $('#cm_payments_general_api_details_' + mode + '_merchant_password').val(),
                 merchant_key = $('#cm_payments_general_api_details_' + mode + '_merchant_key').val(),
                 container = $(this.wrapperContainerSelector),
                 result = $(this.resultContainerSelector),
