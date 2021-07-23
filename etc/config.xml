@@ -7,6 +7,14 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <cm_payments>
+            <general>
+                <current_version>v1.0.0</current_version>
+                <merchant_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <merchant_password backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <mode>test</mode>
+            </general>
+        </cm_payments>
         <payment>
             <cm_payments>
                 <active>1</active>
@@ -123,12 +131,6 @@
                 <transaction_type>redirect</transaction_type>
                 <group>cm</group>
             </cm_payments_bancontact>
-            <cm_payments_general>
-                <current_version>v1.0.0</current_version>
-                <merchant_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
-                <merchant_password backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
-                <mode>test</mode>
-            </cm_payments_general>
         </payment>
     </default>
 </config>
