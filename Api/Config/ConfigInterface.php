@@ -15,14 +15,14 @@ interface ConfigInterface
     /**
      * XML Paths of configuration settings
      */
-    public const XML_PATH_GENERAL_ENABLED = 'payment/cm_payments_general/enabled';
-    public const XML_PATH_GENERAL_TEST_MERCHANT_KEY = 'payment/cm_payments_general/test_merchant_key';
-    public const XML_PATH_GENERAL_TEST_MERCHANT_NAME = 'payment/cm_payments_general/test_merchant_name';
-    public const XML_PATH_GENERAL_TEST_MERCHANT_PASSWORD = 'payment/cm_payments_general/test_merchant_password';
-    public const XML_PATH_GENERAL_LIVE_MERCHANT_KEY = 'payment/cm_payments_general/live_merchant_key';
-    public const XML_PATH_GENERAL_LIVE_MERCHANT_NAME = 'payment/cm_payments_general/live_merchant_name';
-    public const XML_PATH_GENERAL_LIVE_MERCHANT_PASSWORD = 'payment/cm_payments_general/live_merchant_password';
-    public const XML_PATH_GENERAL_MODE = 'payment/cm_payments_general/mode';
+    public const XML_PATH_GENERAL_ENABLED = 'cm_payments/general/enabled';
+    public const XML_PATH_GENERAL_TEST_MERCHANT_NAME = 'cm_payments/general/test_merchant_name';
+    public const XML_PATH_GENERAL_TEST_MERCHANT_PASSWORD = 'cm_payments/general/test_merchant_password';
+    public const XML_PATH_GENERAL_TEST_MERCHANT_KEY = 'cm_payments/general/test_merchant_key';
+    public const XML_PATH_GENERAL_LIVE_MERCHANT_NAME = 'cm_payments/general/live_merchant_name';
+    public const XML_PATH_GENERAL_LIVE_MERCHANT_PASSWORD = 'cm_payments/general/live_merchant_password';
+    public const XML_PATH_GENERAL_LIVE_MERCHANT_KEY = 'cm_payments/general/live_merchant_key';
+    public const XML_PATH_GENERAL_MODE = 'cm_payments/general/mode';
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
