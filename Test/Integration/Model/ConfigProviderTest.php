@@ -12,7 +12,7 @@ use CM\Payments\Test\Integration\IntegrationTestCase;
 class ConfigProviderTest extends IntegrationTestCase
 {
     /**
-     * @magentoConfigFixture default_store payment/cm_payments_general/enabled 1
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
      * @magentoConfigFixture default_store payment/cm_payments/active 1
      * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 1
      * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1

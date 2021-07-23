@@ -39,7 +39,7 @@ class MethodServiceTest extends IntegrationTestCase
      * @magentoConfigFixture default_store payment/checkmo/active 0
      * @magentoConfigFixture default_store payment/fake/active 0
      * @magentoConfigFixture default_store payment/fake_vault/active 0
-     * @magentoConfigFixture default_store payment/cm_payments_general/enabled 1
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
      * @magentoConfigFixture default_store payment/cm_payments/active 0
      * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 0
      * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
@@ -85,7 +85,7 @@ class MethodServiceTest extends IntegrationTestCase
      * @magentoConfigFixture default_store payment/checkmo/active 0
      * @magentoConfigFixture default_store payment/fake/active 0
      * @magentoConfigFixture default_store payment/fake_vault/active 0
-     * @magentoConfigFixture default_store payment/cm_payments_general/enabled 1
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
      * @magentoConfigFixture default_store payment/cm_payments/active 1
      * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 1
      * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1

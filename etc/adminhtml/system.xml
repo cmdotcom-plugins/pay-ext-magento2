@@ -22,7 +22,7 @@
                        showInWebsite="1" showInStore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>payment/cm_payments_general/enabled</config_path>
+                    <config_path>cm_payments/general/enabled</config_path>
                 </field>
             </group>
 
@@ -33,24 +33,24 @@
                        showInWebsite="1" showInStore="1">
                     <label>Api mode (test|production</label>
                     <source_model>CM\Payments\Model\AdminHtml\Source\Mode</source_model>
-                    <config_path>payment/cm_payments_general/mode</config_path>
+                    <config_path>cm_payments/general/mode</config_path>
                 </field>
                 <field id="merchant_name" translate="label" type="text" sortOrder="10" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Merchant Name</label>
-                    <config_path>payment/cm_payments_general/merchant_name</config_path>
+                    <config_path>cm_payments/general/merchant_name</config_path>
                 </field>
                 <field id="merchant_password" translate="label" type="obscure" sortOrder="20" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Merchant Password</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <config_path>payment/cm_payments_general/merchant_password</config_path>
+                    <config_path>cm_payments/general/merchant_password</config_path>
                 </field>
                 <field id="merchant_key" translate="label" type="obscure" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Merchant Key</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <config_path>payment/cm_payments_general/merchant_key</config_path>
+                    <config_path>cm_payments/general/merchant_key</config_path>
                 </field>
                 <depends>
                     <field id="cm_payments_general/status/enabled">1</field>
