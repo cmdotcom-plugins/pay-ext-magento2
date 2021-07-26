@@ -75,7 +75,7 @@
 
             <group id="cm_payments" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="1">
-                <label>CM.com Payments Menu Redirect</label>
+                <label>Menu Redirect by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enabled</label>
@@ -162,9 +162,90 @@
                 </field>
             </group>
 
-            <group id="cm_payments_creditcard" translate="label" type="text" sortOrder="20" showInDefault="1"
+            <group id="cm_payments_ideal" translate="label" type="text" sortOrder="20" showInDefault="1"
                    showInWebsite="1" showInStore="1">
-                <label>Credit Card</label>
+                <label>iDeal by CM.com</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/cm_payments_ideal/active</config_path>
+                </field>
+                <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Title</label>
+                    <config_path>payment/cm_payments_ideal/title</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Countries</label>
+                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
+                    <config_path>payment/cm_payments_ideal/allowspecific</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specificcountry" translate="label" type="multiselect" sortOrder="50" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Countries</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_ideal/specificcountry</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Applicable Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\AllSpecificCurrencies</source_model>
+                    <config_path>payment/cm_payments_ideal/allow_specific_currency</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="specific_currency" translate="label" type="multiselect" sortOrder="52" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Payment from Specific Currencies</label>
+                    <source_model>CM\Payments\Model\AdminHtml\Source\Currency</source_model>
+                    <can_be_empty>1</can_be_empty>
+                    <config_path>payment/cm_payments_ideal/specific_currency</config_path>
+                    <depends>
+                        <field id="allow_specific_currency">1</field>
+                    </depends>
+                </field>
+                <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Minimum Order Total</label>
+                    <config_path>payment/cm_payments_ideal/min_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="max_order_total" translate="label" type="text" sortOrder="70" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Maximum Order Total</label>
+                    <config_path>payment/cm_payments_ideal/max_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Sort Order</label>
+                    <config_path>payment/cm_payments_ideal/sort_order</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="cm_payments_creditcard" translate="label" type="text" sortOrder="30" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
+                <label>Credit Card by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enabled</label>
@@ -251,90 +332,9 @@
                 </field>
             </group>
 
-            <group id="cm_payments_ideal" translate="label" type="text" sortOrder="30" showInDefault="1"
-                   showInWebsite="1" showInStore="1">
-                <label>iDeal</label>
-                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
-                    <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>payment/cm_payments_ideal/active</config_path>
-                </field>
-                <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
-                    <label>Title</label>
-                    <config_path>payment/cm_payments_ideal/title</config_path>
-                    <depends>
-                        <field id="active">1</field>
-                    </depends>
-                </field>
-                <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Countries</label>
-                    <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
-                    <config_path>payment/cm_payments_ideal/allowspecific</config_path>
-                    <depends>
-                        <field id="active">1</field>
-                    </depends>
-                </field>
-                <field id="specificcountry" translate="label" type="multiselect" sortOrder="50" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Specific Countries</label>
-                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
-                    <can_be_empty>1</can_be_empty>
-                    <config_path>payment/cm_payments_ideal/specificcountry</config_path>
-                    <depends>
-                        <field id="active">1</field>
-                    </depends>
-                </field>
-                <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Currencies</label>
-                    <source_model>CM\Payments\Model\AdminHtml\Source\AllSpecificCurrencies</source_model>
-                    <config_path>payment/cm_payments_ideal/allow_specific_currency</config_path>
-                    <depends>
-                        <field id="active">1</field>
-                    </depends>
-                </field>
-                <field id="specific_currency" translate="label" type="multiselect" sortOrder="52" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Specific Currencies</label>
-                    <source_model>CM\Payments\Model\AdminHtml\Source\Currency</source_model>
-                    <can_be_empty>1</can_be_empty>
-                    <config_path>payment/cm_payments_ideal/specific_currency</config_path>
-                    <depends>
-                        <field id="allow_specific_currency">1</field>
-                    </depends>
-                </field>
-                <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Minimum Order Total</label>
-                    <config_path>payment/cm_payments_ideal/min_order_total</config_path>
-                    <depends>
-                        <field id="active">1</field>
-                    </depends>
-                </field>
-                <field id="max_order_total" translate="label" type="text" sortOrder="70" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Maximum Order Total</label>
-                    <config_path>payment/cm_payments_ideal/max_order_total</config_path>
-                    <depends>
-                        <field id="active">1</field>
-                    </depends>
-                </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
-                    <label>Sort Order</label>
-                    <config_path>payment/cm_payments_ideal/sort_order</config_path>
-                    <depends>
-                        <field id="active">1</field>
-                    </depends>
-                </field>
-            </group>
-
             <group id="cm_payments_paypal" translate="label" type="text" sortOrder="40" showInDefault="1"
                    showInWebsite="1" showInStore="1">
-                <label>PayPal</label>
+                <label>PayPal by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enabled</label>
@@ -415,7 +415,7 @@
 
             <group id="cm_payments_bancontact" translate="label" type="text" sortOrder="50" showInDefault="1"
                    showInWebsite="1" showInStore="1">
-                <label>BanContact</label>
+                <label>Bancontact by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enabled</label>
