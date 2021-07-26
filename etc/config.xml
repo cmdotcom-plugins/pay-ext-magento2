@@ -9,6 +9,7 @@
     <default>
         <cm_payments>
             <general>
+                <current_version>v1.0.0</current_version>
                 <merchant_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <merchant_password backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <mode>test</mode>
