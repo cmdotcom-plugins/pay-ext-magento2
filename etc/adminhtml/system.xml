@@ -71,6 +71,19 @@
                 </field>
             </group>
 
+            <group id="cm_payments" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+            <label>CM.com Payments Menu Redirect</label>
+                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Sort Order</label>
+                    <config_path>payment/cm_payments/sort_order</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+            </group>
+
             <group id="cm_payments_creditcard" translate="label" type="text" sortOrder="20" showInDefault="1"
                    showInWebsite="1" showInStore="1">
                 <label>Credit Card</label>
@@ -150,6 +163,14 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Sort Order</label>
+                    <config_path>payment/cm_payments_creditcard/sort_order</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
             </group>
 
             <group id="cm_payments_ideal" translate="label" type="text" sortOrder="30" showInDefault="1"
@@ -223,6 +244,14 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Sort Order</label>
+                    <config_path>payment/cm_payments_ideal/sort_order</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
             </group>
 
             <group id="cm_payments_paypal" translate="label" type="text" sortOrder="40" showInDefault="1"
@@ -292,6 +321,14 @@
                        showInWebsite="1" showInStore="1">
                     <label>Maximum Order Total</label>
                     <config_path>payment/cm_payments_paypal/max_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Sort Order</label>
+                    <config_path>payment/cm_payments_paypal/sort_order</config_path>
                     <depends>
                         <field id="active">1</field>
                     </depends>
@@ -373,6 +410,14 @@
                        showInWebsite="1" showInStore="1">
                     <label>Maximum Order Total</label>
                     <config_path>payment/cm_payments_bancontact/max_order_total</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Sort Order</label>
+                    <config_path>payment/cm_payments_bancontact/sort_order</config_path>
                     <depends>
                         <field id="active">1</field>
                     </depends>
