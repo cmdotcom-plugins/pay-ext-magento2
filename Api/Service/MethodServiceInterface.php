@@ -46,12 +46,6 @@ interface MethodServiceInterface
 
     /**
      * @param CartInterface $quote
-     * @return array
-     */
-    public function getAvailablePaymentMethods(CartInterface $quote): array;
-
-    /**
-     * @param CartInterface $quote
      * @param PaymentDetailsInterface $paymentDetails
      * @return PaymentDetailsInterface
      */
