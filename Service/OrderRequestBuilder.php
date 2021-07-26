@@ -14,7 +14,6 @@ use CM\Payments\Client\Model\OrderCreate as ClientOrder;
 use CM\Payments\Client\Model\OrderCreateFactory as ClientOrderCreateFactory;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Client\Request\OrderCreateRequestFactory;
-use CM\Payments\Model\ConfigProvider;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Math\Random as MathRandom;
 use Magento\Framework\UrlInterface;
@@ -85,13 +84,7 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
     public function create(OrderInterface $order): OrderCreateRequest
     {
         $paymentMethod = $order->getPayment()->getMethod();
-        $paymentProfile = $this->config->getPaymentProfile();
-
-        if ($paymentMethod == ConfigProvider::CODE_CREDIT_CARD) {
-            $paymentProfile = $this->config->getCreditCardPaymentProfile() ?? $this->config->getPaymentProfile();
-        } elseif ($paymentMethod == ConfigProvider::CODE_BANCONTACT) {
-            $paymentProfile = $this->config->getBanContactPaymentProfile() ?? $this->config->getPaymentProfile();
-        }
+        $paymentProfile = $this->config->getPaymentProfile($paymentMethod);
 
         /** @var ClientOrder $clientOrder */
         $clientOrder = $this->clientOrderCreateFactory->create([

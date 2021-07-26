@@ -29,6 +29,7 @@ class ConfigProvider implements ConfigProviderInterface
     public const CODE_IDEAL = 'cm_payments_ideal';
     public const CODE_PAYPAL = 'cm_payments_paypal';
     public const CODE_BANCONTACT = 'cm_payments_bancontact';
+    public const CODE_CM_PAYMENTS_MENU = 'cm_payments';
 
     /**
      * @var AssetRepository

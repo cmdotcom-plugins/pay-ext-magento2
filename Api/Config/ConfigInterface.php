@@ -23,6 +23,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
+    public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
     /**
      * Checks that extension is enabled
@@ -51,10 +52,11 @@ interface ConfigInterface
     public function getMerchantPassword(): ?string;
 
     /**
+     * @param string $paymentMethod
      * @return string|null
      * @throws NoSuchEntityException
      */
-    public function getPaymentProfile(): ?string;
+    public function getPaymentProfile(string $paymentMethod): ?string;
 
     /**
      * @return string|null
@@ -86,4 +88,12 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getBanContactPaymentProfile(): ?string;
+
+    /**
+     * Get Payment Profile for CM Payments Menu Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getCmPaymentsMenuPaymentProfile(): ?string;
 }
