@@ -21,7 +21,7 @@
                 <model>CMPaymentsFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
-                <title>CM.com Payments</title>
+                <title>Menu Redirect by CM.com</title>
                 <currency>EUR</currency>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -39,12 +39,12 @@
                 <transaction_type>redirect</transaction_type>
                 <group>cm</group>
             </cm_payments>
-            <cm_payments_creditcard>
+            <cm_payments_ideal>
                 <active>0</active>
-                <model>CMPaymentsCreditCardFacade</model>
+                <model>CMPaymentsIdealFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
-                <title>CM Payments (Credit Card)</title>
+                <title>iDEAL by CM.com</title>
                 <currency>EUR</currency>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -61,13 +61,13 @@
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
                 <group>cm</group>
-            </cm_payments_creditcard>
-            <cm_payments_ideal>
+            </cm_payments_ideal>
+            <cm_payments_creditcard>
                 <active>0</active>
-                <model>CMPaymentsIdealFacade</model>
+                <model>CMPaymentsCreditCardFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
-                <title>CM Payments (iDeal)</title>
+                <title>Credit Card by CM.com</title>
                 <currency>EUR</currency>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -84,13 +84,13 @@
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
                 <group>cm</group>
-            </cm_payments_ideal>
+            </cm_payments_creditcard>
             <cm_payments_paypal>
                 <active>0</active>
                 <model>CMPaymentsPaypalFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
-                <title>CM Payments (PayPal)</title>
+                <title>PayPal by CM.com</title>
                 <currency>EUR</currency>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
@@ -113,7 +113,7 @@
                 <model>CMPaymentsBancontactFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
-                <title>CM Payments (BanContact)</title>
+                <title>Bancontact by CM.com</title>
                 <currency>EUR</currency>
                 <can_initialize>1</can_initialize>
                 <can_use_checkout>1</can_use_checkout>
