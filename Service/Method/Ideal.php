@@ -14,8 +14,14 @@ use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
 
 class Ideal implements ExtendInterface
 {
-    private PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory;
-    private IssuerInterfaceFactory $issuerFactory;
+    /**
+     * @var PaymentMethodAdditionalDataInterfaceFactory
+     */
+    private $paymentMethodAdditionalDataFactory;
+    /**
+     * @var IssuerInterfaceFactory
+     */
+    private $issuerFactory;
 
     /**
      * Ideal constructor.
