@@ -16,6 +16,7 @@ interface ConfigInterface
      * XML Paths of configuration settings
      */
     public const XML_PATH_GENERAL_ENABLED = 'cm_payments/general/enabled';
+    public const XML_PATH_GENERAL_CURRENT_VERSION = 'cm_payments/general/current_version';
     public const XML_PATH_GENERAL_TEST_MERCHANT_NAME = 'cm_payments/general/test_merchant_name';
     public const XML_PATH_GENERAL_TEST_MERCHANT_PASSWORD = 'cm_payments/general/test_merchant_password';
     public const XML_PATH_GENERAL_TEST_MERCHANT_KEY = 'cm_payments/general/test_merchant_key';
@@ -26,6 +27,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
+    public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
     /**
      * Checks that extension is enabled
@@ -36,30 +38,47 @@ interface ConfigInterface
     public function isEnabled(): ?bool;
 
     /**
+     * Get Current Version
+     *
+     * @return string|null
+     * @throws NoSuchEntityException
+     */
+    public function getCurrentVersion(): ?string;
+
+    /**
+     * Get Merchant Key
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */
     public function getMerchantKey(): ?string;
 
     /**
+     * Get Merchant Name
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */
     public function getMerchantName(): ?string;
 
     /**
+     * Get Merchant Password
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */
     public function getMerchantPassword(): ?string;
 
     /**
+     * @param string $paymentMethod
      * @return string|null
      * @throws NoSuchEntityException
      */
-    public function getPaymentProfile(): ?string;
+    public function getPaymentProfile(string $paymentMethod): ?string;
 
     /**
+     * Get mode
+     *
      * @return string|null
      * @throws NoSuchEntityException
      */
@@ -89,4 +108,12 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getBanContactPaymentProfile(): ?string;
+
+    /**
+     * Get Payment Profile for CM Payments Menu Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getCmPaymentsMenuPaymentProfile(): ?string;
 }

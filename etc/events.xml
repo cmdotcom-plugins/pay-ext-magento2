@@ -4,8 +4,10 @@
   ~ See LICENSE.txt for license details.
   -->
 
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
     <event name="payment_method_assign_data_cm_payments_ideal">
-        <observer name="cm_payments_ideal_gateway_data_assign" instance="CM\Payments\Observer\AdditionalDataAssignObserver" />
+        <observer name="cm_payments_ideal_gateway_data_assign"
+                  instance="CM\Payments\Observer\AdditionalDataAssignObserver" />
     </event>
 </config>
