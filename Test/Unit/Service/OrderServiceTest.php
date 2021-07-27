@@ -24,6 +24,7 @@ use CM\Payments\Model\Domain\CMOrder;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Exception;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -71,6 +72,11 @@ class OrderServiceTest extends UnitTestCase
      * @var CMPaymentsLogger|\PHPUnit\Framework\MockObject\MockObject
      */
     private $cmPaymentsLoggerMock;
+
+    /**
+     * @var ManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $eventManagerMock;
 
     public function testCreateOrder()
     {
@@ -144,6 +150,10 @@ class OrderServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->eventManagerMock = $this->getMockBuilder(ManagerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->orderRepositoryMock->method('get')->willReturn($this->getOrderMock());
         $this->orderRepositoryMock->method('save');
         $this->cmOrderRepositoryMock->method('save');
@@ -176,6 +186,7 @@ class OrderServiceTest extends UnitTestCase
             $this->cmOrderRepositoryMock,
             $this->orderRequestBuilderMock,
             $this->cmOrderInterfaceFactoryMock,
+            $this->eventManagerMock,
             $this->cmPaymentsLoggerMock
         );
     }

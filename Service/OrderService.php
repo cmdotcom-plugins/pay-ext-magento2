@@ -18,6 +18,7 @@ use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Api\OrderInterface as CMOrderClientInterface;
 use CM\Payments\Exception\EmptyOrderKeyException;
 use CM\Payments\Logger\CMPaymentsLogger;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
 class OrderService implements OrderServiceInterface
@@ -58,6 +59,11 @@ class OrderService implements OrderServiceInterface
     private $logger;
 
     /**
+     * @var ManagerInterface
+     */
+    private $eventManager;
+
+    /**
      * OrderService constructor.
      *
      * @param OrderRepositoryInterface $orderRepository
@@ -66,6 +72,7 @@ class OrderService implements OrderServiceInterface
      * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param OrderRequestBuilderInterface $orderRequestBuilder
      * @param CMOrderInterfaceFactory $cmOrderInterfaceFactory
+     * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
@@ -75,6 +82,7 @@ class OrderService implements OrderServiceInterface
         CMOrderRepositoryInterface $cmOrderRepository,
         OrderRequestBuilderInterface $orderRequestBuilder,
         CMOrderInterfaceFactory $cmOrderInterfaceFactory,
+        ManagerInterface $eventManager,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->orderRepository = $orderRepository;
@@ -83,6 +91,7 @@ class OrderService implements OrderServiceInterface
         $this->cmOrderRepository = $cmOrderRepository;
         $this->orderRequestBuilder = $orderRequestBuilder;
         $this->cmOrderInterfaceFactory = $cmOrderInterfaceFactory;
+        $this->eventManager = $eventManager;
         $this->logger = $cmPaymentsLogger;
     }
 
@@ -101,6 +110,11 @@ class OrderService implements OrderServiceInterface
                 'requestPayload' => $orderCreateRequest->getPayload()
             ]
         );
+
+        $this->eventManager->dispatch('cmpayments_before_order_create', [
+            'order' => $order,
+            'orderCreateRequest' => $orderCreateRequest,
+        ]);
 
         $orderCreateResponse = $this->orderClient->create(
             $orderCreateRequest
@@ -130,7 +144,7 @@ class OrderService implements OrderServiceInterface
         $order->getPayment()->setAdditionalInformation($additionalInformation);
         $this->orderRepository->save($order);
 
-        return $this->cmOrderInterfaceFactory->create(
+        $cmOrder = $this->cmOrderInterfaceFactory->create(
             [
                 'url' => $orderCreateResponse->getUrl(),
                 'orderReference' => $orderCreateRequest->getPayload()['order_reference'],
@@ -138,5 +152,12 @@ class OrderService implements OrderServiceInterface
                 'expiresOn' => $orderCreateResponse->getExpiresOn()
             ]
         );
+
+        $this->eventManager->dispatch('cmpayments_after_order_create', [
+            'order' => $order,
+            'cmOrder' => $cmOrder,
+        ]);
+
+        return $cmOrder;
     }
 }

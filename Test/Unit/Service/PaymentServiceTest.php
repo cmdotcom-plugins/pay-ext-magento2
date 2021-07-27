@@ -26,6 +26,7 @@ use CM\Payments\Model\ConfigProvider;
 use CM\Payments\Model\Data\Payment as CMPaymentData;
 use CM\Payments\Service\PaymentService;
 use CM\Payments\Test\Unit\UnitTestCase;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -78,6 +79,11 @@ class PaymentServiceTest extends UnitTestCase
      * @var CMPaymentsLogger|\PHPUnit\Framework\MockObject\MockObject
      */
     private $cmPaymentsLoggerMock;
+
+    /**
+     * @var ManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $eventManagerMock;
 
     public function testCreateIdealPayment()
     {
@@ -181,6 +187,10 @@ class PaymentServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->eventManagerMock = $this->getMockBuilder(ManagerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->orderRepositoryMock->method('get')->willReturn($this->getOrderMock());
         $this->orderRepositoryMock->method('save');
         $this->cmOrderRepositoryMock->method('save');
@@ -205,6 +215,7 @@ class PaymentServiceTest extends UnitTestCase
             $this->cmPaymentFactoryMock,
             $this->cmPaymentRepositoryMock,
             $this->cmOrderRepositoryMock,
+            $this->eventManagerMock,
             $this->cmPaymentsLoggerMock
         );
     }
