@@ -61,7 +61,7 @@ class ApiTestService implements ApiTestServiceInterface
         ];
 
         if (!empty($this->apiConnectionData)) {
-            $errors = $this->validateData($this->apiConnectionData);
+            $errors = $this->validateData();
             $resultData['errors'] = $errors;
 
             if (empty($errors)) {
