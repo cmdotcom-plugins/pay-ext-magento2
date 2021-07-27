@@ -65,13 +65,15 @@ define([
                 function (response) {
                     quote.setTotals(response.totals);
                     let methods = methodConverter(response['payment_methods']);
-                    _.each(methods, function (method) {
-                        if (typeof response['extension_attributes'][method.method] !== 'undefined') {
-                            _.each(response['extension_attributes'][method.method], function (data, property) {
-                                window.checkoutConfig.payment[method.method][property] = data;
-                            });
-                        }
-                    });
+                    if (typeof response['extension_attributes'] !== 'undefined') {
+                        _.each(methods, function (method) {
+                            if (typeof response['extension_attributes'][method.method] !== 'undefined') {
+                                _.each(response['extension_attributes'][method.method], function (data, property) {
+                                    window.checkoutConfig.payment[method.method][property] = data;
+                                });
+                            }
+                        });
+                    }
 
                     paymentService.setPaymentMethods(methods);
                     fullScreenLoader.stopLoader();

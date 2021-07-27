@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client;
 
-use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Config\ConfigInterface;
+use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Api\RequestInterface;
-use CM\Payments\Model\AdminHtml\Source\Mode;
+use CM\Payments\Model\Adminhtml\Source\Mode;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -50,8 +50,7 @@ class ApiClient implements ApiClientInterface
      *
      * @param RequestInterface $request
      * @return array
-     *
-     * @throws GuzzleException
+     * @throws GuzzleException|NoSuchEntityException
      */
     public function execute(RequestInterface $request): array
     {
@@ -72,6 +71,7 @@ class ApiClient implements ApiClientInterface
 
     /**
      * @return HttpClient
+     * @throws NoSuchEntityException
      */
     private function getClient(): HttpClient
     {
@@ -99,7 +99,7 @@ class ApiClient implements ApiClientInterface
      */
     private function getBaseApiUrl(): string
     {
-        $url = $this->config->getMode() === Mode::PROD ? self::API_URL : self::API_TEST_URL;
+        $url = $this->config->getMode() === Mode::LIVE ? self::API_URL : self::API_TEST_URL;
 
         return $url . $this->config->getMerchantKey() . '/';
     }
