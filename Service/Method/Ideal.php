@@ -6,13 +6,13 @@ use CM\Payments\Api\Data\IssuerInterface;
 use CM\Payments\Api\Data\IssuerInterfaceFactory;
 use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterface;
 use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
-use CM\Payments\Api\Service\Method\ExtendInterface;
+use CM\Payments\Api\Service\Method\ExtendMethodInterface;
 use CM\Payments\Client\Model\Response\Method\IdealIssuer;
 use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Model\ConfigProvider;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
 
-class Ideal implements ExtendInterface
+class Ideal implements ExtendMethodInterface
 {
     /**
      * @var PaymentMethodAdditionalDataInterfaceFactory

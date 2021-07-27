@@ -5,7 +5,7 @@ namespace CM\Payments\Api\Service\Method;
 use CM\Payments\Client\Model\Response\PaymentMethod;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
 
-interface ExtendInterface
+interface ExtendMethodInterface
 {
     /**
      * Extend CM.com payment methods with additional data

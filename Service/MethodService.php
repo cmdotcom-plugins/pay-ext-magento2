@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace CM\Payments\Service;
 
 use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
-use CM\Payments\Api\Service\Method\ExtendInterface;
+use CM\Payments\Api\Service\Method\ExtendMethodInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Client\Api\OrderInterface as OrderClientInterface;
@@ -55,7 +55,7 @@ class MethodService implements MethodServiceInterface
     private $paymentMethodAdditionalDataFactory;
 
     /**
-     * @var ExtendInterface[]
+     * @var ExtendMethodInterface[]
      */
     private $methods;
 
@@ -77,7 +77,7 @@ class MethodService implements MethodServiceInterface
      * @param OrderRequestBuilderInterface $orderRequestBuilder
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
      * @param PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory
-     * @param ExtendInterface[] $methods
+     * @param ExtendMethodInterface[] $methods
      * @param PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
