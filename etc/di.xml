@@ -36,6 +36,14 @@
         </arguments>
     </type>
 
+    <type name="CM\Payments\Service\MethodService">
+        <arguments>
+            <argument name="methods" xsi:type="array">
+                <item name="ideal" xsi:type="object">CM\Payments\Service\Method\Ideal</item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- BEGIN CM Payments Method -->
     <virtualType name="CMPaymentsFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>

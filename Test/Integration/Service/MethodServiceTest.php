@@ -11,9 +11,9 @@ namespace CM\Payments\Test\Integration\Service;
 use CM\Payments\Api\Data\IssuerInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Client\Api\ApiClientInterface;
-use CM\Payments\Client\Model\CMPaymentFactory;
 use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Client\Order;
+use CM\Payments\Service\Method\Ideal;
 use CM\Payments\Service\MethodService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use Magento\Checkout\Model\PaymentDetails;
@@ -47,7 +47,7 @@ class MethodServiceTest extends IntegrationTestCase
      * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
      * @magentoDataFixture Magento/Sales/_files/quote.php
      */
-    public function testAddMethodAdditionalData()
+    public function testAddMethodAdditionalIdealData()
     {
         $magentoQuote = $this->loadQuoteById('test01');
 
@@ -60,11 +60,8 @@ class MethodServiceTest extends IntegrationTestCase
             ],
             $this->getMethodResponse()
         );
-        $paymentMethodManagement = $this->objectManager->create(PaymentMethodManagementInterface::class);
 
-        $paymentDetails = $this->objectManager->create(PaymentDetails::class);
-        $paymentDetails->setPaymentMethods($paymentMethodManagement->getList($magentoQuote->getId()));
-
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
         $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
 
         $methods = $actualPaymentDetails->getPaymentMethods();
@@ -78,6 +75,42 @@ class MethodServiceTest extends IntegrationTestCase
 
         $this->assertEquals(2, count($methods));
         $this->assertEquals('cm_payments_ideal', $idealMethod->getCode());
+        $this->assertEquals('cm_payments_bancontact', $banContactMethod->getCode());
+    }
+
+    /**
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
+     * @magentoConfigFixture default_store payment/cm_payments/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_paypal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     */
+    public function testBanContactPaymentMethod()
+    {
+        $magentoQuote = $this->loadQuoteById('test01');
+
+        $this->clientMock->expects($this->exactly(2))->method('execute')->willReturnOnConsecutiveCalls(
+            [
+                'order_key' => '2287A1617D93780EF28044B98438BF2F',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ],
+            $this->getMethodResponse()
+        );
+
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+
+        $methods = $actualPaymentDetails->getPaymentMethods();
+
+        $banContactMethod = $methods[1];
+        $this->assertEquals(2, count($methods));
         $this->assertEquals('cm_payments_bancontact', $banContactMethod->getCode());
     }
 
@@ -107,14 +140,22 @@ class MethodServiceTest extends IntegrationTestCase
             $this->getMethodResponse()
         );
 
-        $actualPaymentMethods = $this->methodService->getAvailablePaymentMethods($magentoQuote);
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
 
-        $this->assertArrayHasKey('cm_payments_ideal', $actualPaymentMethods);
+        $this->assertEquals(3, count($actualPaymentMethods));
     }
 
     /**
      * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store payment/cm_payments/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 0
      * @magentoConfigFixture default_store payment/cm_payments_ideal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_paypal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 0
      * @magentoDataFixture Magento/Sales/_files/quote.php
      */
     public function testInactiveMagentoIdealSetting()
@@ -131,14 +172,21 @@ class MethodServiceTest extends IntegrationTestCase
             $this->getMethodResponse()
         );
 
-        $actualPaymentMethods = $this->methodService->getAvailablePaymentMethods($magentoQuote);
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
 
-        $this->assertArrayNotHasKey('cm_payments_ideal', $actualPaymentMethods);
+        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+
+        $this->assertEquals(0, count($actualPaymentMethods));
     }
 
     /**
      * @magentoConfigFixture default_store payment/checkmo/active 0
-     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store payment/cm_payments/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
      * @magentoDataFixture Magento/Sales/_files/quote.php
      */
     public function testInactiveCMIdealSetting()
@@ -152,31 +200,79 @@ class MethodServiceTest extends IntegrationTestCase
                 'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
                 'expires_on' => '2021-07-12T08:10:57Z'
             ],
-            [
-                [
-                    'method' => 'BANCONTACT',
-                ]
-            ]
+            $this->getMethodResponse()
         );
 
-        $actualPaymentMethods = $this->methodService->getAvailablePaymentMethods($magentoQuote);
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
 
-        $this->assertArrayNotHasKey('cm_payments_ideal', $actualPaymentMethods);
+        $method = $actualPaymentMethods[0];
+        $this->assertEquals(1, count($actualPaymentMethods));
+        $this->assertNotEquals('cm_payments_ideal', $method->getCode());
     }
 
     /**
-     * @param string $orderId
-     * @return CartInterface
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store payment/cm_payments/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 0
+     * @magentoDataFixture Magento/Sales/_files/quote.php
      */
-    private function loadQuoteById($orderId)
+    public function testCmPaymentsRedirectPaymentMethod()
     {
-        $quoteRepository = $this->objectManager->get(CartRepositoryInterface::class);
-        $searchCriteriaBuilder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $searchCriteriaBuilder->addFilter('reserved_order_id', $orderId, 'eq')->create();
+        $magentoQuote = $this->loadQuoteById('test01');
 
-        $orderList = $quoteRepository->getList($searchCriteria)->getItems();
+        $this->clientMock->expects($this->exactly(2))->method('execute')->willReturnOnConsecutiveCalls(
+            [
+                'order_key' => '2287A1617D93780EF28044B98438BF2F',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ],
+            $this->getMethodResponse()
+        );
 
-        return array_shift($orderList);
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+
+        $method = $actualPaymentMethods[0];
+        $this->assertEquals(1, count($actualPaymentMethods));
+        $this->assertEquals('cm_payments', $method->getCode());
+    }
+
+    /**
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store payment/cm_payments/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 0
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     */
+    public function testEmptyCmOrderKey()
+    {
+        $magentoQuote = $this->loadQuoteById('test01');
+
+        $this->clientMock->expects($this->exactly(1))->method('execute')->willReturn(
+            [
+                'order_key' => '',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ]
+        );
+
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+
+        $method = $actualPaymentMethods[0];
+        $this->assertEquals(1, count($actualPaymentMethods));
+        $this->assertEquals('cm_payments', $method->getCode());
     }
 
     protected function setUp(): void
@@ -195,6 +291,9 @@ class MethodServiceTest extends IntegrationTestCase
             MethodService::class,
             [
                 'orderClient' => $orderClient,
+                'methods' => [
+                    $this->objectManager->create(Ideal::class)
+                ],
             ]
         );
     }
@@ -224,5 +323,34 @@ class MethodServiceTest extends IntegrationTestCase
                 'method' => 'BANCONTACT',
             ]
         ];
+    }
+
+    /**
+     * @param string $orderId
+     * @return CartInterface
+     */
+    private function loadQuoteById($orderId)
+    {
+        $quoteRepository = $this->objectManager->get(CartRepositoryInterface::class);
+        $searchCriteriaBuilder = $this->objectManager->create(SearchCriteriaBuilder::class);
+        $searchCriteria = $searchCriteriaBuilder->addFilter('reserved_order_id', $orderId, 'eq')->create();
+
+        $orderList = $quoteRepository->getList($searchCriteria)->getItems();
+
+        return array_shift($orderList);
+    }
+
+    /**
+     * @param CartInterface $magentoQuote
+     * @return PaymentDetails
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    private function getPaymentMethodList(CartInterface $magentoQuote): PaymentDetails
+    {
+        $paymentMethodManagement = $this->objectManager->create(PaymentMethodManagementInterface::class);
+        $paymentDetails = $this->objectManager->create(PaymentDetails::class);
+        $paymentDetails->setPaymentMethods($paymentMethodManagement->getList($magentoQuote->getId()));
+
+        return $paymentDetails;
     }
 }
