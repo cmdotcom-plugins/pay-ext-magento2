@@ -113,6 +113,51 @@ class PaymentServiceTest extends UnitTestCase
         );
     }
 
+    public function testEventDispatch()
+    {
+        $paymentCreateResponse =  new \CM\Payments\Client\Model\Response\PaymentCreate(
+            [
+                'id' => 'pid4911257676t',
+                'status' => 'REDIRECTED_FOR_AUTHORIZATION',
+                'urls' => [
+                    0 => [
+                        'purpose' => 'REDIRECT',
+                        'method' => 'GET',
+                        //phpcs:ignore
+                        'url' => 'https://test.docdatapayments.com/ps_sim/idealbanksimulator.jsf?trxid=1625579689224&ec=4911257676&returnUrl=https%3A%2F%2Ftestsecure.docdatapayments.com%2Fps%2FreturnFromAuthorization%3FpaymentReference%3D49112576765AD00EC846B52EAED61E9FC2530CFF90%26checkDigitId%3D49112576765AD00EC846B52EAED61E9FC2530CFF90',
+                        'order' => 1,
+                    ],
+                ]
+            ]
+        );
+
+        $this->paymentClientMock->expects($this->once())->method('create')->willReturn(
+            $paymentCreateResponse
+        );
+        $order = $this->getOrderMock();
+        $paymentCreate = new PaymentCreate(
+            MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_IDEAL],
+            [
+                'ideal_details' => ['issuer_id' => 'INGBNL2A']
+            ]
+        );
+        $paymentCreateRequest = new PaymentCreateRequest('0287A1617D93780EF28044B98438BF2F', $paymentCreate);
+
+        $cmPayment = new CMPayment(
+            $paymentCreateResponse->getId(),
+            $paymentCreateResponse->getStatus(),
+            $paymentCreateResponse->getRedirectUrl(),
+            $paymentCreateResponse->getUrls()
+        );
+
+        $this->eventManagerMock->expects($this->exactly(2))->method('dispatch')->withConsecutive(
+            ['cmpayments_before_payment_create', ['order' => $order, 'paymentCreateRequest' => $paymentCreateRequest]],
+            ['cmpayments_after_payment_create', ['order' => $order, 'cmPayment' => $cmPayment]]
+        );
+
+        $this->paymentService->create((string)$order->getEntityId());
+    }
+
     /**
      * @return OrderInterface
      */

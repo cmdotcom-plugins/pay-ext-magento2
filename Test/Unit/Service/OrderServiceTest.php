@@ -116,6 +116,52 @@ class OrderServiceTest extends UnitTestCase
         $this->orderService->create('1');
     }
 
+    public function testEventDispatch()
+    {
+        $orderCreateResponse = new \CM\Payments\Client\Model\Response\OrderCreate(
+            [
+                'order_key' => '0287A1617D93780EF28044B98438BF2F',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ]
+        );
+
+        $this->orderClientMock->method('create')->willReturn(
+            $orderCreateResponse
+        );
+        $order = $this->getOrderMock();
+        $orderCreateRequest = new OrderCreateRequest(
+            new OrderCreate(
+                '000000001',
+                2000,
+                'EUR',
+                self::ADDRESS_DATA['email_address'],
+                self::LANGUAGE,
+                self::ADDRESS_DATA['country_code'],
+                self::PAYMENT_PROFILE,
+                [
+                    'success' => '',
+                    'pending' => '',
+                    'cancelled' => '',
+                    'error' => ''
+                ]
+            )
+        );
+
+        $this->eventManagerMock->expects($this->exactly(2))->method('dispatch')->withConsecutive(
+            ['cmpayments_before_order_create', ['order' => $order, 'orderCreateRequest' => $orderCreateRequest]],
+            ['cmpayments_after_order_create', ['order' => $order, 'cmOrder' => new CMOrder(
+                $orderCreateResponse->getUrl(),
+               '000000001',
+                $orderCreateResponse->getOrderKey(),
+                $orderCreateResponse->getExpiresOn(),
+            )]]
+        );
+
+        $this->orderService->create('1');
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
