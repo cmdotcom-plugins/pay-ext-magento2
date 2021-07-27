@@ -121,7 +121,7 @@ class PaymentService implements PaymentServiceInterface
             ]
         );
 
-        $this->eventManager->dispatch('cmpayments_before_order_create', [
+        $this->eventManager->dispatch('cmpayments_before_payment_create', [
             'order' => $order,
             'paymentCreateRequest' => $paymentCreateRequest,
         ]);
