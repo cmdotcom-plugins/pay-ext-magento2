@@ -4,14 +4,19 @@
  * See LICENSE.txt for license details.
  */
 
-namespace CM\Payments\Model\AdminHtml\Source;
+declare(strict_types=1);
+
+namespace CM\Payments\Model\Adminhtml\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
 class Mode implements OptionSourceInterface
 {
-    const TEST = 'test';
-    const PROD = 'production';
+    /**
+     * Modes
+     */
+    public const TEST = 'test';
+    public const LIVE = 'live';
 
     /**
      * Options array
@@ -21,7 +26,7 @@ class Mode implements OptionSourceInterface
     public $options = null;
 
     /**
-     * Live/Test Key Array
+     * Test/Live Key Array
      *
      * @return array
      */
@@ -30,9 +35,10 @@ class Mode implements OptionSourceInterface
         if (!$this->options) {
             $this->options = [
                 ['value' => self::TEST, 'label' => __('Test')],
-                ['value' => self::PROD, 'label' => __('Production')]
+                ['value' => self::LIVE, 'label' => __('Live')]
             ];
         }
+
         return $this->options;
     }
 }

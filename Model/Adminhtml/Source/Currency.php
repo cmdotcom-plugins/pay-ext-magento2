@@ -3,9 +3,14 @@
  * Copyright © CM.com. All rights reserved.
  * See LICENSE.txt for license details.
  */
-namespace CM\Payments\Model\AdminHtml\Source;
 
-class Currency implements \Magento\Framework\Option\ArrayInterface
+declare(strict_types=1);
+
+namespace CM\Payments\Model\Adminhtml\Source;
+
+use Magento\Framework\Data\OptionSourceInterface;
+
+class Currency implements OptionSourceInterface
 {
     /**
      * Countries
@@ -32,7 +37,7 @@ class Currency implements \Magento\Framework\Option\ArrayInterface
     /**
      * Return options array
      *
-     * @param boolean $isMultiselect
+     * @param bool $isMultiselect
      * @param string|array $foregroundCountries
      * @return array
      */

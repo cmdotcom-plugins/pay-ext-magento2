@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace CM\Payments\Config;
 
 use CM\Payments\Api\Config\ConfigInterface;
+use CM\Payments\Model\Adminhtml\Source\Mode;
 use CM\Payments\Model\ConfigProvider;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
@@ -68,22 +69,17 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function getMerchantKey(): ?string
-    {
-        return $this->getConfig(
-            self::XML_PATH_GENERAL_MERCHANT_KEY,
-            ScopeInterface::SCOPE_STORES,
-            (string)$this->storeManager->getStore()->getId()
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getMerchantName(): ?string
     {
+        $mode = $this->getMode();
+        $configPath = self::XML_PATH_GENERAL_TEST_MERCHANT_NAME;
+
+        if ($mode == Mode::LIVE) {
+            $configPath = self::XML_PATH_GENERAL_LIVE_MERCHANT_NAME;
+        }
+
         return $this->getConfig(
-            self::XML_PATH_GENERAL_MERCHANT_NAME,
+            $configPath,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -94,8 +90,46 @@ class Config implements ConfigInterface
      */
     public function getMerchantPassword(): ?string
     {
+        $mode = $this->getMode();
+        $configPath = self::XML_PATH_GENERAL_TEST_MERCHANT_PASSWORD;
+
+        if ($mode == Mode::LIVE) {
+            $configPath = self::XML_PATH_GENERAL_LIVE_MERCHANT_PASSWORD;
+        }
+
         return $this->getConfig(
-            self::XML_PATH_GENERAL_MERCHANT_PASSWORD,
+            $configPath,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMerchantKey(): ?string
+    {
+        $mode = $this->getMode();
+        $configPath = self::XML_PATH_GENERAL_TEST_MERCHANT_KEY;
+
+        if ($mode == Mode::LIVE) {
+            $configPath = self::XML_PATH_GENERAL_LIVE_MERCHANT_KEY;
+        }
+
+        return $this->getConfig(
+            $configPath,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMode(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_MODE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -121,18 +155,6 @@ class Config implements ConfigInterface
         }
 
         return $defaultPaymentMethod;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMode(): ?string
-    {
-        return $this->getConfig(
-            self::XML_PATH_GENERAL_MODE,
-            ScopeInterface::SCOPE_STORES,
-            (string)$this->storeManager->getStore()->getId()
-        );
     }
 
     /**
