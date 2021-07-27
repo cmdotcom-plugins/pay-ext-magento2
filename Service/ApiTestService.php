@@ -13,6 +13,8 @@ use CM\Payments\Client\Api\RequestInterface;
 use CM\Payments\Client\ApiClient;
 use CM\Payments\Model\Adminhtml\Source\Mode;
 use GuzzleHttp\Client as HttpClient;
+use CM\Payments\Api\Config\ConfigInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class ApiTestService implements ApiTestServiceInterface
 {
@@ -22,14 +24,30 @@ class ApiTestService implements ApiTestServiceInterface
     private $apiConnectionData;
 
     /**
+     * @var ConfigInterface
+     */
+    private $config;
+
+    /**
      * ApiTestService constructor
      *
-     * @param array $apiConnectionData
+     * @param ConfigInterface $config
      */
     public function __construct(
-        array $apiConnectionData
+        ConfigInterface $config
     ) {
-        $this->apiConnectionData = $apiConnectionData;
+        $this->config = $config;
+
+        try {
+            $this->apiConnectionData = [
+                'mode' => $this->config->getMode(),
+                'merchantName' => $this->config->getMerchantName(),
+                'merchantPassword' => $this->config->getMerchantPassword(),
+                'merchantKey' => $this->config->getMerchantKey()
+            ];
+        } catch (NoSuchEntityException $e) {
+            $this->apiConnectionData = [];
+        }
     }
 
     /**
@@ -37,17 +55,27 @@ class ApiTestService implements ApiTestServiceInterface
      */
     public function testApiConnection(): array
     {
+        $resultData = ['errors' => [], 'result' => null];
         $options = [
             'json' => ['date' => date('Y-m-d')]
         ];
 
-        $guzzleResponse = $this->getClient()->request(
-            RequestInterface::HTTP_GET,
-            'orders',
-            $options
-        );
+        if (!empty($this->apiConnectionData)) {
+            $errors = $this->validateData($this->apiConnectionData);
+            $resultData['errors'] = $errors;
 
-        return \GuzzleHttp\json_decode($guzzleResponse->getBody()->getContents(), true);
+            if (empty($errors)) {
+                $guzzleResponse = $this->getClient()->request(
+                    RequestInterface::HTTP_GET,
+                    'orders',
+                    $options
+                );
+
+                $resultData['result'] = \GuzzleHttp\json_decode($guzzleResponse->getBody()->getContents(), true);
+            }
+        }
+
+        return $resultData;
     }
 
     /**
@@ -62,6 +90,7 @@ class ApiTestService implements ApiTestServiceInterface
             $this->apiConnectionData['merchantName'] .
                 ':' . $this->apiConnectionData['merchantPassword']
         );
+
         return new HttpClient(
             [
                 'base_uri' => $baseApiUrl,
@@ -70,5 +99,30 @@ class ApiTestService implements ApiTestServiceInterface
                 ]
             ]
         );
+    }
+
+    /**
+     * @return array
+     */
+    private function validateData(): array
+    {
+        $errors = [];
+        if (empty($this->apiConnectionData['mode'])) {
+            $errors[] = __("The 'Api mode' was not recognized. Please, check the data.");
+        }
+
+        if (empty($this->apiConnectionData['merchantName'])) {
+            $errors[] = __("The 'Merchant Name' was not recognized. Please, check the data.");
+        }
+
+        if (empty($this->apiConnectionData['merchantPassword'])) {
+            $errors[] = __("The 'Merchant Password' was not recognized. Please, check the data.");
+        }
+
+        if (empty($this->apiConnectionData['merchantKey'])) {
+            $errors[] = __("The 'Merchant Key' was not recognized. Please, check the data.");
+        }
+
+        return $errors;
     }
 }

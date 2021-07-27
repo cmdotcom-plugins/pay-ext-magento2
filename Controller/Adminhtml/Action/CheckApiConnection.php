@@ -8,14 +8,13 @@ declare(strict_types=1);
 
 namespace CM\Payments\Controller\Adminhtml\Action;
 
-use CM\Payments\Api\Service\ApiTestServiceInterfaceFactory;
 use CM\Payments\Api\Service\ApiTestServiceInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Json as JsonResult;
 use Magento\Framework\Controller\Result\JsonFactory as JsonResultFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
-use GuzzleHttp\Exception\GuzzleException;
 
 class CheckApiConnection extends Action
 {
@@ -25,26 +24,26 @@ class CheckApiConnection extends Action
     private $jsonResultFactory;
 
     /**
-     * @var ApiTestServiceInterfaceFactory
+     * @var ApiTestServiceInterface
      */
-    private $apiTestServiceFactory;
+    private $apiTestService;
 
     /**
      * CheckApiConnection constructor
      *
      * @param Context $context
      * @param JsonResultFactory $jsonResultFactory
-     * @param ApiTestServiceInterfaceFactory $apiTestServiceFactory
+     * @param ApiTestServiceInterface $apiTestService
      */
     public function __construct(
         Context $context,
         JsonResultFactory $jsonResultFactory,
-        ApiTestServiceInterfaceFactory $apiTestServiceFactory
+        ApiTestServiceInterface $apiTestService
     ) {
         parent::__construct($context);
 
         $this->jsonResultFactory = $jsonResultFactory;
-        $this->apiTestServiceFactory = $apiTestServiceFactory;
+        $this->apiTestService = $apiTestService;
     }
 
     /**
@@ -54,79 +53,35 @@ class CheckApiConnection extends Action
     {
         /** @var JsonResult $jsonResult */
         $jsonResult = $this->jsonResultFactory->create();
+        $success = true;
 
-        $apiConnectionData = $this->getRequest()->getParams();
-        $errors = $this->validateData($apiConnectionData);
+        try {
+            $resultData = $this->apiTestService->testApiConnection();
 
-        if (!$errors) {
-            $success = true;
-
-            try {
-                /** @var ApiTestServiceInterface $apiTestService */
-                $apiTestService = $this->apiTestServiceFactory->create(
-                    [
-                        'apiConnectionData' => [
-                            'mode' => $apiConnectionData['mode'],
-                            'merchantName' => $apiConnectionData['merchant_name'],
-                            'merchantPassword' => $apiConnectionData['merchant_password'],
-                            'merchantKey' => $apiConnectionData['merchant_key']
-                        ]
-                    ]
-                );
-
-                $result = $apiTestService->testApiConnection();
-
-                if (!is_array($result)) {
-                    $data = [
-                        'success' => false,
-                        'connectionResult' => __("The connection was unsuccessful. Please, check your credentials.")
-                    ];
-                } else {
-                    $data = [
-                        'success' => $success,
-                        'connectionResult' => __("The connection was successful. Your credentials are valid.")
-                    ];
-                }
-            } catch (GuzzleException|NoSuchEntityException $e) {
+            if (!empty($resultData['errors'])) {
+                array_unshift($resultData['errors'], __("The connection was unsuccessful."));
                 $data = [
                     'success' => false,
-                    'connectionResult' => $e->getMessage()
+                    'connectionResult' => implode('<br />', $resultData['errors'])
+                ];
+            } elseif (!is_array($resultData['result'])) {
+                $data = [
+                    'success' => false,
+                    'connectionResult' => __("The connection was unsuccessful. Please, check your credentials.")
+                ];
+            } else {
+                $data = [
+                    'success' => $success,
+                    'connectionResult' => __("The connection was successful. Your credentials are valid.")
                 ];
             }
-        } else {
-            array_unshift($errors, __("The connection was unsuccessful."));
+        } catch (GuzzleException | NoSuchEntityException $e) {
             $data = [
                 'success' => false,
-                'connectionResult' => implode('<br />', $errors)
+                'connectionResult' => $e->getMessage()
             ];
         }
 
         return $jsonResult->setData(['result' => $data]);
-    }
-
-    /**
-     * @param array $apiConnectionData
-     * @return array
-     */
-    private function validateData(array $apiConnectionData): array
-    {
-        $errors = [];
-        if (empty($apiConnectionData['mode'])) {
-            $errors[] = __("The 'Api mode' was not recognized. Please, check the data.");
-        }
-
-        if (empty($apiConnectionData['merchant_name'])) {
-            $errors[] = __("The 'Merchant Name' was not recognized. Please, check the data.");
-        }
-
-        if (empty($apiConnectionData['merchant_password'])) {
-            $errors[] = __("The 'Merchant Password' was not recognized. Please, check the data.");
-        }
-
-        if (empty($apiConnectionData['merchant_key'])) {
-            $errors[] = __("The 'Merchant Key' was not recognized. Please, check the data.");
-        }
-
-        return $errors;
     }
 }

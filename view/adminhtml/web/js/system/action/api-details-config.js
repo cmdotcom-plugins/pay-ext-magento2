@@ -32,7 +32,7 @@ define([
          */
         changeApiDetailsMode: function () {
             let modeContainerId = $(this).closest('tr').attr('id'),
-                parentTable = $(this).parents().find('table'),
+                parentTable = $(this).closest('table'),
                 mode = $(this).val();
             parentTable.find('tr').each(function () {
                 let containerId = $(this).attr('id');
