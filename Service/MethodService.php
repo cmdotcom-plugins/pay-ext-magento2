@@ -25,7 +25,6 @@ use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\CartInterface;
-use Magento\Quote\Api\Data\PaymentMethodInterface;
 
 class MethodService implements MethodServiceInterface
 {
