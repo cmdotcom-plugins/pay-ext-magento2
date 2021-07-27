@@ -44,6 +44,31 @@
         </arguments>
     </type>
 
+    <type name="CM\Payments\Service\OrderRequestBuilder">
+        <arguments>
+            <argument name="orderRequestParts" xsi:type="array">
+                <item name="orderId" xsi:type="object">CM\Payments\Service\Order\Request\Part\OrderId</item>
+                <item name="amount" xsi:type="object">CM\Payments\Service\Order\Request\Part\Amount</item>
+                <item name="currency" xsi:type="object">CM\Payments\Service\Order\Request\Part\Currency</item>
+                <item name="email" xsi:type="object">CM\Payments\Service\Order\Request\Part\Email</item>
+                <item name="language" xsi:type="object">CM\Payments\Service\Order\Request\Part\Language</item>
+                <item name="country" xsi:type="object">CM\Payments\Service\Order\Request\Part\Country</item>
+                <item name="paymentProfile" xsi:type="object">CM\Payments\Service\Order\Request\Part\PaymentProfile</item>
+                <item name="returnUrls" xsi:type="object">CM\Payments\Service\Order\Request\Part\ReturnUrls</item>
+            </argument>
+            <argument name="quoteRequestParts" xsi:type="array">
+                <item name="orderId" xsi:type="object">CM\Payments\Service\Quote\Request\Part\OrderId</item>
+                <item name="amount" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Amount</item>
+                <item name="currency" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Currency</item>
+                <item name="email" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Email</item>
+                <item name="language" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Language</item>
+                <item name="country" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Country</item>
+                <item name="paymentProfile" xsi:type="object">CM\Payments\Service\Quote\Request\Part\PaymentProfile</item>
+                <item name="returnUrls" xsi:type="object">CM\Payments\Service\Quote\Request\Part\ReturnUrls</item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- BEGIN CM Payments Method -->
     <virtualType name="CMPaymentsFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>

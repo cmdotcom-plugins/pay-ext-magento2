@@ -16,7 +16,7 @@ use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Order as ClientApiOrder;
-use CM\Payments\Client\Model\OrderCreate;
+use CM\Payments\Client\Model\Request\OrderCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Data\Order;
