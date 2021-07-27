@@ -204,6 +204,6 @@ class MethodService implements MethodServiceInterface
      */
     private function isCmPaymentsMethod(string $paymentMethodCode): bool
     {
-        return str_contains($paymentMethodCode, ConfigProvider::CODE . '_');
+        return strpos($paymentMethodCode, ConfigProvider::CODE . '_') !== false;
     }
 }
