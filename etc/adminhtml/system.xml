@@ -34,11 +34,14 @@
                 </field>
             </group>
 
-            <group id="advanced" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="advanced" translate="label comment" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
                 <label>Advanced</label>
-                <field id="payment_method_profile" translate="label" type="text" sortOrder="10" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                <field id="payment_method_profile" translate="label comment" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Payment method profile</label>
+                    <comment><![CDATA[Configure the CM.com Payment Profile to use. This profile should contain the available
+                        payment methods you want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments_methods/profile</config_path>
                 </field>
             </group>
@@ -126,9 +129,11 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="profile" translate="label" type="text" sortOrder="30" showInDefault="1"
+                <field id="profile" translate="label comment" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Profile</label>
+                    <comment><![CDATA[Configure the CM.com Payment Profile to use. This profile should contain the available
+                        payment methods you want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments/profile</config_path>
                     <depends>
                         <field id="active">1</field>
@@ -330,9 +335,11 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="profile" translate="label" type="text" sortOrder="30" showInDefault="1"
+                <field id="profile" translate="label comment" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Profile</label>
+                    <comment><![CDATA[Configure the CM.com Payment Profile to use. This profile should contain the cards you
+                        want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments_creditcard/profile</config_path>
                     <depends>
                         <field id="active">1</field>
@@ -534,9 +541,11 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="profile" translate="label" type="text" sortOrder="30" showInDefault="1"
+                <field id="profile" translate="label comment" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Profile</label>
+                    <comment><![CDATA[Configure the CM.com Payment Profile to use. This profile should contain the available
+                        payment methods you want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments_bancontact/profile</config_path>
                     <depends>
                         <field id="active">1</field>

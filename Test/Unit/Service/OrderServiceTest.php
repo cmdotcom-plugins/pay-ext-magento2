@@ -153,7 +153,7 @@ class OrderServiceTest extends UnitTestCase
             ['cmpayments_before_order_create', ['order' => $order, 'orderCreateRequest' => $orderCreateRequest]],
             ['cmpayments_after_order_create', ['order' => $order, 'cmOrder' => new CMOrder(
                 $orderCreateResponse->getUrl(),
-               '000000001',
+                '000000001',
                 $orderCreateResponse->getOrderKey(),
                 $orderCreateResponse->getExpiresOn(),
             )]]
