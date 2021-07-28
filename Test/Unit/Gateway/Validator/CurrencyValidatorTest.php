@@ -15,10 +15,12 @@ class CurrencyValidatorTest extends UnitTestCase
      * @var \PHPUnit\Framework\MockObject\MockObject
      */
     private $resultMock;
+
     /**
      * @var \Magento\Payment\Gateway\ConfigInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $configMock;
+
     /**
      * @var CurrencyValidator
      */
