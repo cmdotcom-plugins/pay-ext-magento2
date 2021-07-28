@@ -113,6 +113,34 @@ class PaymentServiceTest extends UnitTestCase
         );
     }
 
+    public function testCreatePaypalPayment()
+    {
+        $this->paymentClientMock->expects($this->once())->method('create')->willReturn(
+            new \CM\Payments\Client\Model\Response\PaymentCreate(
+                [
+                    'id' => 'pid4911261016t',
+                    'status' => 'REDIRECTED_FOR_AUTHORIZATION',
+                    'urls' => [
+                        0 => [
+                            'purpose' => 'REDIRECT',
+                            'method' => 'GET',
+                            //phpcs:ignore
+                            'url' => 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&useraction=commit&token=EC-0HD94326F3768884E',
+                            'order' => 1,
+                        ],
+                    ]
+                ]
+            )
+        );
+
+        $order = $this->getOrderMock();
+        $payment = $this->paymentService->create((string)$order->getEntityId());
+
+        $this->assertNotNull(
+            $payment->getId()
+        );
+    }
+
     public function testEventDispatch()
     {
         $paymentCreateResponse =  new \CM\Payments\Client\Model\Response\PaymentCreate(

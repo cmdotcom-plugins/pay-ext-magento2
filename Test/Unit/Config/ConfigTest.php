@@ -18,10 +18,12 @@ class ConfigTest extends UnitTestCase
      * @var StoreManager|\PHPUnit\Framework\MockObject\MockObject
      */
     private $storeManagerMock;
+
     /**
      * @var ScopeConfigInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $scopeConfigMock;
+
     /**
      * @var Config
      */
