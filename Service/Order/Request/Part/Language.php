@@ -19,7 +19,8 @@ class Language implements RequestPartByOrderInterface
     private $localeResolver;
 
     /**
-     * Language constructor.
+     * Language constructor
+     *
      * @param ResolverInterface $localeResolver
      */
     public function __construct(ResolverInterface $localeResolver)

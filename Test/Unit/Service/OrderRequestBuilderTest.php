@@ -14,6 +14,7 @@ use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Service\Order\Request\Part\Amount;
 use CM\Payments\Service\Order\Request\Part\Country;
 use CM\Payments\Service\Order\Request\Part\Currency;
+use CM\Payments\Service\Order\Request\Part\Expiry;
 use CM\Payments\Service\Order\Request\Part\Language;
 use CM\Payments\Service\Order\Request\Part\OrderId;
 use CM\Payments\Service\Order\Request\Part\PaymentProfile;
@@ -127,6 +128,7 @@ class OrderRequestBuilderTest extends UnitTestCase
             new Language($this->resolverMock),
             new PaymentProfile($this->configMock),
             new ReturnUrls($this->urlMock),
+            new Expiry($this->configMock),
         ];
 
         $quoteRequestParts = [

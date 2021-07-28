@@ -56,6 +56,7 @@
                 <item name="country" xsi:type="object">CM\Payments\Service\Order\Request\Part\Country</item>
                 <item name="paymentProfile" xsi:type="object">CM\Payments\Service\Order\Request\Part\PaymentProfile</item>
                 <item name="returnUrls" xsi:type="object">CM\Payments\Service\Order\Request\Part\ReturnUrls</item>
+                <item name="expiry" xsi:type="object">CM\Payments\Service\Order\Request\Part\Expiry</item>
             </argument>
             <argument name="quoteRequestParts" xsi:type="array">
                 <item name="orderId" xsi:type="object">CM\Payments\Service\Quote\Request\Part\OrderId</item>
@@ -66,6 +67,7 @@
                 <item name="country" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Country</item>
                 <item name="paymentProfile" xsi:type="object">CM\Payments\Service\Quote\Request\Part\PaymentProfile</item>
                 <item name="returnUrls" xsi:type="object">CM\Payments\Service\Quote\Request\Part\ReturnUrls</item>
+                <item name="expiry" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Expiry</item>
             </argument>
         </arguments>
     </type>

@@ -116,4 +116,22 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getCmPaymentsMenuPaymentProfile(): ?string;
+
+    /**
+     * Get Order Expiry Unit
+     *
+     * @param string $paymentMethodCode
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getOrderExpiryUnit(string $paymentMethodCode): ?string;
+
+    /**
+     * Get Order Expiry Duration
+     *
+     * @param string $paymentMethodCode
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getOrderExpiryDuration(string $paymentMethodCode): ?string;
 }

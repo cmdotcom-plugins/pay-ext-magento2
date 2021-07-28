@@ -207,6 +207,32 @@ class Config implements ConfigInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getOrderExpiryUnit(string $paymentMethodCode): ?string
+    {
+        $configPath = "payment/{$paymentMethodCode}/order_expiry_unit";
+        return $this->getConfig(
+            $configPath,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getOrderExpiryDuration(string $paymentMethodCode): ?string
+    {
+        $configPath = "payment/{$paymentMethodCode}/order_expiry_duration";
+        return $this->getConfig(
+            $configPath,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
      * Get config value by path
      *
      * @param string $path
