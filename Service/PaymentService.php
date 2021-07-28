@@ -19,6 +19,7 @@ use CM\Payments\Client\Api\PaymentInterface as CMPaymentClientInterface;
 use CM\Payments\Client\Model\CMPaymentFactory;
 use CM\Payments\Exception\EmptyPaymentIdException;
 use CM\Payments\Logger\CMPaymentsLogger;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
 class PaymentService implements PaymentServiceInterface
@@ -64,6 +65,11 @@ class PaymentService implements PaymentServiceInterface
     private $logger;
 
     /**
+     * @var ManagerInterface
+     */
+    private $eventManager;
+
+    /**
      * PaymentService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
@@ -73,6 +79,7 @@ class PaymentService implements PaymentServiceInterface
      * @param CMPaymentFactory $cmPaymentFactory
      * @param CMPaymentRepositoryInterface $cmPaymentRepository
      * @param CMOrderRepositoryInterface $cmOrderRepository
+     * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $logger
      */
     public function __construct(
@@ -83,6 +90,7 @@ class PaymentService implements PaymentServiceInterface
         CMPaymentFactory $cmPaymentFactory,
         CMPaymentRepositoryInterface $cmPaymentRepository,
         CMOrderRepositoryInterface $cmOrderRepository,
+        ManagerInterface $eventManager,
         CMPaymentsLogger $logger
     ) {
         $this->orderRepository = $orderRepository;
@@ -92,6 +100,7 @@ class PaymentService implements PaymentServiceInterface
         $this->cmPaymentFactory = $cmPaymentFactory;
         $this->cmOrderRepository = $cmOrderRepository;
         $this->cmPaymentRepository = $cmPaymentRepository;
+        $this->eventManager = $eventManager;
         $this->logger = $logger;
     }
 
@@ -111,6 +120,11 @@ class PaymentService implements PaymentServiceInterface
                 'requestPayload' => $paymentCreateRequest->getPayload()
             ]
         );
+
+        $this->eventManager->dispatch('cmpayments_before_payment_create', [
+            'order' => $order,
+            'paymentCreateRequest' => $paymentCreateRequest,
+        ]);
 
         $paymentCreateResponse = $this->paymentClient->create(
             $paymentCreateRequest
@@ -136,7 +150,7 @@ class PaymentService implements PaymentServiceInterface
         $order->getPayment()->setAdditionalInformation($additionalInformation);
         $this->orderRepository->save($order);
 
-        return $this->cmPaymentFactory->create(
+        $cmPayment = $this->cmPaymentFactory->create(
             [
                 'id' => $paymentCreateResponse->getId(),
                 'status' => $paymentCreateResponse->getStatus(),
@@ -144,5 +158,12 @@ class PaymentService implements PaymentServiceInterface
                 'urls' => $paymentCreateResponse->getUrls()
             ]
         );
+
+        $this->eventManager->dispatch('cmpayments_after_payment_create', [
+            'order' => $order,
+            'cmPayment' => $cmPayment,
+        ]);
+
+        return $cmPayment;
     }
 }
