@@ -10,7 +10,9 @@ namespace CM\Payments\Client\Api;
 
 use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Client\Model\Response\OrderDetail;
+use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Client\Request\OrderCreateRequest;
+use CM\Payments\Client\Request\OrderGetMethodsRequest;
 use GuzzleHttp\Exception\RequestException;
 
 interface OrderInterface
@@ -22,6 +24,14 @@ interface OrderInterface
      * @throws RequestException
      */
     public function getDetail(string $orderKey): OrderDetail;
+
+    /**
+     * @param string $orderKey
+     * @return PaymentMethod[]
+     *
+     * @throws RequestException
+     */
+    public function getMethods(string $orderKey): array;
 
     /**
      * @param OrderCreateRequest $orderCreateRequest
