@@ -78,6 +78,44 @@ class PaymentServiceTest extends IntegrationTestCase
     }
 
     /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testCreatePaypalPayment()
+    {
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
+        $cmOrderFactory = $this->objectManager->create(OrderInterfaceFactory::class);
+        $cmOrderOrder = $cmOrderFactory->create();
+        $cmOrderRepository = $this->objectManager->get(CMOrderRepositoryInterface::class);
+        $cmOrderOrder->setIncrementId($magentoOrder->getIncrementId());
+        $cmOrderOrder->setOrderId((int)$magentoOrder->getEntityId());
+        $cmOrderOrder->setOrderKey('0287A1617D93780EF28044B98438BF2F');
+        $cmOrderRepository->save($cmOrderOrder);
+
+        $this->clientMock->expects($this->once())->method('execute')->willReturn(
+            [
+                'id' => 'pid4911261016t',
+                'status' => 'REDIRECTED_FOR_AUTHORIZATION',
+                'urls' => [
+                    0 => [
+                        'purpose' => 'REDIRECT',
+                        'method' => 'GET',
+                        //phpcs:ignore
+                        'url' => 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&useraction=commit&token=EC-0HD94326F3768884E',
+                        'order' => 1,
+                    ],
+                ]
+            ]
+        );
+
+        $payment = $this->paymentService->create($magentoOrder->getId());
+        $this->assertNotNull(
+            $payment->getId()
+        );
+    }
+
+    /**
      * @param string $orderId
      * @return OrderInterface
      */
