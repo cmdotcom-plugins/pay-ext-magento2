@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Controller\Payment;
 
-use CM\Payments\Client\Model\OrderCreate;
+use CM\Payments\Client\Model\Request\OrderCreate;
 use Exception;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Action\Action;

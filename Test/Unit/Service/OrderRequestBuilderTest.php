@@ -9,8 +9,17 @@ declare(strict_types=1);
 namespace CM\Payments\Test\Unit\Service;
 
 use CM\Payments\Api\Config\ConfigInterface;
-use CM\Payments\Client\Model\OrderCreate;
+use CM\Payments\Client\Model\Request\OrderCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
+use CM\Payments\Service\Order\Request\Part\Amount;
+use CM\Payments\Service\Order\Request\Part\Country;
+use CM\Payments\Service\Order\Request\Part\Currency;
+use CM\Payments\Service\Order\Request\Part\Language;
+use CM\Payments\Service\Order\Request\Part\OrderId;
+use CM\Payments\Service\Order\Request\Part\PaymentProfile;
+use CM\Payments\Service\Order\Request\Part\ReturnUrls;
+use CM\Payments\Service\Order\Request\Part\Email;
+use CM\Payments\Service\Quote\Request\Part\OrderId as QuoteOrderId;
 use CM\Payments\Service\OrderRequestBuilder;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Magento\Framework\Locale\ResolverInterface;
@@ -108,14 +117,27 @@ class OrderRequestBuilderTest extends UnitTestCase
         $mathRandomMock = $this->getMockBuilder(Random::class)
             ->disableOriginalConstructor()
             ->getMock();
+        
+        $orderRequestParts = [
+            new OrderId(),
+            new Amount(),
+            new Country(),
+            new Currency(),
+            new Email(),
+            new Language($this->resolverMock),
+            new PaymentProfile($this->configMock),
+            new ReturnUrls($this->urlMock),
+        ];
+
+        $quoteRequestParts = [
+            new QuoteOrderId($mathRandomMock)
+        ];
 
         $this->orderRequestBuilder = new OrderRequestBuilder(
-            $this->configMock,
-            $this->resolverMock,
-            $this->urlMock,
             $orderFactoryMock,
             $orderCreateRequestFactoryMock,
-            $mathRandomMock
+            $orderRequestParts,
+            $quoteRequestParts
         );
     }
 }
