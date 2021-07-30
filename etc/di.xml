@@ -33,6 +33,7 @@
             <argument name="parts" xsi:type="array">
                 <item name="method" xsi:type="object">CM\Payments\Service\Payment\Request\Part\Method</item>
                 <item name="idealDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\IdealDetails</item>
+                <item name="elvDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\ElvDetails</item>
             </argument>
         </arguments>
     </type>
@@ -302,7 +303,7 @@
     <!-- END CM Payments (PayPal) Method -->
 
     <!-- BEGIN CM Payments (BanContact) Method -->
-    <virtualType name="CMPaymentsBancontactFacade" type="CMPaymentsFacade">
+    <virtualType name="CMPaymentsBanContactFacade" type="CMPaymentsFacade">
         <arguments>
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_BANCONTACT</argument>
             <argument name="valueHandlerPool" xsi:type="object">CMBanContactValueHandlerPool</argument>
@@ -351,6 +352,57 @@
         </arguments>
     </virtualType>
     <!-- END CM Payments (BanContact) Method -->
+
+    <!-- BEGIN CM Payments (ELV) Method -->
+    <virtualType name="CMPaymentsElvFacade" type="CMPaymentsFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_ELV</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMElvValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">CMElvValidatorPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMElvValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMElvConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMElvConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMElvGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMElvGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_ELV</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMElvValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMElvCountryValidator</item>
+                <item name="currency" xsi:type="string">CMElvCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMElvCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMElvGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMElvCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMElvGenericConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (ELV) Method -->
 
     <!-- BEGIN CM Payments (Logger) -->
     <type name="CM\Payments\Logger\Handler">

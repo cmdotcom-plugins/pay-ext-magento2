@@ -22,13 +22,14 @@ class PaymentCreateRequest implements RequestInterface
      * @var PaymentCreate
      */
     private $paymentCreate;
+
     /**
      * @var string
      */
     private $orderKey;
 
     /**
-     * PaymentCreateRequest constructor.
+     * PaymentCreateRequest constructor
      *
      * @param string $orderKey
      * @param PaymentCreate $orderCreate
