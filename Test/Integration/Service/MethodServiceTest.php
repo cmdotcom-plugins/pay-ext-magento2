@@ -275,6 +275,34 @@ class MethodServiceTest extends IntegrationTestCase
         $this->assertEquals('cm_payments', $method->getCode());
     }
 
+    /**
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
+     * @magentoConfigFixture default_store payment/cm_payments/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     */
+    public function testCmApiErrorShouldContinueAndReturnMagentoMethods()
+    {
+        $magentoQuote = $this->loadQuoteById('test01');
+
+        $this->clientMock->expects($this->exactly(1))->method('execute')->willThrowException(new \Exception());
+
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+
+        $method = $actualPaymentMethods[0];
+        $this->assertEquals(2, count($actualPaymentMethods));
+        $this->assertEquals('cm_payments', $method->getCode());
+        // When api throws an error we don't have ideal issuer so we hide this method on the payment page
+        $this->assertArrayNotHasKey(1, $actualPaymentMethods);
+        $this->assertNotEquals('cm_payments_ideal', $actualPaymentMethods[2]->getCode());
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
