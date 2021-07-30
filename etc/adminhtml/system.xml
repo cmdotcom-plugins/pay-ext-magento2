@@ -34,11 +34,14 @@
                 </field>
             </group>
 
-            <group id="advanced" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="advanced" translate="label comment" type="text" sortOrder="10" showInDefault="1"
+                   showInWebsite="1" showInStore="1">
                 <label>Advanced</label>
-                <field id="payment_method_profile" translate="label" type="text" sortOrder="10" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                <field id="payment_method_profile" translate="label comment" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Payment method profile</label>
+                    <comment><![CDATA[Configure the CM.com Payment Profile to use. This profile should contain the available
+                        payment methods you want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments_methods/profile</config_path>
                 </field>
             </group>
@@ -126,9 +129,11 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="profile" translate="label" type="text" sortOrder="30" showInDefault="1"
+                <field id="profile" translate="label comment" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Profile</label>
+                    <comment><![CDATA[Configure the CM.com Payment Profile to use. This profile should contain the available
+                        payment methods you want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments/profile</config_path>
                     <depends>
                         <field id="active">1</field>
@@ -188,7 +193,24 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Unit</label>
+                    <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
+                    <config_path>payment/cm_payments/order_expiry_unit</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Duration</label>
+                    <config_path>payment/cm_payments/order_expiry_duration</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments/sort_order</config_path>
@@ -269,7 +291,24 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Unit</label>
+                    <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
+                    <config_path>payment/cm_payments_ideal/order_expiry_unit</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Duration</label>
+                    <config_path>payment/cm_payments_ideal/order_expiry_duration</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_ideal/sort_order</config_path>
@@ -296,9 +335,11 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="profile" translate="label" type="text" sortOrder="30" showInDefault="1"
+                <field id="profile" translate="label comment" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Profile</label>
+                    <comment><![CDATA[Configure the CM.com Payment Profile to use. This profile should contain the cards you
+                        want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments_creditcard/profile</config_path>
                     <depends>
                         <field id="active">1</field>
@@ -358,7 +399,24 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Unit</label>
+                    <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
+                    <config_path>payment/cm_payments_creditcard/order_expiry_unit</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Duration</label>
+                    <config_path>payment/cm_payments_creditcard/order_expiry_duration</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_creditcard/sort_order</config_path>
@@ -439,7 +497,24 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Unit</label>
+                    <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
+                    <config_path>payment/cm_payments_paypal/order_expiry_unit</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Duration</label>
+                    <config_path>payment/cm_payments_paypal/order_expiry_duration</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_paypal/sort_order</config_path>
@@ -466,9 +541,11 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="profile" translate="label" type="text" sortOrder="30" showInDefault="1"
+                <field id="profile" translate="label comment" type="text" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Profile</label>
+                    <comment><![CDATA[Configure the CM.com Payment Profile to use. This profile should contain the available
+                        payment methods you want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments_bancontact/profile</config_path>
                     <depends>
                         <field id="active">1</field>
@@ -528,7 +605,24 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Unit</label>
+                    <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
+                    <config_path>payment/cm_payments_bancontact/order_expiry_unit</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Duration</label>
+                    <config_path>payment/cm_payments_bancontact/order_expiry_duration</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_bancontact/sort_order</config_path>

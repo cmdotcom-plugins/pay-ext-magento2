@@ -4,6 +4,8 @@
  * See LICENSE.txt for license details.
  */
 
+declare(strict_types=1);
+
 namespace CM\Payments\Service\Quote\Request\Part;
 
 use CM\Payments\Api\Service\Order\Request\RequestPartByQuoteInterface;
@@ -19,7 +21,8 @@ class Language implements RequestPartByQuoteInterface
     private $localeResolver;
 
     /**
-     * Language constructor.
+     * Language constructor
+     *
      * @param ResolverInterface $localeResolver
      */
     public function __construct(ResolverInterface $localeResolver)

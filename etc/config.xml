@@ -39,6 +39,8 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
+                <order_expiry_unit>HOURS</order_expiry_unit>
+                <order_expiry_duration>8</order_expiry_duration>
                 <group>cm</group>
             </cm_payments>
             <cm_payments_ideal>
@@ -62,6 +64,8 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
+                <order_expiry_unit>HOURS</order_expiry_unit>
+                <order_expiry_duration>8</order_expiry_duration>
                 <group>cm</group>
             </cm_payments_ideal>
             <cm_payments_creditcard>
@@ -85,6 +89,8 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
+                <order_expiry_unit>HOURS</order_expiry_unit>
+                <order_expiry_duration>8</order_expiry_duration>
                 <group>cm</group>
             </cm_payments_creditcard>
             <cm_payments_paypal>
@@ -108,6 +114,8 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
+                <order_expiry_unit>HOURS</order_expiry_unit>
+                <order_expiry_duration>8</order_expiry_duration>
                 <group>cm</group>
             </cm_payments_paypal>
             <cm_payments_bancontact>
@@ -131,6 +139,8 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
+                <order_expiry_unit>HOURS</order_expiry_unit>
+                <order_expiry_duration>8</order_expiry_duration>
                 <group>cm</group>
             </cm_payments_bancontact>
             <cm_payments_elv>
