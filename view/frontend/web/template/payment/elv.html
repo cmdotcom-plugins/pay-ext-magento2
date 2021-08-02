@@ -22,23 +22,21 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <!-- ko if: getIssuers() -->
         <div class="payment-method-iban">
             <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
                 <div class="field field-from">
-                    <label data-bind="attr: {for: iban}" class="label">
+                    <label data-bind="attr: {for: elv-iban}" class="label">
                         <span data-bind="i18n: 'IBAN:'"></span>
                     </label>
                     <div class="control">
                         <input type="text"
                                class="input-text"
-                               data-bind="value: iban, attr: { id: iban}">
+                               data-bind="value: iban, attr: {id: elv-iban}" data-validate="{required:true}">
                     </div>
                 </div>
             </form>
         </div>
         <br/>
-        <!--/ko-->
 
         <div class="payment-method-billing-address">
             <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->

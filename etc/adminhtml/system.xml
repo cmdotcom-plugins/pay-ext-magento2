@@ -703,7 +703,24 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1"
+                <field id="order_expiry_unit" translate="label" type="select" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Unit</label>
+                    <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
+                    <config_path>payment/cm_payments_elv/order_expiry_unit</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="order_expiry_duration" translate="label" type="text" sortOrder="100" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Order Expiry Duration</label>
+                    <config_path>payment/cm_payments_elv/order_expiry_duration</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+                <field id="sort_order" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_elv/sort_order</config_path>

@@ -164,6 +164,8 @@
                 <allow_amount>0</allow_amount>
                 <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
                 <transaction_type>redirect</transaction_type>
+                <order_expiry_unit>HOURS</order_expiry_unit>
+                <order_expiry_duration>8</order_expiry_duration>
                 <group>cm</group>
             </cm_payments_elv>
         </payment>

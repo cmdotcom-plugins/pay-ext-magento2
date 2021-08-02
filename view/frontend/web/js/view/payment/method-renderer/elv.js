@@ -77,10 +77,10 @@ define([
         },
 
         /**
-         * Redirect to controller after place order
+         * Redirect to controller for payment confirmation after place order
          */
         afterPlaceOrder: function () {
-            redirectOnSuccessAction.redirectUrl = url.build('cmpayments/payment/elvredirect');
+            redirectOnSuccessAction.redirectUrl = url.build('cmpayments/payment/elvConfirmation');
             this.redirectAfterPlaceOrder = true;
         }
     });

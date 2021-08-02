@@ -110,6 +110,6 @@ class PaymentCreate
      */
     public function setElvDetails(array $elvDetails): void
     {
-        $this->idealDetails = $elvDetails;
+        $this->elvDetails = $elvDetails;
     }
 }
