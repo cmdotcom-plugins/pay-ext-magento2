@@ -15,14 +15,14 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
-use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\Redirect as ResultRedirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\Phrase;
 use Psr\Log\LoggerInterface;
 
-class PaypalRedirect extends Action implements HttpGetActionInterface
+class Redirect extends Action implements HttpGetActionInterface
 {
     /**
      * @var MessageManagerInterface
@@ -55,7 +55,7 @@ class PaypalRedirect extends Action implements HttpGetActionInterface
     private $logger;
 
     /**
-     * PaypalRedirect constructor
+     * Redirect constructor
      *
      * @param Context $context
      * @param MessageManagerInterface $messageManager
@@ -121,9 +121,9 @@ class PaypalRedirect extends Action implements HttpGetActionInterface
      * Return to checkout cart with error message
      *
      * @param Phrase $message
-     * @return Redirect
+     * @return ResultRedirect
      */
-    public function redirectToCheckoutCart(Phrase $message): Redirect
+    public function redirectToCheckoutCart(Phrase $message): ResultRedirect
     {
         $this->checkoutSession->restoreQuote();
 
