@@ -158,7 +158,7 @@ class MethodService implements MethodServiceInterface
             );
 
             // Remove cm_payments_ideal if available because of missing issuer list.
-            $availablePaymentMethods = array_filter($availablePaymentMethods, function($method) {
+            $availablePaymentMethods = array_filter($availablePaymentMethods, function ($method) {
                 return $method->getCode() !== ConfigProvider::CODE_IDEAL;
             });
 
