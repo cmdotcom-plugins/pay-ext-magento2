@@ -23,7 +23,7 @@ class AdditionalDataAssignObserver extends AbstractDataAssignObserver
     /**
      * @var array
      */
-    protected array $additionalInformationList = [
+    protected $additionalInformationList = [
         self::SELECTED_ISSUER,
         self::IBAN,
     ];
