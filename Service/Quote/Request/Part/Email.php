@@ -4,6 +4,8 @@
  * See LICENSE.txt for license details.
  */
 
+declare(strict_types=1);
+
 namespace CM\Payments\Service\Quote\Request\Part;
 
 use CM\Payments\Api\Service\Order\Request\RequestPartByQuoteInterface;

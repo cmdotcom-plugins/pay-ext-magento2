@@ -20,6 +20,7 @@ use CM\Payments\Service\Order\Request\Part\Amount;
 use CM\Payments\Service\Order\Request\Part\Country;
 use CM\Payments\Service\Order\Request\Part\Currency;
 use CM\Payments\Service\Order\Request\Part\Email;
+use CM\Payments\Service\Order\Request\Part\Expiry;
 use CM\Payments\Service\Order\Request\Part\Language;
 use CM\Payments\Service\Order\Request\Part\OrderId;
 use CM\Payments\Service\Order\Request\Part\PaymentProfile;
@@ -199,6 +200,7 @@ class OrderServiceTest extends IntegrationTestCase
                 $this->objectManager->create(PaymentProfile::class),
                 $this->objectManager->create(Email::class),
                 $this->objectManager->create(ReturnUrls::class),
+                $this->objectManager->create(Expiry::class),
             ],
             'quoteRequestParts' => [
                 $this->objectManager->create(QuoteOrderId::class),
@@ -209,6 +211,7 @@ class OrderServiceTest extends IntegrationTestCase
                 $this->objectManager->create(QuotePaymentProfile::class),
                 $this->objectManager->create(QuoteEmail::class),
                 $this->objectManager->create(QuoteReturnUrls::class),
+                $this->objectManager->create(Expiry::class),
             ]
         ]);
 

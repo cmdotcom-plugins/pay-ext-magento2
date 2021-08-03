@@ -59,6 +59,11 @@ class OrderCreate
     private $returnUrls;
 
     /**
+     * @var array
+     */
+    private $expiry;
+
+    /**
      * Order constructor
      *
      * @param ?string $orderId
@@ -69,6 +74,7 @@ class OrderCreate
      * @param ?string $country
      * @param ?string $paymentProfile
      * @param ?array $returnUrls
+     * @param ?array $expiry
      */
     public function __construct(
         ?string $orderId = null,
@@ -78,7 +84,8 @@ class OrderCreate
         ?string $language = null,
         ?string $country = null,
         ?string $paymentProfile = null,
-        ?array $returnUrls = null
+        ?array $returnUrls = null,
+        ?array $expiry = null
     ) {
         $this->orderId = $orderId;
         $this->amount = $amount;
@@ -88,6 +95,7 @@ class OrderCreate
         $this->country = $country;
         $this->paymentProfile = $paymentProfile;
         $this->returnUrls = $returnUrls;
+        $this->expiry = $expiry;
     }
 
     /**
@@ -106,7 +114,8 @@ class OrderCreate
             'language' => $this->language,
             'country' => $this->country,
             'profile' => $this->paymentProfile,
-            'return_urls' => $this->returnUrls
+            'return_urls' => $this->returnUrls,
+            'expiry' => $this->expiry
         ]);
     }
 
@@ -236,5 +245,21 @@ class OrderCreate
     public function setReturnUrls(array $returnUrls): void
     {
         $this->returnUrls = $returnUrls;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExpiry(): ?array
+    {
+        return $this->expiry;
+    }
+
+    /**
+     * @param array $expiry
+     */
+    public function setExpiry(array $expiry): void
+    {
+        $this->expiry = $expiry;
     }
 }

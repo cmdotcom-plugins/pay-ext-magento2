@@ -4,6 +4,8 @@
  * See LICENSE.txt for license details.
  */
 
+declare(strict_types=1);
+
 namespace CM\Payments\Service\Order\Request\Part;
 
 use CM\Payments\Api\Service\Order\Request\RequestPartByOrderInterface;
@@ -20,7 +22,8 @@ class ReturnUrls implements RequestPartByOrderInterface
     private $urlBuilder;
 
     /**
-     * ReturnUrls constructor.
+     * ReturnUrls constructor
+     *
      * @param UrlInterface $urlBuilder
      */
     public function __construct(UrlInterface $urlBuilder)
