@@ -16,6 +16,22 @@ use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Order;
 use CM\Payments\Exception\EmptyOrderKeyException;
 use CM\Payments\Logger\CMPaymentsLogger;
+use CM\Payments\Service\Order\Request\Part\Amount;
+use CM\Payments\Service\Order\Request\Part\Country;
+use CM\Payments\Service\Order\Request\Part\Currency;
+use CM\Payments\Service\Order\Request\Part\Email;
+use CM\Payments\Service\Order\Request\Part\Language;
+use CM\Payments\Service\Order\Request\Part\OrderId;
+use CM\Payments\Service\Order\Request\Part\PaymentProfile;
+use CM\Payments\Service\Order\Request\Part\ReturnUrls;
+use CM\Payments\Service\Quote\Request\Part\Amount as QuoteAmount;
+use CM\Payments\Service\Quote\Request\Part\Country as QuoteCountry;
+use CM\Payments\Service\Quote\Request\Part\Currency as QuoteCurrency;
+use CM\Payments\Service\Quote\Request\Part\Email as QuoteEmail;
+use CM\Payments\Service\Quote\Request\Part\Language as QuoteLanguage;
+use CM\Payments\Service\Quote\Request\Part\OrderId as QuoteOrderId;
+use CM\Payments\Service\Quote\Request\Part\PaymentProfile as QuotePaymentProfile;
+use CM\Payments\Service\Quote\Request\Part\ReturnUrls as QuoteReturnUrls;
 use CM\Payments\Service\OrderRequestBuilder;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
@@ -173,6 +189,29 @@ class OrderServiceTest extends IntegrationTestCase
             ]
         );
 
+        $orderRequestBuilder = $this->objectManager->create(OrderRequestBuilder::class, [
+            'orderRequestParts' => [
+                $this->objectManager->create(OrderId::class),
+                $this->objectManager->create(Amount::class),
+                $this->objectManager->create(Currency::class),
+                $this->objectManager->create(Language::class),
+                $this->objectManager->create(Country::class),
+                $this->objectManager->create(PaymentProfile::class),
+                $this->objectManager->create(Email::class),
+                $this->objectManager->create(ReturnUrls::class),
+            ],
+            'quoteRequestParts' => [
+                $this->objectManager->create(QuoteOrderId::class),
+                $this->objectManager->create(QuoteAmount::class),
+                $this->objectManager->create(QuoteCurrency::class),
+                $this->objectManager->create(QuoteLanguage::class),
+                $this->objectManager->create(QuoteCountry::class),
+                $this->objectManager->create(QuotePaymentProfile::class),
+                $this->objectManager->create(QuoteEmail::class),
+                $this->objectManager->create(QuoteReturnUrls::class),
+            ]
+        ]);
+
         $this->orderService = $this->objectManager->create(
             OrderService::class,
             [
@@ -180,7 +219,7 @@ class OrderServiceTest extends IntegrationTestCase
                 'orderClient' => $orderClient,
                 'orderInterfaceFactory' => $this->objectManager->create(OrderInterfaceFactory::class),
                 'cmOrderRepository' => $this->objectManager->create(\CM\Payments\Model\OrderRepository::class),
-                'orderRequestBuilder' => $this->objectManager->create(OrderRequestBuilder::class),
+                'orderRequestBuilder' => $orderRequestBuilder,
                 'cmOrderInterfaceFactory' => $this->objectManager->create(CMOrderInterfaceFactory::class),
                 'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments'])
             ]

@@ -6,7 +6,7 @@
 
 namespace CM\Payments\Test\Integration\Controller\Checkout;
 
-use CM\Payments\Client\Model\OrderCreate;
+use CM\Payments\Client\Model\Request\OrderCreate;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Message\MessageInterface;
