@@ -19,7 +19,7 @@ class Expiry implements RequestPartByQuoteInterface
      */
     public function process(CartInterface $quote, OrderCreate $orderCreate): OrderCreate
     {
-        $orderCreate->setReturnUrls([]);
+        $orderCreate->setExpiry([]);
 
         return $orderCreate;
     }
