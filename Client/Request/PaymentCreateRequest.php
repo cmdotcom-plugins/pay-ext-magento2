@@ -22,6 +22,7 @@ class PaymentCreateRequest implements RequestInterface
      * @var PaymentCreate
      */
     private $paymentCreate;
+
     /**
      * @var string
      */
