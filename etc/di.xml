@@ -304,7 +304,7 @@
     <!-- END CM Payments (PayPal) Method -->
 
     <!-- BEGIN CM Payments (BanContact) Method -->
-    <virtualType name="CMPaymentsBancontactFacade" type="CMPaymentsFacade">
+    <virtualType name="CMPaymentsBanContactFacade" type="CMPaymentsFacade">
         <arguments>
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_BANCONTACT</argument>
             <argument name="valueHandlerPool" xsi:type="object">CMBanContactValueHandlerPool</argument>
