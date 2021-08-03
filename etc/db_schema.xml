@@ -6,7 +6,7 @@
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
     <table name="cm_payments_order" resource="default" engine="innodb"
-           comment="CM Payments order table">
+           comment="CM.com Payments order table">
         <column xsi:type="int" name="id" padding="11" unsigned="false" nullable="false" identity="true" comment="id"/>
         <column xsi:type="int" name="order_id" padding="11" unsigned="true" nullable="false" identity="false"
                 default="0"

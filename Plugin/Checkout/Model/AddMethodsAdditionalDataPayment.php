@@ -10,14 +10,12 @@ namespace CM\Payments\Plugin\Checkout\Model;
 
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
-use CM\Payments\Model\ConfigProvider;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
-use Magento\Checkout\Api\Data\ShippingInformationInterface;
-use Magento\Checkout\Api\ShippingInformationManagementInterface;
+use Magento\Checkout\Api\PaymentInformationManagementInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
 
-class ShippingInformationManagement
+class AddMethodsAdditionalDataPayment
 {
     /**
      * @var ConfigService
@@ -35,7 +33,7 @@ class ShippingInformationManagement
     private $methodService;
 
     /**
-     * ShippingInformationManagement constructor
+     * PaymentInformationManagement constructor
      *
      * @param ConfigService $configService
      * @param CartRepositoryInterface $quoteRepository
@@ -52,35 +50,21 @@ class ShippingInformationManagement
     }
 
     /**
-     * @param ShippingInformationManagementInterface $subject
+     * @param PaymentInformationManagementInterface $subject
      * @param PaymentDetailsInterface $paymentDetails
      * @param int $cartId
-     * @param ShippingInformationInterface $addressInformation
      * @return PaymentDetailsInterface
      * @throws NoSuchEntityException
      */
-    public function afterSaveAddressInformation(
-        ShippingInformationManagementInterface $subject,
+    public function afterGetPaymentInformation(
+        PaymentInformationManagementInterface $subject,
         PaymentDetailsInterface $paymentDetails,
-        $cartId,
-        ShippingInformationInterface $addressInformation
+        $cartId
     ): PaymentDetailsInterface {
         if ($this->configService->isEnabled()) {
             $quote = $this->quoteRepository->getActive($cartId);
 
-            $availablePaymentMethods = $paymentDetails->getPaymentMethods();
-            $availableProfileMethods = $this->methodService->getAvailablePaymentMethods($quote);
-            foreach ($availablePaymentMethods as $id => $paymentMethod) {
-                if (strpos($paymentMethod->getCode(), ConfigProvider::CODE . '_') === false) {
-                    continue;
-                }
-
-                if (!isset($availableProfileMethods[$paymentMethod->getCode()])) {
-                    unset($availablePaymentMethods[$id]);
-                }
-            }
-
-            $paymentDetails->setPaymentMethods($availablePaymentMethods);
+            return $this->methodService->addMethodAdditionalData($quote, $paymentDetails);
         }
 
         return $paymentDetails;

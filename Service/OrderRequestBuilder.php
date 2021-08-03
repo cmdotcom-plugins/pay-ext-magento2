@@ -8,36 +8,18 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
-use CM\Payments\Api\Config\ConfigInterface;
+use CM\Payments\Api\Service\Order\Request\RequestPartByOrderInterface;
+use CM\Payments\Api\Service\Order\Request\RequestPartByQuoteInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
-use CM\Payments\Client\Model\OrderCreate as ClientOrder;
-use CM\Payments\Client\Model\OrderCreateFactory as ClientOrderCreateFactory;
+use CM\Payments\Client\Model\Request\OrderCreate;
+use CM\Payments\Client\Model\Request\OrderCreateFactory as ClientOrderCreateFactory;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Client\Request\OrderCreateRequestFactory;
-use CM\Payments\Model\ConfigProvider;
-use Magento\Framework\Locale\ResolverInterface;
-use Magento\Framework\Math\Random as MathRandom;
-use Magento\Framework\UrlInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 
 class OrderRequestBuilder implements OrderRequestBuilderInterface
 {
-    /**
-     * @var ConfigInterface
-     */
-    private $config;
-
-    /**
-     * @var ResolverInterface
-     */
-    private $localeResolver;
-
-    /**
-     * @var UrlInterface
-     */
-    private $urlBuilder;
-
     /**
      * @var ClientOrderCreateFactory
      */
@@ -49,34 +31,33 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
     private $orderCreateRequestFactory;
 
     /**
-     * @var MathRandom
+     * @var RequestPartByOrderInterface[]
      */
-    private $mathRandom;
+    private $orderRequestParts;
+
+    /**
+     * @var RequestPartByQuoteInterface[]
+     */
+    private $quoteRequestParts;
 
     /**
      * OrderRequestBuilder constructor
      *
-     * @param ConfigInterface $config
-     * @param ResolverInterface $localeResolver
-     * @param UrlInterface $urlBuilder
      * @param ClientOrderCreateFactory $clientOrderCreateFactory
      * @param OrderCreateRequestFactory $orderCreateRequestFactory
-     * @param MathRandom $mathRandom
+     * @param RequestPartByOrderInterface[] $orderRequestParts
+     * @param RequestPartByQuoteInterface[] $quoteRequestParts
      */
     public function __construct(
-        ConfigInterface $config,
-        ResolverInterface $localeResolver,
-        UrlInterface $urlBuilder,
         ClientOrderCreateFactory $clientOrderCreateFactory,
         OrderCreateRequestFactory $orderCreateRequestFactory,
-        MathRandom $mathRandom
+        array $orderRequestParts,
+        array $quoteRequestParts
     ) {
-        $this->config = $config;
-        $this->localeResolver = $localeResolver;
-        $this->urlBuilder = $urlBuilder;
         $this->clientOrderCreateFactory = $clientOrderCreateFactory;
         $this->orderCreateRequestFactory = $orderCreateRequestFactory;
-        $this->mathRandom = $mathRandom;
+        $this->orderRequestParts = $orderRequestParts;
+        $this->quoteRequestParts = $quoteRequestParts;
     }
 
     /**
@@ -84,101 +65,28 @@ class OrderRequestBuilder implements OrderRequestBuilderInterface
      */
     public function create(OrderInterface $order): OrderCreateRequest
     {
-        $paymentMethod = $order->getPayment()->getMethod();
-        $paymentProfile = $this->config->getPaymentProfile();
+        /** @var OrderCreate $orderCreate */
+        $orderCreate = $this->clientOrderCreateFactory->create();
 
-        if ($paymentMethod == ConfigProvider::CODE_CREDIT_CARD) {
-            $paymentProfile = $this->config->getCreditCardPaymentProfile() ?? $this->config->getPaymentProfile();
-        } elseif ($paymentMethod == ConfigProvider::CODE_BANCONTACT) {
-            $paymentProfile = $this->config->getBanContactPaymentProfile() ?? $this->config->getPaymentProfile();
+        foreach ($this->orderRequestParts as $part) {
+            $orderCreate = $part->process($order, $orderCreate);
         }
 
-        /** @var ClientOrder $clientOrder */
-        $clientOrder = $this->clientOrderCreateFactory->create([
-            'orderId' => $order->getIncrementId(),
-            'amount' => $this->getAmount($order),
-            'currency' => $order->getOrderCurrencyCode(),
-            'email' => $order->getShippingAddress()->getEmail(),
-            'language' => $this->getLanguageCode((int)$order->getStoreId()),
-            'country' => $order->getShippingAddress()->getCountryId(),
-            'paymentProfile' => $paymentProfile,
-            'returnUrls' => [
-                'success' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_SUCCESS),
-                'pending' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_PENDING),
-                'cancelled' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_CANCELLED),
-                'error' => $this->getReturnUrl($order->getIncrementId(), ClientOrder::STATUS_ERROR)
-            ]
-        ]);
-
-        return $this->orderCreateRequestFactory->create(['orderCreate' => $clientOrder]);
+        return $this->orderCreateRequestFactory->create(['orderCreate' => $orderCreate]);
     }
 
     /**
      * @inheritDoc
      */
-    public function createByQuote(CartInterface $quote, bool $isEmptyProfile = false): OrderCreateRequest
+    public function createByQuote(CartInterface $quote): OrderCreateRequest
     {
-        $orderId = $this->mathRandom->getUniqueHash('Q_');
-        $customerEmail = $quote->getShippingAddress()->getEmail();
+        /** @var OrderCreate $orderCreate */
+        $orderCreate = $this->clientOrderCreateFactory->create();
 
-        // TODO: For guest users we have the problem with recognizing of email on some checkout steps (best case is
-        // TODO: to solve this on CM.com side)
-        if ($quote->getCustomerIsGuest()) {
-            $customerEmail = 'guest@gmail.com';
+        foreach ($this->quoteRequestParts as $part) {
+            $orderCreate = $part->process($quote, $orderCreate);
         }
 
-        /** @var ClientOrder $clientOrder */
-        $clientOrder = $this->clientOrderCreateFactory->create([
-            'orderId' => $orderId,
-            'amount' => (int)($quote->getGrandTotal() * 100),
-            'currency' => $quote->getCurrency()->getQuoteCurrencyCode(),
-            'email' => $customerEmail,
-            'language' => $this->getLanguageCode((int)$quote->getStoreId()),
-            'country' => $quote->getShippingAddress()->getCountryId(),
-            'paymentProfile' => $isEmptyProfile ? '' : $this->config->getPaymentProfile(),
-            'returnUrls' => []
-        ]);
-
-        return $this->orderCreateRequestFactory->create(['orderCreate' => $clientOrder]);
-    }
-
-    /**
-     * @param int $storeId
-     * @return string
-     */
-    private function getLanguageCode(int $storeId): string
-    {
-        if (!$this->localeResolver->emulate($storeId)) {
-            return '';
-        }
-
-        return substr($this->localeResolver->emulate($storeId), 0, 2);
-    }
-
-    /**
-     * Converts amount to int
-     * @param OrderInterface $order
-     * @return int
-     */
-    private function getAmount(OrderInterface $order): int
-    {
-        return (int)($order->getGrandTotal() * 100);
-    }
-
-    /**
-     * Get Return Url
-     *
-     * @param string $orderReference
-     * @param string $status
-     * @return string
-     */
-    private function getReturnUrl(string $orderReference, string $status): string
-    {
-        return $this->urlBuilder->getUrl('cmpayments/payment/result', [
-            '_query' => [
-                'order_reference' => $orderReference,
-                'status' => $status
-            ]
-        ]);
+        return $this->orderCreateRequestFactory->create(['orderCreate' => $orderCreate]);
     }
 }

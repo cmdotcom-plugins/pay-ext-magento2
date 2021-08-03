@@ -10,9 +10,10 @@ namespace CM\Payments\Controller\Payment;
 
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
-use CM\Payments\Client\Model\CMPaymentUrl;
 use Exception;
 use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
@@ -21,12 +22,12 @@ use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\Phrase;
 use Psr\Log\LoggerInterface;
 
-class PaypalRedirect implements HttpGetActionInterface
+class PaypalRedirect extends Action implements HttpGetActionInterface
 {
     /**
      * @var MessageManagerInterface
      */
-    private $messageManager;
+    protected $messageManager;
 
     /**
      * @var Session
@@ -56,6 +57,7 @@ class PaypalRedirect implements HttpGetActionInterface
     /**
      * PaypalRedirect constructor
      *
+     * @param Context $context
      * @param MessageManagerInterface $messageManager
      * @param Session $checkoutSession
      * @param RedirectFactory $redirectFactory
@@ -64,6 +66,7 @@ class PaypalRedirect implements HttpGetActionInterface
      * @param LoggerInterface $logger
      */
     public function __construct(
+        Context $context,
         MessageManagerInterface $messageManager,
         Session $checkoutSession,
         RedirectFactory $redirectFactory,
@@ -77,6 +80,8 @@ class PaypalRedirect implements HttpGetActionInterface
         $this->orderService = $orderService;
         $this->paymentService = $paymentService;
         $this->logger = $logger;
+
+        parent::__construct($context);
     }
 
     /**
@@ -93,19 +98,21 @@ class PaypalRedirect implements HttpGetActionInterface
             }
 
             $cmOrder = $this->orderService->create($order->getEntityId());
+            if (!$cmOrder->getOrderReference()) {
+                throw new LocalizedException(__('The order was not placed properly.'));
+            }
+
             $cmPayment = $this->paymentService->create($order->getEntityId());
-            $url = $this->getUrl($cmPayment->getUrls());
-            if (empty($url)) {
+            $redirectUrl = $cmPayment->getRedirectUrl();
+            if (!$redirectUrl) {
                 throw new LocalizedException(__('No redirect url found in payment response'));
             }
 
             return $this->redirectFactory->create()
-                ->setUrl($url);
-
-
-            return $this->redirectFactory->create()->setUrl($cmOrder->getUrl());
+                ->setUrl($redirectUrl);
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage());
+
             return $this->redirectToCheckoutCart(__('Something went wrong while creating the order.'));
         }
     }
@@ -124,21 +131,5 @@ class PaypalRedirect implements HttpGetActionInterface
 
         return $this->redirectFactory->create()
             ->setPath('checkout/cart');
-    }
-
-    /**
-     * @param CMPaymentUrl[] $paymentUrls
-     *
-     * @return string
-     */
-    private function getUrl(array $paymentUrls): string
-    {
-        foreach ($paymentUrls as $paymentUrl) {
-            if ($paymentUrl->getPurpose() === CMPaymentUrl::PURPOSE_REDIRECT) {
-                return $paymentUrl->getUrl();
-            }
-        }
-
-        return '';
     }
 }

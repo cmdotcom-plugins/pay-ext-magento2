@@ -8,9 +8,10 @@ declare(strict_types=1);
 
 namespace CM\Payments\Controller\Payment;
 
-use CM\Payments\Api\Model\Data\OrderInterface as CMOrderInterface;
-use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
-use CM\Payments\Api\Service\OrderServiceInterface;
+use CM\Payments\Api\Service\OrderTransactionServiceInterface;
+use CM\Payments\Logger\CMPaymentsLogger;
+use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
@@ -19,12 +20,8 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Order\Payment;
-use Psr\Log\LoggerInterface;
 
-class Notification implements HttpGetActionInterface, CsrfAwareActionInterface
+class Notification extends Action implements HttpGetActionInterface, CsrfAwareActionInterface
 {
     /**
      * @var RequestInterface
@@ -37,49 +34,37 @@ class Notification implements HttpGetActionInterface, CsrfAwareActionInterface
     private $resultJsonFactory;
 
     /**
-     * @var CMOrderRepositoryInterface
-     */
-    private $cmOrderRepository;
-
-    /**
-     * @var OrderRepositoryInterface
-     */
-    private $orderRepository;
-
-    /**
-     * @var OrderServiceInterface
-     */
-    private $orderService;
-
-    /**
-     * @var LoggerInterface
+     * @var CMPaymentsLogger
      */
     private $logger;
 
     /**
-     * Notification constructor
+     * @var OrderTransactionServiceInterface
+     */
+    private $orderTransactionService;
+
+    /**
+     * Notification constructor.
      *
+     * @param Context $context
      * @param RequestInterface $request
      * @param JsonFactory $resultJsonFactory
-     * @param CMOrderRepositoryInterface $cmOrderRepository
-     * @param OrderRepositoryInterface $orderRepository
-     * @param OrderServiceInterface $orderService,
-     * @param LoggerInterface $logger
+     * @param OrderTransactionServiceInterface $orderTransactionService
+     * @param CMPaymentsLogger $logger
      */
     public function __construct(
+        Context $context,
         RequestInterface $request,
         JsonFactory $resultJsonFactory,
-        CMOrderRepositoryInterface $cmOrderRepository,
-        OrderRepositoryInterface $orderRepository,
-        OrderServiceInterface $orderService,
-        LoggerInterface $logger
+        OrderTransactionServiceInterface $orderTransactionService,
+        CMPaymentsLogger $logger
     ) {
         $this->request = $request;
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->cmOrderRepository = $cmOrderRepository;
-        $this->orderRepository = $orderRepository;
-        $this->orderService = $orderService;
         $this->logger = $logger;
+        $this->orderTransactionService = $orderTransactionService;
+
+        parent::__construct($context);
     }
 
     /**
@@ -97,38 +82,18 @@ class Notification implements HttpGetActionInterface, CsrfAwareActionInterface
         }
 
         try {
-            /** @var CMOrderInterface $cmOrder */
-            $cmOrder = $this->cmOrderRepository->getByOrderKey($cmOrderId);
+            $this->orderTransactionService->process($cmOrderId);
 
-            /** @var OrderInterface $order */
-            $order = $this->orderRepository->get($cmOrder->getOrderId());
+            $resultPage->setHttpResponseCode(200);
+            $resultPage->setData([]);
 
-            /** @var Payment $payment */
-            $payment = $order->getPayment();
-
-            $cmOrderDetails = $this->orderService->get($cmOrder);
-
-            if (!$cmOrderDetails) {
-                throw new NoSuchEntityException(
-                    __('CM Order with ID "%1" does not exist.', $cmOrderId)
-                );
-            }
-
-            if (!empty($cmOrderDetails['considered_safe'])) {
-                $payment->setNotificationResult(true);
-                $payment->accept(false);
-                $this->orderService->setOrderStatus($order, $payment->getMethod());
-            }
+            return $resultPage;
         } catch (NoSuchEntityException $e) {
-            $resultPage->setHttpResponseCode(404);
+            $resultPage->setData(['message' => __('No such entity')]);
+            $resultPage->setHttpResponseCode(400);
 
             return $resultPage;
         }
-
-        $resultPage->setHttpResponseCode(200);
-        $resultPage->setData([]);
-
-        return $resultPage;
     }
 
     /**

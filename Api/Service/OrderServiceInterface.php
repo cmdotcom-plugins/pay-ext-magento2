@@ -10,6 +10,7 @@ namespace CM\Payments\Api\Service;
 
 use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
+use CM\Payments\Client\Api\OrderDetailInterface;
 
 interface OrderServiceInterface
 {
@@ -19,10 +20,4 @@ interface OrderServiceInterface
      * @return CMOrderInterface
      */
     public function create(string $orderId): CMOrderInterface;
-
-    /**
-     * @param CMOrder $cmOrder
-     * @return array
-     */
-    public function get(CMOrder $cmOrder): array;
 }

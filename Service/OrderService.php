@@ -8,23 +8,18 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
-use CM\Payments\Api\Client\ApiClientInterface;
 use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
-use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
 use CM\Payments\Api\Model\Data\OrderInterfaceFactory as CMOrderFactory;
 use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Client\Request\OrderGetMethodsRequest;
-use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
-use CM\Payments\Client\Request\OrderGetRequest;
-use CM\Payments\Client\Request\OrderGetRequestFactory;
+use CM\Payments\Client\Api\OrderInterface as CMOrderClientInterface;
 use CM\Payments\Exception\EmptyOrderKeyException;
 use CM\Payments\Logger\CMPaymentsLogger;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Order;
 
 class OrderService implements OrderServiceInterface
 {
@@ -34,9 +29,9 @@ class OrderService implements OrderServiceInterface
     private $orderRepository;
 
     /**
-     * @var ApiClientInterface
+     * @var CMOrderClientInterface
      */
-    private $apiClient;
+    private $orderClient;
 
     /**
      * @var CMOrderFactory
@@ -59,52 +54,44 @@ class OrderService implements OrderServiceInterface
     private $cmOrderInterfaceFactory;
 
     /**
-     * @var OrderGetRequestFactory
-     */
-    private $orderGetRequestFactory;
-
-    /**
-     * @var OrderGetMethodsRequestFactory
-     */
-    private $orderGetMethodsRequestFactory;
-
-    /**
      * @var CMPaymentsLogger
      */
     private $logger;
 
     /**
-     * OrderService constructor
+     * @var ManagerInterface
+     */
+    private $eventManager;
+
+    /**
+     * OrderService constructor.
      *
      * @param OrderRepositoryInterface $orderRepository
-     * @param ApiClientInterface $apiClient
-     * @param OrderInterfaceFactory $cmOrderFactory
+     * @param CMOrderClientInterface $orderClient
+     * @param CMOrderFactory $cmOrderFactory
      * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param OrderRequestBuilderInterface $orderRequestBuilder
      * @param CMOrderInterfaceFactory $cmOrderInterfaceFactory
-     * @param OrderGetRequestFactory $orderGetRequestFactory
-     * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
+     * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
-        ApiClientInterface $apiClient,
-        OrderInterfaceFactory $cmOrderFactory,
+        CMOrderClientInterface $orderClient,
+        CMOrderFactory $cmOrderFactory,
         CMOrderRepositoryInterface $cmOrderRepository,
         OrderRequestBuilderInterface $orderRequestBuilder,
         CMOrderInterfaceFactory $cmOrderInterfaceFactory,
-        OrderGetRequestFactory $orderGetRequestFactory,
-        OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
+        ManagerInterface $eventManager,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->orderRepository = $orderRepository;
-        $this->apiClient = $apiClient;
+        $this->orderClient = $orderClient;
         $this->cmOrderFactory = $cmOrderFactory;
         $this->cmOrderRepository = $cmOrderRepository;
         $this->orderRequestBuilder = $orderRequestBuilder;
         $this->cmOrderInterfaceFactory = $cmOrderInterfaceFactory;
-        $this->orderGetRequestFactory = $orderGetRequestFactory;
-        $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
+        $this->eventManager = $eventManager;
         $this->logger = $cmPaymentsLogger;
     }
 
@@ -116,78 +103,61 @@ class OrderService implements OrderServiceInterface
         $order = $this->orderRepository->get($orderId);
         $orderCreateRequest = $this->orderRequestBuilder->create($order);
 
-        $this->logger->info('CM Create order request', [
-            'orderId' => $orderId,
-            'requestPayload' => $orderCreateRequest->getPayload()
+        $this->logger->info(
+            'CM Create order request',
+            [
+                'orderId' => $orderId,
+                'requestPayload' => $orderCreateRequest->getPayload()
+            ]
+        );
+
+        $this->eventManager->dispatch('cmpayments_before_order_create', [
+            'order' => $order,
+            'orderCreateRequest' => $orderCreateRequest,
         ]);
 
-        $response = $this->apiClient->execute(
+        $orderCreateResponse = $this->orderClient->create(
             $orderCreateRequest
         );
 
-        if (empty($response['order_key'])) {
+        if (empty($orderCreateResponse->getOrderKey())) {
             throw new EmptyOrderKeyException(__('Empty order key'));
         }
+
         /** @var CMOrder $cmOrder */
         $model = $this->cmOrderFactory->create();
         $model->setOrderId((int)$order->getEntityId());
-        $model->setOrderKey($response['order_key']);
+        $model->setOrderKey($orderCreateResponse->getOrderKey());
         $model->setIncrementId($order->getIncrementId());
 
         $this->cmOrderRepository->save($model);
 
         $additionalInformation = $order->getPayment()->getAdditionalInformation();
-        if ($response['expires_on']) {
-            $additionalInformation['expires_at'] = $response['expires_on'];
+        if ($orderCreateResponse->getExpiresOn()) {
+            $additionalInformation['expires_at'] = $orderCreateResponse->getExpiresOn();
         }
 
-        if ($response['url']) {
-            $additionalInformation['checkout_url'] = $response['url'];
+        if ($orderCreateResponse->getUrl()) {
+            $additionalInformation['checkout_url'] = $orderCreateResponse->getUrl();
         }
 
         $order->getPayment()->setAdditionalInformation($additionalInformation);
         $this->orderRepository->save($order);
 
-        return $this->cmOrderInterfaceFactory->create(
+        $cmOrder = $this->cmOrderInterfaceFactory->create(
             [
-                'url' => $response['url'],
+                'url' => $orderCreateResponse->getUrl(),
                 'orderReference' => $orderCreateRequest->getPayload()['order_reference'],
-                'orderKey' => $response['order_key'],
-                'expiresOn' => $response['expires_on'],
+                'orderKey' => $orderCreateResponse->getOrderKey(),
+                'expiresOn' => $orderCreateResponse->getExpiresOn()
             ]
         );
-    }
 
-    /**
-     * @param CMOrder $cmOrder
-     * @return array
-     */
-    public function get(CMOrder $cmOrder): array
-    {
-        /** @var OrderGetRequest $orderGetRequest */
-        $orderGetRequest = $this->orderGetRequestFactory->create(['cmOrder' => $cmOrder]);
+        $this->eventManager->dispatch('cmpayments_after_order_create', [
+            'order' => $order,
+            'cmOrder' => $cmOrder,
+        ]);
 
-        return $this->apiClient->execute(
-            $orderGetRequest
-        );
-    }
-
-    /**
-     * Update the order status if the order state is Order::STATE_PROCESSING
-     *
-     * @param Order $order
-     * @param String $method
-     * @param string|null $status
-     */
-    public function setOrderStatus(Order $order, string $method, ?string $status = null)
-    {
-        if (!isset($status)) {
-            //TODO: Add the proper status
-            $status = 'processing';
-        }
-
-        if (Order::STATE_PROCESSING === $order->getState()) {
-            $order->addCommentToStatusHistory(__('Order processed by CM.'), $status);
-        }
+        return $cmOrder;
     }
 }
