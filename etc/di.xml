@@ -354,6 +354,57 @@
     </virtualType>
     <!-- END CM Payments (BanContact) Method -->
 
+    <!-- BEGIN CM Payments (Klarna) Method -->
+    <virtualType name="CMPaymentsKlarnaFacade" type="CMPaymentsFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_KLARNA</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMKlarnaValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">CMKlarnaValidatorPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMKlarnaConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMKlarnaGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_KLARNA</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMKlarnaCountryValidator</item>
+                <item name="currency" xsi:type="string">CMKlarnaCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMKlarnaGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMKlarnaGenericConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (Klarna) Method -->
+
     <!-- BEGIN CM Payments (Logger) -->
     <type name="CM\Payments\Logger\Handler">
         <arguments>
