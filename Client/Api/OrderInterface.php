@@ -20,7 +20,6 @@ interface OrderInterface
     /**
      * @param string $date
      * @return OrderListItem[]
-     *
      * @throws RequestException
      */
     public function getList(string $date): array;
@@ -35,7 +34,6 @@ interface OrderInterface
     /**
      * @param string $orderKey
      * @return PaymentMethod[]
-     *
      * @throws RequestException
      */
     public function getMethods(string $orderKey): array;
