@@ -73,6 +73,15 @@
         </arguments>
     </type>
 
+    <type name="CM\Payments\Observer\AdditionalDataAssignObserver">
+        <arguments>
+            <argument name="additionalInformationList" xsi:type="array">
+                <item name="selected_issuer" xsi:type="string">selected_issuer</item>
+                <item name="iban" xsi:type="string">iban</item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- BEGIN CM Payments Method -->
     <virtualType name="CMPaymentsFacade" type="Magento\Payment\Model\Method\Adapter">
         <arguments>

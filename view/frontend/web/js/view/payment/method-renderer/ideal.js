@@ -98,7 +98,7 @@ define([
          * Redirect to controller after place order
          */
         afterPlaceOrder: function () {
-            redirectOnSuccessAction.redirectUrl = url.build('cmpayments/payment/idealredirect');
+            redirectOnSuccessAction.redirectUrl = url.build('cmpayments/payment/redirect');
             this.redirectAfterPlaceOrder = true;
         }
     });

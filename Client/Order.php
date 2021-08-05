@@ -12,10 +12,12 @@ use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Api\OrderInterface;
 use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Client\Model\Response\OrderDetail;
+use CM\Payments\Client\Model\Response\OrderListItem;
 use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Client\Request\OrderGetMethodsRequest;
 use CM\Payments\Client\Request\OrderGetRequest;
+use CM\Payments\Client\Request\OrdersRequest;
 use GuzzleHttp\Exception\RequestException;
 
 class Order implements OrderInterface
@@ -32,6 +34,24 @@ class Order implements OrderInterface
     public function __construct(ApiClientInterface $apiClient)
     {
         $this->apiClient = $apiClient;
+    }
+
+    /**
+     * @return OrderListItem[]
+     *
+     * @throws RequestException
+     */
+    public function getList(string $date): array
+    {
+        $ordersRequest = new OrdersRequest($date);
+
+        $response = $this->apiClient->execute(
+            $ordersRequest
+        );
+
+        return array_map(function ($order) {
+            return new OrderListItem($order);
+        }, $response);
     }
 
     /**

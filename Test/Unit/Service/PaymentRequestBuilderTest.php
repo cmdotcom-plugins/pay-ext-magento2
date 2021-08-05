@@ -29,11 +29,6 @@ class PaymentRequestBuilderTest extends UnitTestCase
      */
     private $paymentRequestBuilder;
 
-    /**
-     * @var \CM\Payments\Api\Config\ConfigInterface
-     */
-    private $configMock;
-
     public function testCreateIdealPaymentRequestBuilder()
     {
         $orderMock = $this->getOrderMock(ConfigProvider::CODE_IDEAL);
@@ -118,15 +113,10 @@ class PaymentRequestBuilderTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->configMock = $this->getMockBuilder(ConfigInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $clientPaymentCreateFactoryMock = $this->getMockupFactory(PaymentCreate::class);
         $paymentCreateRequestFactoryMock = $this->getMockupFactory(PaymentCreateRequest::class);
 
         $this->paymentRequestBuilder = new PaymentRequestBuilder(
-            $this->configMock,
             $clientPaymentCreateFactoryMock,
             $paymentCreateRequestFactoryMock,
             [
