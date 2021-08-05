@@ -21,12 +21,13 @@ use GuzzleHttp\Exception\RequestException;
 class Order implements OrderInterface
 {
     /**
-     * ApiClientInterface
+     * @var ApiClientInterface
      */
     private $apiClient;
 
     /**
-     * Order constructor.
+     * Order constructor
+     *
      * @param ApiClientInterface $apiClient
      */
     public function __construct(ApiClientInterface $apiClient)

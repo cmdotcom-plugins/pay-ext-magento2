@@ -12,7 +12,6 @@ use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Client\Model\Response\OrderDetail;
 use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Client\Request\OrderCreateRequest;
-use CM\Payments\Client\Request\OrderGetMethodsRequest;
 use GuzzleHttp\Exception\RequestException;
 
 interface OrderInterface
@@ -20,7 +19,6 @@ interface OrderInterface
     /**
      * @param string $orderKey
      * @return OrderDetail
-     *
      * @throws RequestException
      */
     public function getDetail(string $orderKey): OrderDetail;
@@ -36,7 +34,6 @@ interface OrderInterface
     /**
      * @param OrderCreateRequest $orderCreateRequest
      * @return OrderCreate
-     *
      * @throws RequestException
      */
     public function create(OrderCreateRequest $orderCreateRequest): OrderCreate;

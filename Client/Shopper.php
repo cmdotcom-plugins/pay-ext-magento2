@@ -9,11 +9,11 @@ declare(strict_types=1);
 namespace CM\Payments\Client;
 
 use CM\Payments\Client\Api\ApiClientInterface;
-use CM\Payments\Client\Api\PaymentInterface;
-use CM\Payments\Client\Model\Response\PaymentCreate;
-use CM\Payments\Client\Request\PaymentCreateRequest;
+use CM\Payments\Client\Api\ShopperInterface;
+use CM\Payments\Client\Model\Response\ShopperCreate;
+use CM\Payments\Client\Request\ShopperCreateRequest;
 
-class Payment implements PaymentInterface
+class Shopper implements ShopperInterface
 {
     /**
      * @var ApiClientInterface
@@ -21,7 +21,7 @@ class Payment implements PaymentInterface
     private $apiClient;
 
     /**
-     * Payment constructor
+     * Shopper constructor
      *
      * @param ApiClientInterface $apiClient
      */
@@ -34,12 +34,12 @@ class Payment implements PaymentInterface
     /**
      * @inheritDoc
      */
-    public function create(PaymentCreateRequest $paymentCreateRequest): PaymentCreate
+    public function create(ShopperCreateRequest $shopperCreateRequest): ShopperCreate
     {
         $response = $this->apiClient->execute(
-            $paymentCreateRequest
+            $shopperCreateRequest
         );
 
-        return new PaymentCreate($response);
+        return new ShopperCreate($response);
     }
 }

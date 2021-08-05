@@ -128,7 +128,7 @@ class MethodService implements MethodServiceInterface
             }
 
             foreach ($availablePaymentMethods as $id => $paymentMethod) {
-                if (! $this->isCmPaymentsMethod($paymentMethod->getCode())) {
+                if (!$this->isCmPaymentsMethod($paymentMethod->getCode())) {
                     continue;
                 }
 
@@ -191,11 +191,11 @@ class MethodService implements MethodServiceInterface
      */
     private function createCmOrder(CartInterface $quote): OrderCreate
     {
-        $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote, true);
-        $cmOrder = $this->orderClient->create(
+        $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote);
+
+        return $this->orderClient->create(
             $orderCreateRequest
         );
-        return $cmOrder;
     }
 
     /**

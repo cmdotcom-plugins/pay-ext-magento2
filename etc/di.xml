@@ -9,14 +9,21 @@
     <preference for="CM\Payments\Client\Api\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
     <preference for="CM\Payments\Client\Api\OrderInterface" type="CM\Payments\Client\Order" />
     <preference for="CM\Payments\Client\Api\PaymentInterface" type="CM\Payments\Client\Payment" />
+    <preference for="CM\Payments\Client\Api\ShopperInterface" type="CM\Payments\Client\Shopper" />
     <preference for="CM\Payments\Api\Service\OrderServiceInterface" type="CM\Payments\Service\OrderService" />
-    <preference for="CM\Payments\Api\Service\OrderTransactionServiceInterface" type="CM\Payments\Service\OrderTransactionService" />
+    <preference for="CM\Payments\Api\Service\OrderTransactionServiceInterface"
+                type="CM\Payments\Service\OrderTransactionService" />
     <preference for="CM\Payments\Api\Service\PaymentServiceInterface" type="CM\Payments\Service\PaymentService" />
     <preference for="CM\Payments\Api\Service\MethodServiceInterface" type="CM\Payments\Service\MethodService" />
     <preference for="CM\Payments\Api\Service\VersionServiceInterface" type="CM\Payments\Service\VersionService" />
     <preference for="CM\Payments\Api\Service\ApiTestServiceInterface" type="CM\Payments\Service\ApiTestService" />
-    <preference for="CM\Payments\Api\Service\OrderRequestBuilderInterface" type="CM\Payments\Service\OrderRequestBuilder" />
-    <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface" type="CM\Payments\Service\PaymentRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\ShopperServiceInterface" type="CM\Payments\Service\ShopperService" />
+    <preference for="CM\Payments\Api\Service\OrderRequestBuilderInterface"
+                type="CM\Payments\Service\OrderRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface"
+                type="CM\Payments\Service\PaymentRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\ShopperRequestBuilderInterface"
+                type="CM\Payments\Service\ShopperRequestBuilder" />
     <preference for="CM\Payments\Api\Client\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
     <preference for="CM\Payments\Api\Model\OrderRepositoryInterface" type="CM\Payments\Model\OrderRepository" />
     <preference for="CM\Payments\Api\Model\PaymentRepositoryInterface" type="CM\Payments\Model\PaymentRepository" />
@@ -57,6 +64,7 @@
                 <item name="paymentProfile" xsi:type="object">CM\Payments\Service\Order\Request\Part\PaymentProfile</item>
                 <item name="returnUrls" xsi:type="object">CM\Payments\Service\Order\Request\Part\ReturnUrls</item>
                 <item name="expiry" xsi:type="object">CM\Payments\Service\Order\Request\Part\Expiry</item>
+                <item name="billing_address_key" xsi:type="object">CM\Payments\Service\Order\Request\Part\BillingAddressKey</item>
             </argument>
             <argument name="quoteRequestParts" xsi:type="array">
                 <item name="orderId" xsi:type="object">CM\Payments\Service\Quote\Request\Part\OrderId</item>
@@ -68,6 +76,30 @@
                 <item name="paymentProfile" xsi:type="object">CM\Payments\Service\Quote\Request\Part\PaymentProfile</item>
                 <item name="returnUrls" xsi:type="object">CM\Payments\Service\Quote\Request\Part\ReturnUrls</item>
                 <item name="expiry" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Expiry</item>
+                <item name="billing_address_key" xsi:type="object">CM\Payments\Service\Quote\Request\Part\BillingAddressKey</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="CM\Payments\Service\ShopperRequestBuilder">
+        <arguments>
+            <argument name="orderAddressRequestParts" xsi:type="array">
+                <item name="shopperId" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\ShopperId</item>
+                <item name="name" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\Name</item>
+                <item name="address" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\Address</item>
+                <item name="email" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\Email</item>
+                <item name="gender" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\Gender</item>
+                <item name="dateOfBirth" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\DateOfBirth</item>
+                <item name="phoneNumber" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\PhoneNumber</item>
+            </argument>
+            <argument name="quoteAddressRequestParts" xsi:type="array">
+                <item name="shopperId" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\ShopperId</item>
+                <item name="name" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\Name</item>
+                <item name="address" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\Address</item>
+                <item name="email" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\Email</item>
+                <item name="gender" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\Gender</item>
+                <item name="dateOfBirth" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\DateOfBirth</item>
+                <item name="phoneNumber" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\PhoneNumber</item>
             </argument>
         </arguments>
     </type>
