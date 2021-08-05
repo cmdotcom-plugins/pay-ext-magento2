@@ -19,8 +19,10 @@ use CM\Payments\Client\Api\PaymentInterface as CMPaymentClientInterface;
 use CM\Payments\Client\Model\CMPaymentFactory;
 use CM\Payments\Exception\EmptyPaymentIdException;
 use CM\Payments\Logger\CMPaymentsLogger;
+use CM\Payments\Model\ConfigProvider;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use GuzzleHttp\Exception\GuzzleException;
 
 class PaymentService implements PaymentServiceInterface
 {
@@ -126,12 +128,31 @@ class PaymentService implements PaymentServiceInterface
             'paymentCreateRequest' => $paymentCreateRequest,
         ]);
 
-        $paymentCreateResponse = $this->paymentClient->create(
-            $paymentCreateRequest
-        );
+        $paymentCreateResponse = null;
+        try {
+            $paymentCreateResponse = $this->paymentClient->create(
+                $paymentCreateRequest
+            );
+        } catch (GuzzleException $e) {
+            $this->logger->info(
+                'CM Create payment request error',
+                [
+                    'orderId' => $orderId,
+                    'exceptionMessage' => $e->getMessage()
+                ]
+            );
+        }
+
+        // Cleaning of ELV iban from payment information
+        $additionalInformation = $order->getPayment()->getAdditionalInformation();
+        if ($order->getPayment()->getMethod() == ConfigProvider::CODE_ELV) {
+            unset($additionalInformation['iban']);
+            $order->getPayment()->setAdditionalInformation($additionalInformation);
+            $this->orderRepository->save($order);
+        }
 
         // Todo: validate and handle response status
-        if (!$paymentCreateResponse->getId()) {
+        if (!$paymentCreateResponse || !$paymentCreateResponse->getId()) {
             throw new EmptyPaymentIdException(__('Empty payment id'));
         }
 
@@ -144,9 +165,7 @@ class PaymentService implements PaymentServiceInterface
 
         $this->cmPaymentRepository->save($cmPayment);
 
-        $additionalInformation = $order->getPayment()->getAdditionalInformation();
         $additionalInformation['cm_payment_id'] = $paymentCreateResponse->getId();
-
         $order->getPayment()->setAdditionalInformation($additionalInformation);
         $this->orderRepository->save($order);
 

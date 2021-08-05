@@ -4,6 +4,8 @@
  * See LICENSE.txt for license details.
  */
 
+declare(strict_types=1);
+
 namespace CM\Payments\Observer;
 
 use Magento\Framework\Event\Observer;
@@ -12,13 +14,18 @@ use Magento\Quote\Api\Data\PaymentInterface;
 
 class AdditionalDataAssignObserver extends AbstractDataAssignObserver
 {
-    const SELECTED_ISSUER = 'selected_issuer';
+    /**
+     * Additional data keys
+     */
+    public const SELECTED_ISSUER = 'selected_issuer';
+    public const IBAN = 'iban';
 
     /**
      * @var array
      */
     protected $additionalInformationList = [
         self::SELECTED_ISSUER,
+        self::IBAN,
     ];
 
     /**
