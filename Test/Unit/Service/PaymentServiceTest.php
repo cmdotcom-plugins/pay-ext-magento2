@@ -141,6 +141,25 @@ class PaymentServiceTest extends UnitTestCase
         );
     }
 
+    public function testCreateElvPayment()
+    {
+        $this->paymentClientMock->expects($this->once())->method('create')->willReturn(
+            new \CM\Payments\Client\Model\Response\PaymentCreate(
+                [
+                    'id' => 'pid4911261022t',
+                    'status' => 'AUTHORIZED'
+                ]
+            )
+        );
+
+        $order = $this->getOrderMock();
+        $payment = $this->paymentService->create((string)$order->getEntityId());
+
+        $this->assertNotNull(
+            $payment->getId()
+        );
+    }
+
     public function testEventDispatch()
     {
         $paymentCreateResponse =  new \CM\Payments\Client\Model\Response\PaymentCreate(

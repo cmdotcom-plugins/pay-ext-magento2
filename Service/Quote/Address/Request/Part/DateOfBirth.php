@@ -42,7 +42,7 @@ class DateOfBirth implements RequestPartByQuoteAddressInterface
         if ($quoteAddress->getCustomerId()) {
             try {
                 $customer = $this->customerRepository->getById($quoteAddress->getCustomerId());
-                $shopperCreate->setDateOfBirth($customer->getDob());
+                $shopperCreate->setDateOfBirth((string)$customer->getDob());
             } catch (LocalizedException | NoSuchEntityException $e) {
                 $shopperCreate->setDateOfBirth('');
             }

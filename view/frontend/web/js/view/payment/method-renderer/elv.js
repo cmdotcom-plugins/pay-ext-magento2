@@ -17,8 +17,8 @@ define([
     'use strict';
     return Component.extend({
         defaults: {
-            template: 'CM_Payments/payment/ideal',
-            selectedIssuer: null,
+            template: 'CM_Payments/payment/elv',
+            iban: null,
             paymentConfig: ''
         },
 
@@ -44,44 +44,26 @@ define([
         },
 
         /**
-         * Get issuer list
-         *
-         * @returns {*|*[]}
-         */
-        getIssuers: function () {
-            return this.paymentConfig.issuers || [];
-        },
-
-        /**
-         * Get selected issuer
-         *
-         * @returns string
-         */
-        getSelectedIssuer: function () {
-            return this.selectedIssuer;
-        },
-
-        /**
-         * Add extra data to request payload paymentInformation
-         *
-         * @returns {{additional_data: {selected_issuer: *}, method}}
-         */
-        getData: function () {
-            return {
-                'method': this.item.method,
-                'additional_data': {
-                    "selected_issuer": this.getSelectedIssuer()
-                }
-            };
-        },
-
-        /**
          * Get the gateway image
          *
          * @returns {string}
          */
         getImage: function () {
             return this.paymentConfig.image;
+        },
+
+        /**
+         * Add extra data to request payload paymentInformation
+         *
+         * @returns {{additional_data: {iban: *}, method}}
+         */
+        getData: function () {
+            return {
+                'method': this.item.method,
+                'additional_data': {
+                    "iban": this.iban
+                }
+            };
         },
 
         /**
@@ -95,10 +77,10 @@ define([
         },
 
         /**
-         * Redirect to controller after place order
+         * Redirect to controller for payment confirmation after place order
          */
         afterPlaceOrder: function () {
-            redirectOnSuccessAction.redirectUrl = url.build('cmpayments/payment/redirect');
+            redirectOnSuccessAction.redirectUrl = url.build('cmpayments/payment/elvConfirmation');
             this.redirectAfterPlaceOrder = true;
         }
     });

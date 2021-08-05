@@ -9,10 +9,7 @@ declare(strict_types=1);
 namespace CM\Payments\Service;
 
 use CM\Payments\Api\Service\ApiTestServiceInterface;
-use CM\Payments\Client\Api\RequestInterface;
-use CM\Payments\Client\ApiClient;
-use CM\Payments\Model\Adminhtml\Source\Mode;
-use GuzzleHttp\Client as HttpClient;
+use CM\Payments\Client\Api\OrderInterface;
 use CM\Payments\Api\Config\ConfigInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 
@@ -27,6 +24,10 @@ class ApiTestService implements ApiTestServiceInterface
      * @var ConfigInterface
      */
     private $config;
+    /**
+     * @var OrderInterface
+     */
+    private $orderClient;
 
     /**
      * ApiTestService constructor
@@ -34,9 +35,11 @@ class ApiTestService implements ApiTestServiceInterface
      * @param ConfigInterface $config
      */
     public function __construct(
-        ConfigInterface $config
+        ConfigInterface $config,
+        OrderInterface $orderClient
     ) {
         $this->config = $config;
+        $this->orderClient = $orderClient;
 
         try {
             $this->apiConnectionData = [
@@ -56,49 +59,17 @@ class ApiTestService implements ApiTestServiceInterface
     public function testApiConnection(): array
     {
         $resultData = ['errors' => [], 'result' => null];
-        $options = [
-            'json' => ['date' => date('Y-m-d')]
-        ];
 
         if (!empty($this->apiConnectionData)) {
             $errors = $this->validateData();
             $resultData['errors'] = $errors;
 
             if (empty($errors)) {
-                $guzzleResponse = $this->getClient()->request(
-                    RequestInterface::HTTP_GET,
-                    'orders',
-                    $options
-                );
-
-                $resultData['result'] = \GuzzleHttp\json_decode($guzzleResponse->getBody()->getContents(), true);
+                $resultData['result'] = $this->orderClient->getList(date('Y-m-d'));
             }
         }
 
         return $resultData;
-    }
-
-    /**
-     * @return HttpClient
-     */
-    private function getClient(): HttpClient
-    {
-        $baseApiUrl = $this->apiConnectionData['mode'] === Mode::LIVE ? ApiClient::API_URL : ApiClient::API_TEST_URL;
-        $baseApiUrl .= $this->apiConnectionData['merchantKey'] . '/';
-
-        $authorizationToken = 'Basic ' . base64_encode(
-            $this->apiConnectionData['merchantName'] .
-                ':' . $this->apiConnectionData['merchantPassword']
-        );
-
-        return new HttpClient(
-            [
-                'base_uri' => $baseApiUrl,
-                'headers' => [
-                    'Authorization' => $authorizationToken
-                ]
-            ]
-        );
     }
 
     /**

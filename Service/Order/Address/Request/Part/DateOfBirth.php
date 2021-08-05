@@ -42,7 +42,7 @@ class DateOfBirth implements RequestPartByOrderAddressInterface
         if ($orderAddress->getCustomerId()) {
             try {
                 $customer = $this->customerRepository->getById($orderAddress->getCustomerId());
-                $shopperCreate->setDateOfBirth($customer->getDob());
+                $shopperCreate->setDateOfBirth((string)$customer->getDob());
             } catch (LocalizedException | NoSuchEntityException $e) {
                 $shopperCreate->setDateOfBirth('');
             }

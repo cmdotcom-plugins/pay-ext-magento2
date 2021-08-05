@@ -22,17 +22,25 @@ class PaymentCreate
     private $idealDetails;
 
     /**
+     * @var array
+     */
+    private $elvDetails;
+
+    /**
      * Order constructor
      *
      * @param string $method
      * @param array $idealDetails
+     * @param array $elvDetails
      */
     public function __construct(
         string $method = '',
-        array $idealDetails = []
+        array $idealDetails = [],
+        array $elvDetails = []
     ) {
         $this->method = $method;
         $this->idealDetails = $idealDetails;
+        $this->elvDetails = $elvDetails;
     }
 
     /**
@@ -48,6 +56,10 @@ class PaymentCreate
 
         if ($this->idealDetails) {
             $data['ideal_details'] =  $this->idealDetails;
+        }
+
+        if ($this->elvDetails) {
+            $data['elv_payment_input'] =  $this->elvDetails;
         }
 
         return $data;
@@ -83,5 +95,21 @@ class PaymentCreate
     public function setIdealDetails(array $idealDetails): void
     {
         $this->idealDetails = $idealDetails;
+    }
+
+    /**
+     * @return array
+     */
+    public function getElvDetails(): array
+    {
+        return $this->elvDetails;
+    }
+
+    /**
+     * @param array $elvDetails
+     */
+    public function setElvDetails(array $elvDetails): void
+    {
+        $this->elvDetails = $elvDetails;
     }
 }

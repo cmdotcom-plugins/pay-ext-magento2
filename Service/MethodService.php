@@ -107,8 +107,8 @@ class MethodService implements MethodServiceInterface
         CartInterface $quote,
         PaymentDetailsInterface $paymentDetails
     ): PaymentDetailsInterface {
+        $availablePaymentMethods = $paymentDetails->getPaymentMethods();
         try {
-            $availablePaymentMethods = $paymentDetails->getPaymentMethods();
             $cmOrder = $this->createCmOrder($quote);
             if (empty($cmOrder->getOrderKey())) {
                 throw new LocalizedException(
@@ -149,13 +149,20 @@ class MethodService implements MethodServiceInterface
 
             $paymentDetails->setExtensionAttributes($paymentDetailsExtension);
             $paymentDetails->setPaymentMethods($availablePaymentMethods);
-        } catch (LocalizedException $e) {
+        } catch (\Exception $e) {
             $this->logger->error(
                 'CM Get Available Methods request',
                 [
                     'error' => $e->getMessage(),
                 ]
             );
+
+            // Remove cm_payments_ideal if available because of missing issuer list.
+            $availablePaymentMethods = array_filter($availablePaymentMethods, function ($method) {
+                return $method->getCode() !== ConfigProvider::CODE_IDEAL;
+            });
+
+            $paymentDetails->setPaymentMethods($availablePaymentMethods);
         }
 
         return $paymentDetails;

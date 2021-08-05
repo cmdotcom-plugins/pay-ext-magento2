@@ -10,12 +10,21 @@ namespace CM\Payments\Client\Api;
 
 use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Client\Model\Response\OrderDetail;
+use CM\Payments\Client\Model\Response\OrderListItem;
 use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use GuzzleHttp\Exception\RequestException;
 
 interface OrderInterface
 {
+    /**
+     * @param string $date
+     * @return OrderListItem[]
+     *
+     * @throws RequestException
+     */
+    public function getList(string $date): array;
+
     /**
      * @param string $orderKey
      * @return OrderDetail

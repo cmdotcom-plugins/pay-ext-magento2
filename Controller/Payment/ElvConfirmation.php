@@ -10,20 +10,19 @@ namespace CM\Payments\Controller\Payment;
 
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
-use CM\Payments\Exception\NoRedirectUrlProvidedException;
 use Exception;
 use Magento\Checkout\Model\Session;
+use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpGetActionInterface;
-use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Controller\Result\Redirect;
+use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\Phrase;
-use Magento\Framework\App\Action\Action;
 use Psr\Log\LoggerInterface;
 
-class IdealRedirect extends Action implements HttpGetActionInterface
+class ElvConfirmation extends Action implements HttpGetActionInterface
 {
     /**
      * @var MessageManagerInterface
@@ -56,7 +55,7 @@ class IdealRedirect extends Action implements HttpGetActionInterface
     private $logger;
 
     /**
-     * Redirect constructor
+     * Elv constructor
      *
      * @param Context $context
      * @param MessageManagerInterface $messageManager
@@ -93,6 +92,7 @@ class IdealRedirect extends Action implements HttpGetActionInterface
         try {
             $order = $this->checkoutSession->getLastRealOrder();
             $orderId = $order->getRealOrderId();
+
             if (!$orderId) {
                 return $this->redirectToCheckoutCart(__('No order id found.'));
             }
@@ -102,22 +102,15 @@ class IdealRedirect extends Action implements HttpGetActionInterface
                 throw new LocalizedException(__('The order was not placed properly.'));
             }
 
-            // Todo: use cmOrder->getOrderKey() to create payment instead of Magento orderId
             $cmPayment = $this->paymentService->create($order->getEntityId());
-            $redirectUrl = $cmPayment->getRedirectUrl();
-            if (!$redirectUrl) {
-                // Todo: log
-                //[
-                //                    'orderId' => $order->getEntityId(),
-                //                    'paymentId' => $cmPayment->getId()
-                //                ]
-                throw new NoRedirectUrlProvidedException(__('No redirect url found in payment response'));
+            if (!$cmPayment->getId()) {
+                throw new LocalizedException(__('The Payment was not finished properly!'));
             }
 
             return $this->redirectFactory->create()
-                ->setUrl($redirectUrl);
+                ->setPath('checkout/onepage/success');
         } catch (Exception $exception) {
-            $this->logger->error($exception);
+            $this->logger->critical($exception->getMessage());
 
             return $this->redirectToCheckoutCart(__('Something went wrong while creating the order.'));
         }
@@ -129,7 +122,7 @@ class IdealRedirect extends Action implements HttpGetActionInterface
      * @param Phrase $message
      * @return Redirect
      */
-    private function redirectToCheckoutCart(Phrase $message): Redirect
+    public function redirectToCheckoutCart(Phrase $message): Redirect
     {
         $this->checkoutSession->restoreQuote();
 
