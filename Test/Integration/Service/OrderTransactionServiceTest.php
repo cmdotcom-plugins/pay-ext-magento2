@@ -30,6 +30,7 @@ class OrderTransactionServiceTest extends IntegrationTestCase
      * @var ApiClientInterface|MockObject
      */
     private $clientMock;
+
     /**
      * @var OrderTransactionServiceInterface
      */

@@ -4,6 +4,8 @@
  * See LICENSE.txt for license details.
  */
 
+declare(strict_types=1);
+
 namespace CM\Payments\Client\Model\Response;
 
 class OrderCreate
@@ -12,21 +14,25 @@ class OrderCreate
      * @var string|null
      */
     private $url;
+
     /**
      * @var string|null
      */
     private $orderKey;
+
     /**
      * @var string|null
      */
     private $expiresOn;
 
     /**
-     * CMOrder constructor.
+     * OrderCreate constructor
+     *
      * @param array $orderCreate
      */
-    public function __construct(array $orderCreate)
-    {
+    public function __construct(
+        array $orderCreate
+    ) {
         $this->url = $orderCreate['url'] ?? null;
         $this->orderKey = $orderCreate['order_key'] ?? null;
         $this->expiresOn = $orderCreate['expires_on'] ?? null;

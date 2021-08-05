@@ -1,0 +1,71 @@
+/**
+ * Copyright © CM.com. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+.admin__page-nav._collapsed.cm_payments-tab .title,
+.admin__page-nav._collapsed._show.cm_payments-tab .title {
+    background-image: url('../images/cm_payments_logo.svg');
+    background-position: 10px center;
+    background-position: 15px center;
+    background-repeat: no-repeat;
+    background-size: auto 70%;
+    text-indent: 40px;
+    background-size: auto 50%;
+    text-indent: 35px;
+}
+
+.cm_payments-section {
+    .cm_payments-fieldset-logo {
+        background: url("../images/cm_payments_logo.svg") no-repeat center;
+        height: 100px;
+        width: 180px;
+        display: inline-block;
+        vertical-align: middle;
+        margin: 0 20px 0 0px;
+    }
+
+    .cm_payments-text {
+        display: inline-block;
+        vertical-align: middle;
+        width: 50%;
+    }
+
+    .button-container {
+        float: right;
+    }
+}
+
+#cmpayments_button_version {
+    background: transparent;
+    padding-left: 0.85rem;
+    margin: -0.8rem 0 -1rem 2rem;
+    white-space: nowrap;
+    color: #948f8b;
+    border: 1px solid #b4b4b4;
+    transition: 0.3s color, 0.3s border;
+}
+
+.cmpayments-button-disabled {
+    position: absolute;
+    top: 0;
+}
+
+.cmpayments-result-version {
+    margin-top: 10px;
+    .cmpayments-version-is-latest {
+        color: darkgreen;
+    }
+    .cmpayments-version-is-not-latest {
+        color: red;
+    }
+}
+
+.cmpayments-check-api-connection-result {
+    margin-top: 10px;
+    .cmpayments-api-connection-success {
+        color: darkgreen;
+    }
+    .cmpayments-api-connection-error {
+        color: red;
+    }
+}

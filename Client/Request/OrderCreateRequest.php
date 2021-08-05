@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace CM\Payments\Client\Request;
 
 use CM\Payments\Client\Api\RequestInterface;
-use CM\Payments\Client\Model\OrderCreate;
+use CM\Payments\Client\Model\Request\OrderCreate;
 
 class OrderCreateRequest implements RequestInterface
 {

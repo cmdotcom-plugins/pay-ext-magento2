@@ -26,25 +26,30 @@ class OrderTransactionService implements OrderTransactionServiceInterface
      * @var OrderRepositoryInterface
      */
     private $orderRepository;
+
     /**
      * @var CMOrderRepositoryInterface
      */
     private $cmOrderRepository;
+
     /**
      * @var CMPaymentsLogger
      */
     private $logger;
+
     /**
      * @var CMOrderClientInterface
      */
     private $orderClient;
+
     /**
      * @var ManagerInterface
      */
     private $eventManager;
 
     /**
-     * OrderTransactionService constructor.
+     * OrderTransactionService constructor
+     *
      * @param OrderRepositoryInterface $orderRepository
      * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param CMPaymentsLogger $cmPaymentsLogger

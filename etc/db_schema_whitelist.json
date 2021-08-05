@@ -16,5 +16,10 @@
         "constraint": {
             "PRIMARY": true
         }
+    },
+    "quote": {
+        "column": {
+            "cm_order_key": true
+        }
     }
 }

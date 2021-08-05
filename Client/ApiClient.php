@@ -8,17 +8,21 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client;
 
-use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Config\ConfigInterface;
+use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Api\RequestInterface;
-use CM\Payments\Model\AdminHtml\Source\Mode;
+use CM\Payments\Model\Adminhtml\Source\Mode;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class ApiClient implements ApiClientInterface
 {
-    const API_TEST_URL = 'https://testsecure.docdatapayments.com/ps/api/public/v1/merchants/';
-    const API_URL = 'https://secure.docdatapayments.com/ps/api/public/v1/merchants/';
+    /**
+     * API urls
+     */
+    public const API_TEST_URL = 'https://testsecure.docdatapayments.com/ps/api/public/v1/merchants/';
+    public const API_URL = 'https://secure.docdatapayments.com/ps/api/public/v1/merchants/';
 
     /**
      * @var HttpClient
@@ -46,8 +50,7 @@ class ApiClient implements ApiClientInterface
      *
      * @param RequestInterface $request
      * @return array
-     *
-     * @throws GuzzleException
+     * @throws GuzzleException|NoSuchEntityException
      */
     public function execute(RequestInterface $request): array
     {
@@ -68,6 +71,7 @@ class ApiClient implements ApiClientInterface
 
     /**
      * @return HttpClient
+     * @throws NoSuchEntityException
      */
     private function getClient(): HttpClient
     {
@@ -76,12 +80,14 @@ class ApiClient implements ApiClientInterface
             $merchantPassword = $this->config->getMerchantPassword();
 
             $authorizationToken = 'Basic ' . base64_encode($merchantName . ':' . $merchantPassword);
-            $this->httpClient = new HttpClient([
-                'base_uri' => $this->getBaseApiUrl(),
-                'headers' => [
-                    'Authorization' => $authorizationToken
+            $this->httpClient = new HttpClient(
+                [
+                    'base_uri' => $this->getBaseApiUrl(),
+                    'headers' => [
+                        'Authorization' => $authorizationToken
+                    ]
                 ]
-            ]);
+            );
         }
 
         return $this->httpClient;
@@ -89,10 +95,11 @@ class ApiClient implements ApiClientInterface
 
     /**
      * @return string
+     * @throws NoSuchEntityException
      */
     private function getBaseApiUrl(): string
     {
-        $url = $this->config->getApiMode() === Mode::PROD ? self::API_URL : self::API_TEST_URL;
+        $url = $this->config->getMode() === Mode::LIVE ? self::API_URL : self::API_TEST_URL;
 
         return $url . $this->config->getMerchantKey() . '/';
     }

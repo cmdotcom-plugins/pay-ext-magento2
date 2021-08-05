@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!--
+  ~ Copyright © CM.com. All rights reserved.
+  ~ See LICENSE.txt for license details.
+  -->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Checkout\Api\ShippingInformationManagementInterface">
+        <plugin name="cm_payments_checkout_model_add_methods_additional_data_shipping_plugin"
+                type="CM\Payments\Plugin\Checkout\Model\AddMethodsAdditionalDataShipping" sortOrder="100" />
+    </type>
+
+    <type name="Magento\Checkout\Api\PaymentInformationManagementInterface">
+        <plugin name="cm_payments_checkout_model_add_methods_additional_data_payment_plugin"
+                type="CM\Payments\Plugin\Checkout\Model\AddMethodsAdditionalDataPayment" sortOrder="100" />
+    </type>
+</config>

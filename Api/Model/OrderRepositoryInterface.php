@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace CM\Payments\Api\Model;
 
-use CM\Payments\Model\Order;
 use CM\Payments\Api\Model\Data\OrderInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 interface OrderRepositoryInterface
 {
@@ -21,13 +21,24 @@ interface OrderRepositoryInterface
 
     /**
      * @param string $orderKey
-     * @return Order
+     * @return OrderInterface
+     *
+     * @throws NoSuchEntityException
      */
     public function getByOrderKey(string $orderKey): OrderInterface;
 
     /**
+     * Get Order by Order Id
+     * @param int $orderId
+     * @return OrderInterface
+     *
+     * @throws NoSuchEntityException
+     */
+    public function getByOrderId(int $orderId): OrderInterface;
+
+    /**
      * @param OrderInterface $order
-     * @return Order
+     * @return OrderInterface
      */
     public function save(OrderInterface $order): OrderInterface;
 }

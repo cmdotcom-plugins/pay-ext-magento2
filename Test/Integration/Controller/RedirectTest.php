@@ -25,7 +25,6 @@ class RedirectTest extends AbstractController
     }
 
     /**
-     *
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testRedirectsToCartOnException()
@@ -51,7 +50,6 @@ class RedirectTest extends AbstractController
     }
 
     /**
-     *
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testRedirect()
