@@ -15,18 +15,18 @@ use Magento\Quote\Api\Data\PaymentInterface;
 class AdditionalDataAssignObserver extends AbstractDataAssignObserver
 {
     /**
-     * Additional data keys
+     * @var string[]
      */
-    public const SELECTED_ISSUER = 'selected_issuer';
-    public const IBAN = 'iban';
+    private $additionalInformationList;
 
     /**
-     * @var array
+     * AdditionalDataAssignObserver constructor.
+     * @param string[] $additionalInformationList
      */
-    protected $additionalInformationList = [
-        self::SELECTED_ISSUER,
-        self::IBAN,
-    ];
+    public function __construct(array $additionalInformationList)
+    {
+        $this->additionalInformationList = $additionalInformationList;
+    }
 
     /**
      * @param Observer $observer
