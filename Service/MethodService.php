@@ -128,7 +128,7 @@ class MethodService implements MethodServiceInterface
             }
 
             foreach ($availablePaymentMethods as $id => $paymentMethod) {
-                if (! $this->isCmPaymentsMethod($paymentMethod->getCode())) {
+                if (!$this->isCmPaymentsMethod($paymentMethod->getCode())) {
                     continue;
                 }
 

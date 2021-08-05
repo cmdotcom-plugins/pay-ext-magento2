@@ -116,6 +116,35 @@ class PaymentServiceTest extends IntegrationTestCase
     }
 
     /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testCreateElvPayment()
+    {
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
+        $cmOrderFactory = $this->objectManager->create(OrderInterfaceFactory::class);
+        $cmOrderOrder = $cmOrderFactory->create();
+        $cmOrderRepository = $this->objectManager->get(CMOrderRepositoryInterface::class);
+        $cmOrderOrder->setIncrementId($magentoOrder->getIncrementId());
+        $cmOrderOrder->setOrderId((int)$magentoOrder->getEntityId());
+        $cmOrderOrder->setOrderKey('0287A1617D93780EF28044B98438BF2M');
+        $cmOrderRepository->save($cmOrderOrder);
+
+        $this->clientMock->expects($this->once())->method('execute')->willReturn(
+            [
+                'id' => 'pid4911261022t',
+                'status' => 'AUTHORIZED'
+            ]
+        );
+
+        $payment = $this->paymentService->create($magentoOrder->getId());
+        $this->assertNotNull(
+            $payment->getId()
+        );
+    }
+
+    /**
      * @param string $orderId
      * @return OrderInterface
      */
