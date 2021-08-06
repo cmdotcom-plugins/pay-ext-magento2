@@ -18,6 +18,7 @@
     <preference for="CM\Payments\Api\Service\VersionServiceInterface" type="CM\Payments\Service\VersionService" />
     <preference for="CM\Payments\Api\Service\ApiTestServiceInterface" type="CM\Payments\Service\ApiTestService" />
     <preference for="CM\Payments\Api\Service\ShopperServiceInterface" type="CM\Payments\Service\ShopperService" />
+    <preference for="CM\Payments\Api\Service\AddressServiceInterface" type="CM\Payments\Service\AddressService" />
     <preference for="CM\Payments\Api\Service\OrderRequestBuilderInterface"
                 type="CM\Payments\Service\OrderRequestBuilder" />
     <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface"
