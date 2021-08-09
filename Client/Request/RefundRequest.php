@@ -26,7 +26,7 @@ class RefundRequest implements RequestInterface
     /**
      * RefundRequest constructor.
      *
-     * @param string $orderKey
+     * @param RefundCreate $refundCreate
      */
     public function __construct(
         RefundCreate $refundCreate
@@ -42,7 +42,7 @@ class RefundRequest implements RequestInterface
         return str_replace(
             ['{order_key}', '{payment_id}'],
             [$this->refundCreate->getOrderKey(), $this->refundCreate->getPaymentId()],
-                self::ENDPOINT
+            self::ENDPOINT
         );
     }
 

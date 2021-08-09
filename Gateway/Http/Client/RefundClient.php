@@ -30,6 +30,7 @@ class RefundClient implements ClientInterface
     ) {
         $this->refundClient = $refundClient;
     }
+
     /**
      * Places request to gateway. Returns result as ENV array
      *

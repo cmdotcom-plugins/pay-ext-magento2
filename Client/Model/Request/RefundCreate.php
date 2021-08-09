@@ -63,7 +63,6 @@ class RefundCreate
         string $currency,
         string $refundReference = '',
         string $refundRequiredDate = ''
-
     ) {
         $this->description = $description;
         $this->amount = $amount;

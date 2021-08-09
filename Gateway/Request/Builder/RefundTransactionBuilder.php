@@ -59,7 +59,9 @@ class RefundTransactionBuilder implements BuilderInterface
         $amount = (float)SubjectReader::readAmount($buildSubject);
 
         if ($amount <= 0) {
-            throw new CouldNotRefundException(__('Refunds with 0 amount can not be processed. Please set a different amount'));
+            throw new CouldNotRefundException(
+                __('Refunds with 0 amount can not be processed. Please set a different amount')
+            );
         }
 
         $payment = $paymentDataObject->getPayment();
@@ -74,13 +76,14 @@ class RefundTransactionBuilder implements BuilderInterface
         $orderId = $order->getIncrementId();
 
         $cmOrder = $this->cmOrderRepository->getByOrderId((int) $order->getEntityId());
+        $cmPayment = $this->cmPaymentRepository->getByOrderKey($cmOrder->getOrderKey());
 
         $payload = new RefundCreate(
             $cmOrder->getOrderKey(),
-            $order->getPayment()->getLastTransId(),
+            $cmPayment->getPaymentId(),
             $orderId,
             'Refund of Magento Order ' .$orderId,
-            (int) ($amount * 100) + ($creditMemo->getAdjustment() * 100),
+            (int) (($amount * 100) + ($creditMemo->getAdjustment() * 100)),
             $order->getOrderCurrencyCode()
         );
 
