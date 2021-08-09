@@ -16,7 +16,7 @@ use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Order as ClientApiOrder;
-use CM\Payments\Client\Model\OrderCreate;
+use CM\Payments\Client\Model\Request\OrderCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Data\Order;
@@ -153,7 +153,7 @@ class OrderServiceTest extends UnitTestCase
             ['cmpayments_before_order_create', ['order' => $order, 'orderCreateRequest' => $orderCreateRequest]],
             ['cmpayments_after_order_create', ['order' => $order, 'cmOrder' => new CMOrder(
                 $orderCreateResponse->getUrl(),
-               '000000001',
+                '000000001',
                 $orderCreateResponse->getOrderKey(),
                 $orderCreateResponse->getExpiresOn(),
             )]]

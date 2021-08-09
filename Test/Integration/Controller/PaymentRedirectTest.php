@@ -17,7 +17,7 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\TestFramework\TestCase\AbstractController;
 
-class PaypalRedirectTest extends AbstractController
+class PaymentRedirectTest extends AbstractController
 {
     /**
      * @magentoDataFixture Magento/Sales/_files/order.php
@@ -60,9 +60,82 @@ class PaypalRedirectTest extends AbstractController
         $paymentService->expects($this->once())->method('create')->with($order->getId())->willReturn($cmPayment);
         $this->_objectManager->addSharedInstance($paymentService, PaymentService::class);
 
-        $this->dispatch('cmpayments/payment/paypalRedirect');
+        $this->dispatch('cmpayments/payment/redirect');
 
         $this->assertRedirect($this->stringContains('paypal.com'));
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testEmptyOrderReference()
+    {
+        $sessionMock = $this->createMock(Session::class);
+
+        $sessionMock->expects($this->once())->method('getLastRealOrder')->willReturn($this->loadOrderById('100000001'));
+        $this->_objectManager->addSharedInstance($sessionMock, Session::class);
+
+        $order = $this->loadOrderById('100000001');
+        $cmOrder = new CMOrder(
+            'https://test-cm.nl',
+            '',
+            '0287A1617D93780EF28044B98438BF2F',
+            strtotime('+1 hour')
+        );
+
+        $orderService = $this->createMock(OrderService::class);
+        $orderService->expects($this->once())->method('create')->with($order->getId())->willReturn($cmOrder);
+        $this->_objectManager->addSharedInstance($orderService, OrderService::class);
+
+        $this->dispatch('cmpayments/payment/redirect');
+
+        $this->assertRedirect($this->stringContains('checkout/cart'));
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testEmptyOrderRedirectUrl()
+    {
+        $sessionMock = $this->createMock(Session::class);
+        $sessionMock->expects($this->once())->method('getLastRealOrder')->willReturn($this->loadOrderById('100000001'));
+        $this->_objectManager->addSharedInstance($sessionMock, Session::class);
+
+        $order = $this->loadOrderById('100000001');
+        $cmOrder = new CMOrder(
+            'https://test-cm.nl',
+            '100000001',
+            '0287A1617D93780EF28044B98438BF2F',
+            strtotime('+1 hour')
+        );
+
+        $cmPayment = new CMPayment(
+            'pid4911261016t',
+            'REDIRECTED_FOR_AUTHENTICATION',
+            //phpcs:ignore
+            '',
+            [
+                new CMPaymentUrl(
+                    'REDIRECT',
+                    'GET',
+                    //phpcs:ignore
+                    '',
+                    '1'
+                )
+            ]
+        );
+
+        $orderService = $this->createMock(OrderService::class);
+        $orderService->expects($this->once())->method('create')->with($order->getId())->willReturn($cmOrder);
+        $this->_objectManager->addSharedInstance($orderService, OrderService::class);
+
+        $paymentService = $this->createMock(PaymentService::class);
+        $paymentService->expects($this->once())->method('create')->with($order->getId())->willReturn($cmPayment);
+        $this->_objectManager->addSharedInstance($paymentService, PaymentService::class);
+
+        $this->dispatch('cmpayments/payment/redirect');
+
+        $this->assertRedirect($this->stringContains('checkout/cart'));
     }
 
     /**

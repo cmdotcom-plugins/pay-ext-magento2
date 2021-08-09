@@ -25,13 +25,7 @@
         </arguments>
     </type>
 
-    <type name="CM\Payments\Controller\Payment\IdealRedirect">
-        <arguments>
-            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
-        </arguments>
-    </type>
-
-    <type name="CM\Payments\Controller\Payment\PaypalRedirect">
+    <type name="CM\Payments\Controller\Payment\Redirect">
         <arguments>
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>

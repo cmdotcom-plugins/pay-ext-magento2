@@ -15,6 +15,7 @@ use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Client\Order;
 use CM\Payments\Service\Method\Ideal;
 use CM\Payments\Service\MethodService;
+use CM\Payments\Service\OrderRequestBuilder;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use Magento\Checkout\Model\PaymentDetails;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -22,6 +23,22 @@ use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Api\PaymentMethodManagementInterface;
 use PHPUnit\Framework\MockObject\MockObject;
+use CM\Payments\Service\Order\Request\Part\Amount;
+use CM\Payments\Service\Order\Request\Part\Country;
+use CM\Payments\Service\Order\Request\Part\Currency;
+use CM\Payments\Service\Order\Request\Part\Email;
+use CM\Payments\Service\Order\Request\Part\Language;
+use CM\Payments\Service\Order\Request\Part\OrderId;
+use CM\Payments\Service\Order\Request\Part\PaymentProfile;
+use CM\Payments\Service\Order\Request\Part\ReturnUrls;
+use CM\Payments\Service\Quote\Request\Part\Amount as QuoteAmount;
+use CM\Payments\Service\Quote\Request\Part\Country as QuoteCountry;
+use CM\Payments\Service\Quote\Request\Part\Currency as QuoteCurrency;
+use CM\Payments\Service\Quote\Request\Part\Email as QuoteEmail;
+use CM\Payments\Service\Quote\Request\Part\Language as QuoteLanguage;
+use CM\Payments\Service\Quote\Request\Part\OrderId as QuoteOrderId;
+use CM\Payments\Service\Quote\Request\Part\PaymentProfile as QuotePaymentProfile;
+use CM\Payments\Service\Quote\Request\Part\ReturnUrls as QuoteReturnUrls;
 
 class MethodServiceTest extends IntegrationTestCase
 {
@@ -275,6 +292,34 @@ class MethodServiceTest extends IntegrationTestCase
         $this->assertEquals('cm_payments', $method->getCode());
     }
 
+    /**
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
+     * @magentoConfigFixture default_store payment/cm_payments/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     */
+    public function testCmApiErrorShouldContinueAndReturnMagentoMethods()
+    {
+        $magentoQuote = $this->loadQuoteById('test01');
+
+        $this->clientMock->expects($this->exactly(1))->method('execute')->willThrowException(new \Exception());
+
+        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+
+        $method = $actualPaymentMethods[0];
+        $this->assertEquals(2, count($actualPaymentMethods));
+        $this->assertEquals('cm_payments', $method->getCode());
+        // When api throws an error we don't have ideal issuer so we hide this method on the payment page
+        $this->assertArrayNotHasKey(1, $actualPaymentMethods);
+        $this->assertNotEquals('cm_payments_ideal', $actualPaymentMethods[2]->getCode());
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -287,6 +332,29 @@ class MethodServiceTest extends IntegrationTestCase
             ]
         );
 
+        $orderRequestBuilder = $this->objectManager->create(OrderRequestBuilder::class, [
+            'orderRequestParts' => [
+                $this->objectManager->create(OrderId::class),
+                $this->objectManager->create(Amount::class),
+                $this->objectManager->create(Currency::class),
+                $this->objectManager->create(Language::class),
+                $this->objectManager->create(Country::class),
+                $this->objectManager->create(PaymentProfile::class),
+                $this->objectManager->create(Email::class),
+                $this->objectManager->create(ReturnUrls::class),
+            ],
+            'quoteRequestParts' => [
+                $this->objectManager->create(QuoteOrderId::class),
+                $this->objectManager->create(QuoteAmount::class),
+                $this->objectManager->create(QuoteCurrency::class),
+                $this->objectManager->create(QuoteLanguage::class),
+                $this->objectManager->create(QuoteCountry::class),
+                $this->objectManager->create(QuotePaymentProfile::class),
+                $this->objectManager->create(QuoteEmail::class),
+                $this->objectManager->create(QuoteReturnUrls::class),
+            ]
+        ]);
+
         $this->methodService = $this->objectManager->create(
             MethodService::class,
             [
@@ -294,6 +362,7 @@ class MethodServiceTest extends IntegrationTestCase
                 'methods' => [
                     $this->objectManager->create(Ideal::class)
                 ],
+                'orderRequestBuilder' => $orderRequestBuilder
             ]
         );
     }

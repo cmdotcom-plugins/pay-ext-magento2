@@ -29,11 +29,6 @@ class PaymentRequestBuilderTest extends UnitTestCase
      */
     private $paymentRequestBuilder;
 
-    /**
-     * @var \CM\Payments\Api\Config\ConfigInterface
-     */
-    private $configMock;
-
     public function testCreateIdealPaymentRequestBuilder()
     {
         $orderMock = $this->getOrderMock(ConfigProvider::CODE_IDEAL);
@@ -59,6 +54,18 @@ class PaymentRequestBuilderTest extends UnitTestCase
 
         $this->assertSame(
             MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_PAYPAL],
+            $paymentRequest->getPayload()['method']
+        );
+    }
+
+    public function testCreateElvPaymentRequestBuilder()
+    {
+        $orderMock = $this->getOrderMock(ConfigProvider::CODE_ELV);
+        $orderKey = '0287A1617D93780EF28044B98438BF2F';
+        $paymentRequest = $this->paymentRequestBuilder->create($orderMock, $orderKey);
+
+        $this->assertSame(
+            MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_ELV],
             $paymentRequest->getPayload()['method']
         );
     }
@@ -106,15 +113,10 @@ class PaymentRequestBuilderTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->configMock = $this->getMockBuilder(ConfigInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $clientPaymentCreateFactoryMock = $this->getMockupFactory(PaymentCreate::class);
         $paymentCreateRequestFactoryMock = $this->getMockupFactory(PaymentCreateRequest::class);
 
         $this->paymentRequestBuilder = new PaymentRequestBuilder(
-            $this->configMock,
             $clientPaymentCreateFactoryMock,
             $paymentCreateRequestFactoryMock,
             [

@@ -34,8 +34,6 @@ define([
             deferred,
             messageContainer
         ) {
-            //TODO: Use Original function in case of module disabled
-            //originalGetPaymentInformationFunction(deferred, messageContainer);
             let serviceUrl;
 
             deferred = deferred || $.Deferred();

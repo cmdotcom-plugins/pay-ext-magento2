@@ -21,7 +21,8 @@ interface MethodServiceInterface
         ConfigProvider::CODE_CREDIT_CARD,
         ConfigProvider::CODE_IDEAL,
         ConfigProvider::CODE_PAYPAL,
-        ConfigProvider::CODE_BANCONTACT
+        ConfigProvider::CODE_BANCONTACT,
+        ConfigProvider::CODE_ELV
     ];
 
     /**
@@ -33,7 +34,8 @@ interface MethodServiceInterface
         'MAESTRO' => ConfigProvider::CODE_CREDIT_CARD,
         'IDEAL' => ConfigProvider::CODE_IDEAL,
         'PAYPAL_EXPRESS_CHECKOUT' => ConfigProvider::CODE_PAYPAL,
-        'BANCONTACT' => ConfigProvider::CODE_BANCONTACT
+        'BANCONTACT' => ConfigProvider::CODE_BANCONTACT,
+        'ELV' => ConfigProvider::CODE_ELV
     ];
 
     /**
@@ -41,7 +43,8 @@ interface MethodServiceInterface
      */
     public const API_METHODS_MAPPING = [
         ConfigProvider::CODE_IDEAL => 'IDEAL',
-        ConfigProvider::CODE_PAYPAL => 'PAYPAL'
+        ConfigProvider::CODE_PAYPAL => 'PAYPAL',
+        ConfigProvider::CODE_ELV => 'ELV'
     ];
 
     /**

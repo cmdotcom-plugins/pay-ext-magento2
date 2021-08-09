@@ -24,9 +24,8 @@ interface OrderRequestBuilderInterface
 
     /**
      * @param CartInterface $quote
-     * @param bool $isEmptyProfile
      * @return OrderCreateRequest
      * @throws LocalizedException
      */
-    public function createByQuote(CartInterface $quote, bool $isEmptyProfile = false): OrderCreateRequest;
+    public function createByQuote(CartInterface $quote): OrderCreateRequest;
 }
