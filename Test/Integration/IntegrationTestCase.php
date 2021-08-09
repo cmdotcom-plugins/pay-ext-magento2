@@ -6,6 +6,8 @@
 
 namespace CM\Payments\Test\Integration;
 
+use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\TestFramework\ObjectManager;
 use PHPUnit\Framework\TestCase;
 
@@ -21,5 +23,22 @@ class IntegrationTestCase extends TestCase
         parent::setUp();
 
         $this->objectManager = ObjectManager::getInstance();
+    }
+
+    /**
+     * @param OrderInterface $magentoOrder
+     * @return OrderInterface
+     */
+    protected function addCurrencyToOrder(OrderInterface $magentoOrder): OrderInterface
+    {
+        /** @var OrderInterface $magentoOrder */
+        $magentoOrder
+            ->setOrderCurrencyCode('USD')
+            ->setBaseCurrencyCode('USD');
+
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        return $magentoOrder;
     }
 }

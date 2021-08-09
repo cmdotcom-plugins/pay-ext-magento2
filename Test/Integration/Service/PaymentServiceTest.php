@@ -160,23 +160,6 @@ class PaymentServiceTest extends IntegrationTestCase
     }
 
     /**
-     * @param OrderInterface $magentoOrder
-     * @return OrderInterface
-     */
-    private function addCurrencyToOrder(OrderInterface $magentoOrder): OrderInterface
-    {
-        /** @var OrderInterface $magentoOrder */
-        $magentoOrder
-            ->setOrderCurrencyCode('EUR')
-            ->setBaseCurrencyCode('EUR');
-
-        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $repository->save($magentoOrder);
-
-        return $magentoOrder;
-    }
-
-    /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testSavePaymentInDatabase()

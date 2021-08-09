@@ -40,6 +40,7 @@ class RefundTransactionBuilderTest extends IntegrationTestCase
 
         $stateObject = new DataObject();
         $order = $this->loadOrderById('100000001');
+        $order = $this->addCurrencyToOrder($order);
         $creditmemo = $this->getCreditMemo('100000001');
 
         $order->getPayment()->setCreditMemo($creditmemo);
