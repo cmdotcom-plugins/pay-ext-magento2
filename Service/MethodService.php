@@ -12,6 +12,7 @@ use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
 use CM\Payments\Api\Service\Method\ExtendMethodInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
+use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Client\Api\OrderInterface as OrderClientInterface;
 use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Client\Model\Response\PaymentMethod;
@@ -44,6 +45,11 @@ class MethodService implements MethodServiceInterface
     private $orderRequestBuilder;
 
     /**
+     * @var OrderItemsRequestBuilderInterface
+     */
+    private $orderItemsRequestBuilder;
+
+    /**
      * @var OrderGetMethodsRequestFactory
      */
     private $orderGetMethodsRequestFactory;
@@ -74,6 +80,7 @@ class MethodService implements MethodServiceInterface
      * @param ConfigService $configService
      * @param OrderClientInterface $orderClient
      * @param OrderRequestBuilderInterface $orderRequestBuilder
+     * @param OrderItemsRequestBuilderInterface $orderItemsRequestBuilder
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
      * @param PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory
      * @param ExtendMethodInterface[] $methods
@@ -84,6 +91,7 @@ class MethodService implements MethodServiceInterface
         ConfigService $configService,
         OrderClientInterface $orderClient,
         OrderRequestBuilderInterface $orderRequestBuilder,
+        OrderItemsRequestBuilderInterface $orderItemsRequestBuilder,
         OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
         PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory,
         array $methods,
@@ -93,6 +101,7 @@ class MethodService implements MethodServiceInterface
         $this->configService = $configService;
         $this->orderClient = $orderClient;
         $this->orderRequestBuilder = $orderRequestBuilder;
+        $this->orderItemsRequestBuilder = $orderItemsRequestBuilder;
         $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
         $this->paymentMethodAdditionalDataFactory = $paymentMethodAdditionalDataFactory;
         $this->methods = $methods;
@@ -107,62 +116,67 @@ class MethodService implements MethodServiceInterface
         CartInterface $quote,
         PaymentDetailsInterface $paymentDetails
     ): PaymentDetailsInterface {
-        $availablePaymentMethods = $paymentDetails->getPaymentMethods();
-        try {
-            $cmOrder = $this->createCmOrder($quote);
-            if (empty($cmOrder->getOrderKey())) {
-                throw new LocalizedException(
-                    __("The Methods were not requested properly because of CM Order creation problem.")
+        if ($quote->getGrandTotal() > 0) {
+            $availablePaymentMethods = $paymentDetails->getPaymentMethods();
+            try {
+                $cmOrder = $this->createCmOrder($quote);
+                if (empty($cmOrder->getOrderKey())) {
+                    throw new LocalizedException(
+                        __("The Methods were not requested properly because of CM Order creation problem.")
+                    );
+                } else {
+                    // Needed for Klarna availability
+                    $this->createCmOrderItems($quote, $cmOrder->getOrderKey());
+                }
+
+                $cmPaymentMethods = $this->orderClient->getMethods(
+                    $cmOrder->getOrderKey()
                 );
-            }
+                $cmPaymentMethods = $this->getMappedCmPaymentMethods($cmPaymentMethods);
 
-            $cmPaymentMethods = $this->orderClient->getMethods(
-                $cmOrder->getOrderKey()
-            );
-            $cmPaymentMethods = $this->getMappedCmPaymentMethods($cmPaymentMethods);
-
-            $paymentDetailsExtension = $paymentDetails->getExtensionAttributes();
-            if ($paymentDetailsExtension == null) {
-                /** @var PaymentDetailsExtensionInterface $paymentDetailsExtension */
-                $paymentDetailsExtension = $this->paymentDetailsExtensionFactory->create();
-            }
-
-            foreach ($availablePaymentMethods as $id => $paymentMethod) {
-                if (!$this->isCmPaymentsMethod($paymentMethod->getCode())) {
-                    continue;
+                $paymentDetailsExtension = $paymentDetails->getExtensionAttributes();
+                if ($paymentDetailsExtension == null) {
+                    /** @var PaymentDetailsExtensionInterface $paymentDetailsExtension */
+                    $paymentDetailsExtension = $this->paymentDetailsExtensionFactory->create();
                 }
 
-                if (!isset($cmPaymentMethods[$paymentMethod->getCode()])) {
-                    unset($availablePaymentMethods[$id]);
-                }
+                foreach ($availablePaymentMethods as $id => $paymentMethod) {
+                    if (!$this->isCmPaymentsMethod($paymentMethod->getCode())) {
+                        continue;
+                    }
 
-                foreach ($this->methods as $method) {
-                    if (isset($cmPaymentMethods[$paymentMethod->getCode()])) {
-                        $paymentDetailsExtension = $method->extend(
-                            $paymentMethod->getCode(),
-                            $cmPaymentMethods[$paymentMethod->getCode()],
-                            $paymentDetailsExtension
-                        );
+                    if (!isset($cmPaymentMethods[$paymentMethod->getCode()])) {
+                        unset($availablePaymentMethods[$id]);
+                    }
+
+                    foreach ($this->methods as $method) {
+                        if (isset($cmPaymentMethods[$paymentMethod->getCode()])) {
+                            $paymentDetailsExtension = $method->extend(
+                                $paymentMethod->getCode(),
+                                $cmPaymentMethods[$paymentMethod->getCode()],
+                                $paymentDetailsExtension
+                            );
+                        }
                     }
                 }
+
+                $paymentDetails->setExtensionAttributes($paymentDetailsExtension);
+                $paymentDetails->setPaymentMethods($availablePaymentMethods);
+            } catch (\Exception $e) {
+                $this->logger->error(
+                    'CM Get Available Methods request',
+                    [
+                        'error' => $e->getMessage(),
+                    ]
+                );
+
+                // Remove cm_payments_ideal if available because of missing issuer list.
+                $availablePaymentMethods = array_filter($availablePaymentMethods, function ($method) {
+                    return $method->getCode() !== ConfigProvider::CODE_IDEAL;
+                });
+
+                $paymentDetails->setPaymentMethods($availablePaymentMethods);
             }
-
-            $paymentDetails->setExtensionAttributes($paymentDetailsExtension);
-            $paymentDetails->setPaymentMethods($availablePaymentMethods);
-        } catch (\Exception $e) {
-            $this->logger->error(
-                'CM Get Available Methods request',
-                [
-                    'error' => $e->getMessage(),
-                ]
-            );
-
-            // Remove cm_payments_ideal if available because of missing issuer list.
-            $availablePaymentMethods = array_filter($availablePaymentMethods, function ($method) {
-                return $method->getCode() !== ConfigProvider::CODE_IDEAL;
-            });
-
-            $paymentDetails->setPaymentMethods($availablePaymentMethods);
         }
 
         return $paymentDetails;
@@ -203,6 +217,22 @@ class MethodService implements MethodServiceInterface
         return $this->orderClient->create(
             $orderCreateRequest
         );
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @param string $orderKey
+     * @return void
+     * @throws LocalizedException
+     */
+    private function createCmOrderItems(CartInterface $quote, string $orderKey): void
+    {
+        $orderCreateItemsRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
+            $orderKey,
+            $quote->getAllVisibleItems()
+        );
+
+        $this->orderClient->createItems($orderCreateItemsRequest);
     }
 
     /**

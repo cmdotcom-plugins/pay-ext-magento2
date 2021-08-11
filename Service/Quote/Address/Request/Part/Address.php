@@ -40,7 +40,7 @@ class Address implements RequestPartByQuoteAddressInterface
             'street' => implode('', $quoteAddress->getStreet()),
             'housenumber' => '',
             'housenumber_addition' => '',
-            'postalcode' => $quoteAddress->getPostcode(),
+            'postal_code' => $quoteAddress->getPostcode(),
             'city' => $quoteAddress->getCity(),
             'state' => $quoteAddress->getRegionCode(),
             'country' => $quoteAddress->getCountryId()

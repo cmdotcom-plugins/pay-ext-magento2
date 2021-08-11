@@ -26,13 +26,17 @@
             <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
                 <div class="fieldset">
                     <div class="field required">
-                        <label data-bind="attr: {for: 'elv-iban'}" class="label">
-                            <span data-bind="i18n: 'IBAN:'"></span>
+                        <label data-bind="attr: {for: 'dob'}" class="label">
+                            <span data-bind="i18n: 'Date Of Birth:'"></span>
                         </label>
                         <div class="control">
                             <input type="text"
                                    class="input-text"
-                                   data-bind="value: iban, attr: {id: 'elv-iban'}" data-validate="{required:true}">
+                                   data-bind="datepicker: {storage: dob,
+                                    options: {'dateFormat': 'yyyy-mm-dd', 'changeMonth': true, 'maxDate': '-18Y',
+                                    'changeYear': true, 'yearRange': '-110:-18'}},
+                                    value: dob, attr: {id: 'dob', readonly: true}"
+                                   data-validate="{required:true, 'validate-date': {dateFormat: 'yyyy-mm-dd'}}">
                         </div>
                     </div>
                 </div>

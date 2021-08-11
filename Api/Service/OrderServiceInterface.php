@@ -16,8 +16,8 @@ interface OrderServiceInterface
 {
     /**
      * @param string $orderId
-     *
+     * @param bool $isItemsCreationNeeded
      * @return CMOrderInterface
      */
-    public function create(string $orderId): CMOrderInterface;
+    public function create(string $orderId, bool $isItemsCreationNeeded = false): CMOrderInterface;
 }

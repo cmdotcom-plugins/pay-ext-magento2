@@ -10,6 +10,7 @@ namespace CM\Payments\Controller\Payment;
 
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
+use CM\Payments\Model\ConfigProvider;
 use Exception;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
@@ -97,7 +98,11 @@ class Redirect extends Action implements HttpGetActionInterface
                 return $this->redirectToCheckoutCart(__('No order id found.'));
             }
 
-            $cmOrder = $this->orderService->create($order->getEntityId());
+            $isItemsCreationNeeded = false;
+            if ($order->getPayment()->getMethod() == ConfigProvider::CODE_KLARNA) {
+                $isItemsCreationNeeded = true;
+            }
+            $cmOrder = $this->orderService->create($order->getEntityId(), $isItemsCreationNeeded);
             if (!$cmOrder->getOrderReference()) {
                 throw new LocalizedException(__('The order was not placed properly.'));
             }

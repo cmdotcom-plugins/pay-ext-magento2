@@ -55,7 +55,7 @@ class AddressService implements AddressServiceInterface
             }
         }
 
-        $address['postalcode'] = preg_replace('/\s+/', '', $address['postalcode']);
+        $address['postal_code'] = preg_replace('/\s+/', '', $address['postal_code']);
 
         return $address;
     }

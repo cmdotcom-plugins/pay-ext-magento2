@@ -38,14 +38,18 @@ class DateOfBirth implements RequestPartByOrderAddressInterface
      */
     public function process(OrderAddressInterface $orderAddress, ShopperCreate $shopperCreate): ShopperCreate
     {
-        $shopperCreate->setDateOfBirth('');
-        if ($orderAddress->getCustomerId()) {
+        $dob = $orderAddress->getOrder()->getPayment()->getAdditionalInformation('dob');
+        if (!empty($dob)) {
+            $shopperCreate->setDateOfBirth((string)$dob);
+        } elseif ($orderAddress->getCustomerId()) {
             try {
                 $customer = $this->customerRepository->getById($orderAddress->getCustomerId());
                 $shopperCreate->setDateOfBirth((string)$customer->getDob());
             } catch (LocalizedException | NoSuchEntityException $e) {
                 $shopperCreate->setDateOfBirth('');
             }
+        } else {
+            $shopperCreate->setDateOfBirth('');
         }
 
         return $shopperCreate;

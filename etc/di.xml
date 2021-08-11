@@ -21,6 +21,8 @@
     <preference for="CM\Payments\Api\Service\AddressServiceInterface" type="CM\Payments\Service\AddressService" />
     <preference for="CM\Payments\Api\Service\OrderRequestBuilderInterface"
                 type="CM\Payments\Service\OrderRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\OrderItemsRequestBuilderInterface"
+                type="CM\Payments\Service\OrderItemsRequestBuilder" />
     <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface"
                 type="CM\Payments\Service\PaymentRequestBuilder" />
     <preference for="CM\Payments\Api\Service\ShopperRequestBuilderInterface"
@@ -83,11 +85,43 @@
         </arguments>
     </type>
 
+    <type name="CM\Payments\Service\OrderItemsRequestBuilder">
+        <arguments>
+            <argument name="orderItemRequestParts" xsi:type="array">
+                <item name="itemId" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\ItemId</item>
+                <item name="sku" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Sku</item>
+                <item name="name" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Name</item>
+                <item name="description" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Description</item>
+                <item name="type" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Type</item>
+                <item name="quantity" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Quantity</item>
+                <item name="currency" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Currency</item>
+                <item name="unitAmount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\UnitAmount</item>
+                <item name="amount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Amount</item>
+                <item name="vat_amount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\VatAmount</item>
+                <item name="vat_rate" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\VatRate</item>
+            </argument>
+            <argument name="quoteItemRequestParts" xsi:type="array">
+                <item name="itemId" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\ItemId</item>
+                <item name="sku" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Sku</item>
+                <item name="name" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Name</item>
+                <item name="description" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Description</item>
+                <item name="type" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Type</item>
+                <item name="quantity" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Quantity</item>
+                <item name="currency" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Currency</item>
+                <item name="unitAmount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\UnitAmount</item>
+                <item name="amount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Amount</item>
+                <item name="vat_amount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\VatAmount</item>
+                <item name="vat_rate" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\VatRate</item>
+            </argument>
+        </arguments>
+    </type>
+
     <type name="CM\Payments\Observer\AdditionalDataAssignObserver">
         <arguments>
             <argument name="additionalInformationList" xsi:type="array">
                 <item name="selected_issuer" xsi:type="string">selected_issuer</item>
                 <item name="iban" xsi:type="string">iban</item>
+                <item name="dob" xsi:type="string">dob</item>
             </argument>
         </arguments>
     </type>

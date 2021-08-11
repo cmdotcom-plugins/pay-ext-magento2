@@ -84,7 +84,7 @@ class ShopperRequestBuilder implements ShopperRequestBuilderInterface
         $shopperCreate = $this->clientShopperCreateFactory->create();
 
         foreach ($this->quoteAddressRequestParts as $part) {
-            $shopperCreate = $part->process($quoteAddress, $shopperCreate);
+              $shopperCreate = $part->process($quoteAddress, $shopperCreate);
         }
 
         return $this->shopperCreateRequestFactory->create(['shopperCreate' => $shopperCreate]);

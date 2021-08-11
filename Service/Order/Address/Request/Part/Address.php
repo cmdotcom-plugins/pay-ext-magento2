@@ -40,7 +40,7 @@ class Address implements RequestPartByOrderAddressInterface
             'street' => implode('', $orderAddress->getStreet()),
             'housenumber' => '',
             'housenumber_addition' => '',
-            'postalcode' => $orderAddress->getPostcode(),
+            'postal_code' => $orderAddress->getPostcode(),
             'city' => $orderAddress->getCity(),
             'state' => $orderAddress->getRegionCode(),
             'country' => $orderAddress->getCountryId()
