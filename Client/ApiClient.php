@@ -66,14 +66,12 @@ class ApiClient implements ApiClientInterface
             $options
         );
 
-        $response = $guzzleResponse->getBody()->getContents();
-        if (!$response) {
-            $response = [];
-        } else {
-            $response = \GuzzleHttp\json_decode($response, true);
+        $responseBody = $guzzleResponse->getBody()->getContents();
+        if (!empty($responseBody)) {
+            return \GuzzleHttp\json_decode($responseBody, true);
         }
 
-        return $response;
+        return [];
     }
 
     /**

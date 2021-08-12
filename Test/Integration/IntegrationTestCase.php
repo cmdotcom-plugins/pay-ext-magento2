@@ -29,6 +29,7 @@ class IntegrationTestCase extends TestCase
     }
 
     /**
+
      * Get Magento order by increment id
      * @param $orderId
      * @return OrderInterface
@@ -71,7 +72,6 @@ class IntegrationTestCase extends TestCase
         $magentoOrder
             ->setOrderCurrencyCode('EUR')
             ->setBaseCurrencyCode('EUR');
-
         $repository = $this->objectManager->get(OrderRepositoryInterface::class);
         $repository->save($magentoOrder);
 
