@@ -168,21 +168,6 @@ class AddMethodsAdditionalDataShippingTest extends IntegrationTestCase
     }
 
     /**
-     * @param string $orderId
-     * @return CartInterface
-     */
-    private function loadQuoteById($orderId)
-    {
-        $quoteRepository = $this->objectManager->get(CartRepositoryInterface::class);
-        $searchCriteriaBuilder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $searchCriteriaBuilder->addFilter('reserved_order_id', $orderId, 'eq')->create();
-
-        $orderList = $quoteRepository->getList($searchCriteria)->getItems();
-
-        return array_shift($orderList);
-    }
-
-    /**
      * @return array[]
      */
     private function getMethodResponse()

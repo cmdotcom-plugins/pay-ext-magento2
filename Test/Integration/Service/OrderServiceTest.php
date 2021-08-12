@@ -138,39 +138,6 @@ class OrderServiceTest extends IntegrationTestCase
     }
 
     /**
-     *
-     * @param $orderId
-     * @return OrderInterface
-     */
-    private function loadOrderById($orderId)
-    {
-        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $builder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $builder->addFilter('increment_id', $orderId, 'eq')->create();
-
-        $orderList = $repository->getList($searchCriteria)->getItems();
-
-        return array_shift($orderList);
-    }
-
-    /**
-     * @param OrderInterface $magentoOrder
-     * @return OrderInterface
-     */
-    private function addCurrencyToOrder(OrderInterface $magentoOrder): OrderInterface
-    {
-        /** @var OrderInterface $magentoOrder */
-        $magentoOrder
-            ->setOrderCurrencyCode('USD')
-            ->setBaseCurrencyCode('USD');
-
-        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $repository->save($magentoOrder);
-
-        return $magentoOrder;
-    }
-
-    /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testCreateOrderRequestException()
