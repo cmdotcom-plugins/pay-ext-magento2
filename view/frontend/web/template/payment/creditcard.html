@@ -1,0 +1,99 @@
+<!--
+  ~ Copyright © CM.com. All rights reserved.
+  ~ See LICENSE.txt for license details.
+  -->
+
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label data-bind="attr: {'for': getCode()}" class="label">
+            <!-- ko if: getImage() -->
+            <img data-bind="attr: {src: getImage()}" class="payment-icon" width="50" height="50"/>
+            <!--/ko-->
+            <span data-bind="text: getTitle()"></span>
+        </label>
+
+    </div>
+    <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+
+        <!-- ko if: isDirect() -->
+        <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
+            <div class="field-input-cardHolder">
+                <label for="cardHolder">Cardholder</label>
+                <input type="text" id="cardHolder" placeholder="Enter cardholder"
+                       data-bind="value: cardHolder, attr: {id: 'creditcard-card-holder'}"
+                       data-validate="{required:true}"
+                       style="background-image: url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAfBJREFUWAntVk1OwkAUZkoDKza4Utm61iP0AqyIDXahN2BjwiHYGU+gizap4QDuegWN7lyCbMSlCQjU7yO0TOlAi6GwgJc0fT/fzPfmzet0crmD7HsFBAvQbrcrw+Gw5fu+AfOYvgylJ4TwCoVCs1ardYTruqfj8fgV5OUMSVVT93VdP9dAzpVvm5wJHZFbg2LQ2pEYOlZ/oiDvwNcsFoseY4PBwMCrhaeCJyKWZU37KOJcYdi27QdhcuuBIb073BvTNL8ln4NeeR6NRi/wxZKQcGurQs5oNhqLshzVTMBewW/LMU3TTNlO0ieTiStjYhUIyi6DAp0xbEdgTt+LE0aCKQw24U4llsCs4ZRJrYopB6RwqnpA1YQ5NGFZ1YQ41Z5S8IQQdP5laEBRJcD4Vj5DEsW2gE6s6g3d/YP/g+BDnT7GNi2qCjTwGd6riBzHaaCEd3Js01vwCPIbmWBRx1nwAN/1ov+/drgFWIlfKpVukyYihtgkXNp4mABK+1GtVr+SBhJDbBIubVw+Cd/TDgKO2DPiN3YUo6y/nDCNEIsqTKH1en2tcwA9FKEItyDi3aIh8Gl1sRrVnSDzNFDJT1bAy5xpOYGn5fP5JuL95ZjMIn1ya7j5dPGfv0A5eAnpZUY3n5jXcoec5J67D9q+VuAPM47D3XaSeL4AAAAASUVORK5CYII=&quot;); background-repeat: no-repeat; background-attachment: scroll; background-size: 16px 18px; background-position: 98% 50%; cursor: auto;">
+
+            </div>
+            <div class="field-input-cardNumber">
+                <label for="cardHolder">Card number</label>
+                <input type="text"
+                       placeholder="Enter card number"
+                       name="cardNumber"
+                       autocomplete="cc-number"
+                       data-bind="value: cardNumber, attr: {id: 'creditcard-card-number'}"
+                       data-validate="{required:true}"
+                       x-autocompletetype="cc-number"
+                       pattern="\d*"
+                       class="form-control cc-number unknown">
+            </div>
+            <div class="cm-payments-small-inputs">
+                <div class="field-select-expiryMonth">
+                    <label for="expiryMonth">Expiry month</label>
+                    <select id="expiryMonth" data-bind="options: getMonths()
+                        optionsCaption: '-- Please select --', value: selectedMonth" data-validate="{required:true}">
+                    </select>
+
+                </div>
+                <div class="field-select-expiryYear">
+                    <label for="expiryYear">Expiry year</label>
+                    <select id="expiryYear" data-bind="options: getYears()
+                        optionsCaption: '-- Please select --', value: selectedYear" data-validate="{required:true}">
+                    </select>
+                </div>
+                <div class="field-input-ccv">
+                    <label for="creditcard-cvv">CVV/CVC</label>
+                    <input type="text" id="creditcard-cvv"
+                           placeholder="****"
+                           maxlength="4"
+                           data-bind="value: cvv"
+                           data-validate="{required:true}">
+                </div>
+            </div>
+        </form>
+        <!--/ko-->
+
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                        click: placeOrder,
+                        attr: {title: $t('Place Order')},
+                        css: {disabled: !isPlaceOrderActionAllowed()},
+                        enable: (getCode() == isChecked())"
+                        disabled>
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

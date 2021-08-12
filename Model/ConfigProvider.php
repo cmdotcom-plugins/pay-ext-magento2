@@ -87,6 +87,12 @@ class ConfigProvider implements ConfigProviderInterface
                 if ($code == self::CODE_IDEAL) {
                     $config['payment'][$code]['issuers'] = [];
                 }
+
+                if ($code == self::CODE_CREDIT_CARD) {
+                    // Todo: make this configurable.
+                    $config['payment'][$code]['encryption_library'] = 'https://testsecure.docdatapayments.com/cse/' . $this->configService->getMerchantKey();
+                    $config['payment'][$code]['is_direct'] = true;
+                }
             }
         } catch (LocalizedException $e) {
             $config = [];
