@@ -12,7 +12,6 @@ use CM\Payments\Client\Api\OrderInterface;
 use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Service\ApiTestService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
-use GuzzleHttp\ClientFactory;
 
 class ApiTestServiceTest extends IntegrationTestCase
 {

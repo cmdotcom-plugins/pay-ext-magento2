@@ -55,12 +55,8 @@ use CM\Payments\Service\ShopperService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Checkout\Api\PaymentInformationManagementInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Payment\Model\PaymentMethod;
-use Magento\Quote\Api\CartRepositoryInterface;
-use Magento\Quote\Api\Data\CartInterface;
-use Magento\Quote\Api\Data\PaymentMethodInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AddMethodsAdditionalDataPaymentTest extends IntegrationTestCase
