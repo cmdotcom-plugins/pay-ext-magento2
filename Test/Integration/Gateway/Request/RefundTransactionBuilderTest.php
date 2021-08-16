@@ -95,21 +95,6 @@ class RefundTransactionBuilderTest extends IntegrationTestCase
      * @param $orderId
      * @return OrderInterface
      */
-    private function loadOrderById($orderId)
-    {
-        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $builder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $builder->addFilter('increment_id', $orderId, 'eq')->create();
-
-        $orderList = $repository->getList($searchCriteria)->getItems();
-
-        return array_shift($orderList);
-    }
-
-    /**
-     * @param $orderId
-     * @return OrderInterface
-     */
     private function getCreditMemo($orderId)
     {
         $repository = $this->objectManager->get(CreditmemoRepository::class);
