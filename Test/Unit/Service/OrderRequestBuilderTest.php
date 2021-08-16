@@ -10,8 +10,10 @@ namespace CM\Payments\Test\Unit\Service;
 
 use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Client\Model\Request\OrderCreate;
+use CM\Payments\Client\Model\Response\ShopperCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Service\Order\Request\Part\Amount;
+use CM\Payments\Service\Order\Request\Part\BillingAddressKey;
 use CM\Payments\Service\Order\Request\Part\Country;
 use CM\Payments\Service\Order\Request\Part\Currency;
 use CM\Payments\Service\Order\Request\Part\Email;
@@ -22,6 +24,7 @@ use CM\Payments\Service\Order\Request\Part\PaymentProfile;
 use CM\Payments\Service\Order\Request\Part\ReturnUrls;
 use CM\Payments\Service\OrderRequestBuilder;
 use CM\Payments\Service\Quote\Request\Part\OrderId as QuoteOrderId;
+use CM\Payments\Service\ShopperService;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Magento\Framework\Locale\ResolverInterface;
 use Magento\Framework\Math\Random;
@@ -34,24 +37,29 @@ use Magento\Sales\Model\Order;
 class OrderRequestBuilderTest extends UnitTestCase
 {
     /**
-     * @var \Magento\Framework\Locale\ResolverInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var ResolverInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $resolverMock;
 
     /**
-     * @var \CM\Payments\Service\OrderRequestBuilder
-     */
-    private $orderRequestBuilder;
-
-    /**
-     * @var \Magento\Framework\UrlInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var UrlInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $urlMock;
 
     /**
-     * @var \CM\Payments\Api\Config\ConfigInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var ConfigInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $configMock;
+
+    /**
+     * @var ShopperService|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $shopperServiceMock;
+
+    /**
+     * @var OrderRequestBuilder|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $orderRequestBuilder;
 
     public function testCreateOrderRequestBuilder()
     {
@@ -91,12 +99,20 @@ class OrderRequestBuilderTest extends UnitTestCase
      * @param string $paymentMethod
      * @return OrderInterface
      */
-    private function getOrderMock(string $paymentMethod): OrderInterface
+    protected function getOrderMock(string $paymentMethod): OrderInterface
     {
         $shippingAddressMock = $this->createConfiguredMock(
             OrderAddressInterface::class,
             [
+                'getFirstname' => static::ADDRESS_DATA['firstname'],
+                'getMiddlename' => static::ADDRESS_DATA['middlename'],
+                'getLastname' => static::ADDRESS_DATA['lastname'],
                 'getEmail' => static::ADDRESS_DATA['email_address'],
+                'getStreet' => static::ADDRESS_DATA['street_address1'],
+                'getCity' => static::ADDRESS_DATA['city'],
+                'getRegionCode' => static::ADDRESS_DATA['region_code'],
+                'getPostcode' => static::ADDRESS_DATA['postal_code'],
+                'getCompany' => static::ADDRESS_DATA['company'],
                 'getCountryId' => static::ADDRESS_DATA['country_code']
             ]
         );
@@ -111,6 +127,7 @@ class OrderRequestBuilderTest extends UnitTestCase
         $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
         $orderMock->method('getStoreId')->willReturn(1);
         $orderMock->method('getShippingAddress')->willReturn($shippingAddressMock);
+        $orderMock->method('getBillingAddress')->willReturn($shippingAddressMock);
         $orderMock->method('getGrandTotal')->willReturn(50.99);
         $orderMock->method('getPayment')->willReturn($paymentMock);
 
@@ -133,6 +150,10 @@ class OrderRequestBuilderTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->shopperServiceMock = $this->getMockBuilder(ShopperService::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $orderFactoryMock = $this->getMockupFactory(OrderCreate::class);
 
         $orderCreateRequestFactoryMock = $this->getMockupFactory(OrderCreateRequest::class);
@@ -140,6 +161,14 @@ class OrderRequestBuilderTest extends UnitTestCase
         $mathRandomMock = $this->getMockBuilder(Random::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->shopperServiceMock->method('createByOrderAddress')
+            ->with()->willReturn(
+                new ShopperCreate([
+                                      'shopper_key' => 'ec11cd24-e667-4f9e-a677-5ffe0d4aee5e',
+                                      'address_key' => 'ec11cd24-e667-4f9e-a677-5ffe0d4aee5e'
+                                  ])
+            );
 
         $orderRequestParts = [
             new OrderId(),
@@ -151,6 +180,7 @@ class OrderRequestBuilderTest extends UnitTestCase
             new PaymentProfile($this->configMock),
             new ReturnUrls($this->urlMock),
             new Expiry($this->configMock),
+            new BillingAddressKey($this->shopperServiceMock),
         ];
 
         $quoteRequestParts = [

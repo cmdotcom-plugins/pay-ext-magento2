@@ -188,7 +188,7 @@ class OrderServiceTest extends UnitTestCase
         );
 
         $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
-            ->setMethods(['getAdditionalInformation', 'setAdditionalInformation'])
+            ->onlyMethods(['getAdditionalInformation', 'setAdditionalInformation'])
             ->getMockForAbstractClass();
         $paymentMock->method('getAdditionalInformation')->willReturn([]);
         $paymentMock->method('setAdditionalInformation')->willReturnSelf();

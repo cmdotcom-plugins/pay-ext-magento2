@@ -197,9 +197,9 @@ class ShopperCreate
     }
 
     /**
-     * @param string $dateOfBirth
+     * @param ?string $dateOfBirth
      */
-    public function setDateOfBirth(string $dateOfBirth): void
+    public function setDateOfBirth(?string $dateOfBirth): void
     {
         $this->dateOfBirth = $dateOfBirth;
     }

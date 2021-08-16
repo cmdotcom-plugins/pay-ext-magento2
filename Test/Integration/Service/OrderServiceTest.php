@@ -83,10 +83,10 @@ use CM\Payments\Test\Integration\IntegrationTestCase;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\OrderRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -134,6 +134,28 @@ class OrderServiceTest extends IntegrationTestCase
         //phpcs:ignore
             'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
             $order->getUrl()
+        );
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testCreateOrderItems()
+    {
+        $this->clientMock->expects($this->once())->method('execute')->willReturn(
+            []
+        );
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
+        $orderItemsCreationResult = $this->orderService->createItems(
+            '0287A1617D93780EF28044B98438BF2F',
+            $magentoOrder
+        );
+        $this->assertSame(
+            true,
+            $orderItemsCreationResult
         );
     }
 

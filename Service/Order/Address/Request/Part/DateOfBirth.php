@@ -41,17 +41,31 @@ class DateOfBirth implements RequestPartByOrderAddressInterface
         $dob = $orderAddress->getOrder()->getPayment()->getAdditionalInformation('dob');
         if (!empty($dob)) {
             $shopperCreate->setDateOfBirth((string)$dob);
-        } elseif ($orderAddress->getCustomerId()) {
-            try {
-                $customer = $this->customerRepository->getById($orderAddress->getCustomerId());
-                $shopperCreate->setDateOfBirth((string)$customer->getDob());
-            } catch (LocalizedException | NoSuchEntityException $e) {
-                $shopperCreate->setDateOfBirth('');
-            }
         } else {
-            $shopperCreate->setDateOfBirth('');
+            $shopperCreate->setDateOfBirth($this->getDobFromCustomer((string)$orderAddress->getCustomerId()));
         }
 
         return $shopperCreate;
+    }
+
+    /**
+     * Get Date of Birth from customer if exists
+     *
+     * @param ?string $customerId
+     * @return ?string
+     */
+    private function getDobFromCustomer(?string $customerId): ?string
+    {
+        $dob = '';
+        if ($customerId) {
+            try {
+                $customer = $this->customerRepository->getById($customerId);
+                $dob = $customer->getDob();
+            } catch (LocalizedException | NoSuchEntityException $e) {
+                $dob = '';
+            }
+        }
+
+        return $dob;
     }
 }
