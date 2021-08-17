@@ -19,7 +19,7 @@ class Amount implements RequestPartByOrderInterface
      */
     public function process(OrderInterface $order, OrderCreate $orderCreate): OrderCreate
     {
-        $orderCreate->setAmount((int)($order->getGrandTotal() * 100));
+        $orderCreate->setAmount((int)round($order->getGrandTotal() * 100));
 
         return $orderCreate;
     }

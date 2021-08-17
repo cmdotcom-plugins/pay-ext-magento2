@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace CM\Payments\Test\Unit;
 
+use CM\Payments\Client\Api\ApiClientInterface;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class UnitTestCase extends TestCase
@@ -32,6 +34,9 @@ class UnitTestCase extends TestCase
      * Customer Address Constant
      */
     public const ADDRESS_DATA = [
+        'firstname'                  => 'Johan',
+        'middlename'                 => 'de',
+        'lastname'                   => 'Vries',
         'region'                     => '',
         'region_code'                => '',
         'country_code'               => 'NL',
@@ -49,11 +54,17 @@ class UnitTestCase extends TestCase
      */
     protected $objectManager;
 
+    /**
+     * @var ApiClientInterface|MockObject
+     */
+    protected $clientMock;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->objectManager = new ObjectManager($this);
+        $this->clientMock = $this->createMock(ApiClientInterface::class);
         $this->setUpWithoutVoid();
     }
 

@@ -24,14 +24,16 @@
 
         <div class="payment-method-iban">
             <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
-                <div class="field field-from">
-                    <label data-bind="attr: {for: 'elv-iban'}" class="label">
-                        <span data-bind="i18n: 'IBAN:'"></span>
-                    </label>
-                    <div class="control">
-                        <input type="text"
-                               class="input-text"
-                               data-bind="value: iban, attr: {id: 'elv-iban'}" data-validate="{required:true}">
+                <div class="fieldset">
+                    <div class="field required">
+                        <label data-bind="attr: {for: 'elv-iban'}" class="label">
+                            <span data-bind="i18n: 'IBAN:'"></span>
+                        </label>
+                        <div class="control">
+                            <input type="text"
+                                   class="input-text"
+                                   data-bind="value: iban, attr: {id: 'elv-iban'}" data-validate="{required:true}">
+                        </div>
                     </div>
                 </div>
             </form>

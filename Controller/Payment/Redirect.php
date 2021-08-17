@@ -10,6 +10,7 @@ namespace CM\Payments\Controller\Payment;
 
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
+use CM\Payments\Model\ConfigProvider;
 use Exception;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;

@@ -17,18 +17,20 @@ use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Client\Request\OrderGetMethodsRequest;
 use CM\Payments\Client\Request\OrderGetRequest;
+use CM\Payments\Client\Request\OrderItemsCreateRequest;
 use CM\Payments\Client\Request\OrdersRequest;
 use GuzzleHttp\Exception\RequestException;
 
 class Order implements OrderInterface
 {
     /**
-     * ApiClientInterface
+     * @var ApiClientInterface
      */
     private $apiClient;
 
     /**
-     * Order constructor.
+     * Order constructor
+     *
      * @param ApiClientInterface $apiClient
      */
     public function __construct(ApiClientInterface $apiClient)
@@ -97,5 +99,15 @@ class Order implements OrderInterface
         );
 
         return new OrderCreate($response);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createItems(OrderItemsCreateRequest $orderItemsCreateRequest): array
+    {
+        return $this->apiClient->execute(
+            $orderItemsCreateRequest
+        );
     }
 }
