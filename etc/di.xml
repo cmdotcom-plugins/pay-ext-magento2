@@ -28,12 +28,16 @@
     <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder"/>
     <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config"/>
 
+    <preference for="CM\Payments\Api\Data\CardDetailsInterface" type="CM\Payments\Model\Data\CardDetails"/>
+    <preference for="CM\Payments\Api\Data\BrowserDetailsInterface" type="CM\Payments\Model\Data\BrowserDetails"/>
+
     <type name="CM\Payments\Service\PaymentRequestBuilder">
         <arguments>
             <argument name="parts" xsi:type="array">
                 <item name="method" xsi:type="object">CM\Payments\Service\Payment\Request\Part\Method</item>
                 <item name="idealDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\IdealDetails</item>
                 <item name="elvDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\ElvDetails</item>
+                <item name="cardDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\CardDetails</item>
             </argument>
         </arguments>
     </type>

@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace CM\Payments\Client\Model;
 
 use CM\Payments\Client\Api\CMPaymentInterface;
+use CM\Payments\Client\Api\CMPaymentUrlInterface;
 
 class CMPayment implements CMPaymentInterface
 {
@@ -77,7 +78,7 @@ class CMPayment implements CMPaymentInterface
     }
 
     /**
-     * @return CMPaymentUrl[]
+     * @return CMPaymentUrlInterface[]
      */
     public function getUrls(): array
     {

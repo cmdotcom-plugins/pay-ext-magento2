@@ -70,6 +70,7 @@
             </cm_payments_ideal>
             <cm_payments_creditcard>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsCreditCardFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>

@@ -11,6 +11,7 @@ namespace CM\Payments\Model;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
 use CM\Payments\Logger\CMPaymentsLogger;
+use CM\Payments\Model\Adminhtml\Source\MethodMode;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
@@ -89,9 +90,8 @@ class ConfigProvider implements ConfigProviderInterface
                 }
 
                 if ($code == self::CODE_CREDIT_CARD) {
-                    // Todo: make this configurable.
-                    $config['payment'][$code]['encryption_library'] = 'https://testsecure.docdatapayments.com/cse/' . $this->configService->getMerchantKey();
-                    $config['payment'][$code]['is_direct'] = true;
+                    $config['payment'][$code]['encryption_library'] = $this->configService->getEncryptLibrary();
+                    $config['payment'][$code]['is_direct'] = $this->configService->isCreditCardDirect();
                 }
             }
         } catch (LocalizedException $e) {

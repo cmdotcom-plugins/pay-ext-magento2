@@ -34,8 +34,22 @@ class OrderId implements RequestPartByQuoteInterface
      */
     public function process(CartInterface $quote, OrderCreate $orderCreate): OrderCreate
     {
-        $orderCreate->setOrderId($this->mathRandom->getUniqueHash('Q_'));
+        $orderCreate->setOrderId($this->getOrderId($quote));
 
         return $orderCreate;
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    private function getOrderId(CartInterface $quote): string
+    {
+        if ($quote->getReservedOrderId()) {
+            return $quote->getReservedOrderId();
+        }
+
+        return $this->mathRandom->getUniqueHash('Q_');
     }
 }

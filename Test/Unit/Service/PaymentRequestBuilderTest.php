@@ -33,7 +33,7 @@ class PaymentRequestBuilderTest extends UnitTestCase
     {
         $orderMock = $this->getOrderMock(ConfigProvider::CODE_IDEAL);
         $orderKey = '0287A1617D93780EF28044B98438BF2F';
-        $paymentRequest = $this->paymentRequestBuilder->create($orderMock, $orderKey);
+        $paymentRequest = $this->paymentRequestBuilder->create('1',  $orderKey, $orderMock);
 
         $this->assertSame(
             MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_IDEAL],
@@ -50,7 +50,7 @@ class PaymentRequestBuilderTest extends UnitTestCase
     {
         $orderMock = $this->getOrderMock(ConfigProvider::CODE_PAYPAL);
         $orderKey = '0287A1617D93780EF28044B98438BF2F';
-        $paymentRequest = $this->paymentRequestBuilder->create($orderMock, $orderKey);
+        $paymentRequest = $this->paymentRequestBuilder->create('1',  $orderKey, $orderMock);
 
         $this->assertSame(
             MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_PAYPAL],
@@ -62,7 +62,7 @@ class PaymentRequestBuilderTest extends UnitTestCase
     {
         $orderMock = $this->getOrderMock(ConfigProvider::CODE_ELV);
         $orderKey = '0287A1617D93780EF28044B98438BF2F';
-        $paymentRequest = $this->paymentRequestBuilder->create($orderMock, $orderKey);
+        $paymentRequest = $this->paymentRequestBuilder->create('1',  $orderKey, $orderMock);
 
         $this->assertSame(
             MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_ELV],

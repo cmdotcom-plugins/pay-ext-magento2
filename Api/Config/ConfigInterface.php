@@ -26,6 +26,7 @@ interface ConfigInterface
     public const XML_PATH_GENERAL_MODE = 'cm_payments/general/mode';
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
+    public const XML_PATH_PAYMENT_CREDIT_CARD_MODE = 'payment/cm_payments_creditcard/mode';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
     public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
@@ -134,4 +135,17 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getOrderExpiryDuration(string $paymentMethodCode): ?string;
+
+    /**
+     * Get Order Expiry Duration
+     *
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    public function getEncryptLibrary(): string;
+
+    /**
+     * @return bool
+     */
+    public function isCreditCardDirect(): bool;
 }

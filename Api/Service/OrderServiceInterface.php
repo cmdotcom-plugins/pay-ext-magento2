@@ -11,6 +11,7 @@ namespace CM\Payments\Api\Service;
 use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Model\Data\OrderInterface as CMOrder;
 use CM\Payments\Client\Api\OrderDetailInterface;
+use Magento\Quote\Model\Quote;
 
 interface OrderServiceInterface
 {
@@ -20,4 +21,12 @@ interface OrderServiceInterface
      * @return CMOrderInterface
      */
     public function create(string $orderId): CMOrderInterface;
+
+    /**
+     * @param string $incrementId
+     * @param Quote $quote
+     *
+     * @return CMOrderInterface
+     */
+    public function createByQuote(string $incrementId, Quote $quote): CMOrderInterface;
 }

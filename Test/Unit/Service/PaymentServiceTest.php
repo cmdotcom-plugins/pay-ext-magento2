@@ -14,6 +14,7 @@ use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
+use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
 use CM\Payments\Client\Model\CMPayment;
@@ -27,6 +28,9 @@ use CM\Payments\Model\Data\Payment as CMPaymentData;
 use CM\Payments\Service\PaymentService;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
+use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -283,6 +287,22 @@ class PaymentServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->cartRepositoryMock = $this->getMockBuilder(CartRepositoryInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->orderServiceMock = $this->getMockBuilder(OrderServiceInterface::class)
+        ->disableOriginalConstructor()
+        ->getMock();
+
+        $this->maskedQuoteIdToQuoteIdMock = $this->getMockBuilder(MaskedQuoteIdToQuoteIdInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->quoteManagementMock = $this->getMockBuilder(QuoteManagement::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->orderRepositoryMock->method('get')->willReturn($this->getOrderMock());
         $this->orderRepositoryMock->method('save');
         $this->cmOrderRepositoryMock->method('save');
@@ -301,14 +321,18 @@ class PaymentServiceTest extends UnitTestCase
 
         $this->paymentService = new PaymentService(
             $this->orderRepositoryMock,
+            $this->cartRepositoryMock,
             $this->paymentClientMock,
             $this->paymentRequestBuilderMock,
             $this->cmPaymentDataFactoryMock,
+            $this->orderServiceMock,
             $this->cmPaymentFactoryMock,
             $this->cmPaymentRepositoryMock,
             $this->cmOrderRepositoryMock,
             $this->eventManagerMock,
-            $this->cmPaymentsLoggerMock
+            $this->cmPaymentsLoggerMock,
+            $this->maskedQuoteIdToQuoteIdMock,
+            $this->quoteManagementMock
         );
     }
 }

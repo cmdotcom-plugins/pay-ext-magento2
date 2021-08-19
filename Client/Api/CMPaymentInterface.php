@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Api;
 
-use CM\Payments\Client\Model\CMPaymentUrl;
-
 interface CMPaymentInterface
 {
     /**
@@ -28,7 +26,7 @@ interface CMPaymentInterface
     public function getRedirectUrl(): ?string;
 
     /**
-     * @return CMPaymentUrl[]
+     * @return \CM\Payments\Client\Api\CMPaymentUrlInterface[]
      */
     public function getUrls(): array;
 }

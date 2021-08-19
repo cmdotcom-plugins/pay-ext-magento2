@@ -260,7 +260,7 @@ class OrderServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $orderMock->method('getEntityId')->willReturn('1');
+        $orderMock->method('getEntityId')->willReturn(1);
         $orderMock->method('getIncrementId')->willReturn('000000001');
         $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
         $orderMock->method('getStoreId')->willReturn(1);
