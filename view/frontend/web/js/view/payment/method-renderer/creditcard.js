@@ -7,12 +7,14 @@ define([
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/action/redirect-on-success',
     'mage/url',
-    'jquery'
+    'jquery',
+    'creditcard-3dsv2-validation'
 ], function (
     Component,
     redirectOnSuccessAction,
     url,
-    $
+    $,
+    cc3DSv2Validation
 ) {
     'use strict';
     return Component.extend({
@@ -36,8 +38,13 @@ define([
             this._super();
             this.paymentConfig = window.checkoutConfig.payment[this.item.method];
 
-            this.loadEncryptionLibrary(function() {
+            this.loadEncryptionLibrary(function () {
                 console.log(window.cseEncrypt);
+                console.log('loaded');
+            })
+
+            this.loadNsa3DsLibrary(function () {
+                console.log(window.nca3DSWebSDK);
                 console.log('loaded');
             })
 
@@ -76,12 +83,16 @@ define([
             };
         },
 
-        loadEncryptionLibrary: function(callback) {
+        loadEncryptionLibrary: function (callback) {
             $.getScript(this.paymentConfig.encryption_library, callback);
         },
 
-        encryptCreditCardFields: function() {
-            if(window.cseEncrypt === undefined) {
+        loadNsa3DsLibrary: function (callback) {
+            $.getScript(this.paymentConfig.nsa3ds_library, callback);
+        },
+
+        encryptCreditCardFields: function () {
+            if (window.cseEncrypt === undefined) {
                 console.error('CM.com encryption library is not loaded');
                 return false;
             }
@@ -97,6 +108,7 @@ define([
 
         /**
          * Checks if creditcard mode is set to 'direct'
+         *
          * @returns {boolean}
          */
         isDirect: function () {
@@ -107,7 +119,7 @@ define([
          * Get array of months
          * @returns {string[]}
          */
-        getMonths: function() {
+        getMonths: function () {
             return ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
         },
 
@@ -115,7 +127,7 @@ define([
          * Get array of years
          * @returns {string[]}
          */
-        getYears: function() {
+        getYears: function () {
             var currentYear = new Date().getFullYear().toString().substr(-2), years = [];
             var endYear = currentYear + 20;
             while ( currentYear <= endYear ) {
@@ -128,15 +140,15 @@ define([
          *
          * @returns {null}
          */
-        getCardHolder: function() {
+        getCardHolder: function () {
             return this.cardHolder;
         },
 
-        getCardNumber: function() {
+        getCardNumber: function () {
             return this.cardNumber;
         },
 
-        getCvv: function() {
+        getCvv: function () {
             return this.cvv;
         },
 
@@ -169,8 +181,29 @@ define([
             return this.data && $form.validation() && $form.validation('isValid');
         },
 
-        placeOrder: function() {
+        placeOrder: function () {
             // Todo: create cm order + cm payment and validate 3d secure.
+
+            let responseExample = {
+                "status": "REDIRECTED_FOR_AUTHENTICATION",
+                "urls": [{
+                    "purpose": "HIDDEN_IFRAME",
+                    "method": "POST",
+                    "url": "https://testsecure.docdatapayments.com/ps/api/public/3dsv2/v1/transactions/3ds-method-notification",
+                    "order": 1,
+                    "parameters": {
+                        "threeDSMethodData": "eyJ0aHJlZURTTWV0aG9kTm90aWZpY2F0aW9uVVJMIjoiaHR0cHM6Ly90ZXN0c2VjdXJlLmRvY2RhdGFwYXltZW50cy5jb20vcHMvYXBpL3B1YmxpYy8zZHN2Mi92MS90cmFuc2FjdGlvbnMvM2RzLW1ldGhvZC1ub3RpZmljYXRpb24iLCJ0aHJlZURTU2VydmVyVHJhbnNJRCI6IjZlNDRmN2IxLWEzYzMtNDNhNi1iNjQ2LWMwMDEwMmY1YWM1ZSJ9"
+                    }
+                },
+                {
+                    "purpose": "IFRAME",
+                    "method": "POST",
+                    "url": "https://testsecure.docdatapayments.com/ps/api/public/3dsv2/v1/transactions/6e44f7b1-a3c3-43a6-b646-c00102f5ac5e/references/4911282291/authenticate",
+                    "order": 2
+                }]
+            };
+            debugger;
+            let result = cc3DSv2Validation.perform3DsSteps(responseExample);
 
             return false;
         },

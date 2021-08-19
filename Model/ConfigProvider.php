@@ -90,7 +90,12 @@ class ConfigProvider implements ConfigProviderInterface
 
                 if ($code == self::CODE_CREDIT_CARD) {
                     // Todo: make this configurable.
-                    $config['payment'][$code]['encryption_library'] = 'https://testsecure.docdatapayments.com/cse/' . $this->configService->getMerchantKey();
+                    $config['payment'][$code]['encryption_library'] =
+                        'https://' . ($this->configService->getMode() == 'test' ? 'test' : '')
+                        . 'secure.docdatapayments.com/cse/' . $this->configService->getMerchantKey();
+                    $config['payment'][$code]['nsa3ds_library'] =
+                        'https://' . ($this->configService->getMode() == 'test' ? 'test' : '')
+                        . 'secure.docdatapayments.com/ps/script/nca-3ds-web-sdk.js';
                     $config['payment'][$code]['is_direct'] = true;
                 }
             }

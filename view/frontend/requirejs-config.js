@@ -13,5 +13,10 @@ var config = {
                 'CM_Payments/js/action/get-payment-information-mixin': true
             }
         }
+    },
+    map: {
+        '*': {
+            'creditcard-3dsv2-validation': 'CM_Payments/js/model/creditcard/3dsv2-validation',
+        }
     }
 };

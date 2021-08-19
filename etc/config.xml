@@ -169,5 +169,14 @@
                 <group>cm</group>
             </cm_payments_elv>
         </payment>
+        <csp>
+            <policies>
+                <storefront>
+                    <frame-ancestors>
+                        <inline>0</inline>
+                    </frame-ancestors>
+                </storefront>
+            </policies>
+        </csp>
     </default>
 </config>
