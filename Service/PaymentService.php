@@ -8,10 +8,13 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
+use CM\Payments\Api\Data\BrowserDetailsInterface;
+use CM\Payments\Api\Data\CardDetailsInterface;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
+use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
 use CM\Payments\Client\Api\CMPaymentInterface;
@@ -21,6 +24,10 @@ use CM\Payments\Exception\EmptyPaymentIdException;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
+use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -70,6 +77,22 @@ class PaymentService implements PaymentServiceInterface
      * @var ManagerInterface
      */
     private $eventManager;
+    /**
+     * @var CartRepositoryInterface
+     */
+    private $cartRepository;
+    /**
+     * @var OrderServiceInterface
+     */
+    private $orderService;
+    /**
+     * @var MaskedQuoteIdToQuoteIdInterface
+     */
+    private $maskedQuoteIdToQuoteId;
+    /**
+     * @var QuoteManagement
+     */
+    private $quoteManagement;
 
     /**
      * PaymentService constructor
@@ -86,14 +109,18 @@ class PaymentService implements PaymentServiceInterface
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
+        CartRepositoryInterface $cartRepository,
         CMPaymentClientInterface $paymentClient,
         PaymentRequestBuilderInterface $paymentRequestBuilder,
         CMPaymentDataFactory $cmPaymentDataFactory,
+        OrderServiceInterface $orderService,
         CMPaymentFactory $cmPaymentFactory,
         CMPaymentRepositoryInterface $cmPaymentRepository,
         CMOrderRepositoryInterface $cmOrderRepository,
         ManagerInterface $eventManager,
-        CMPaymentsLogger $logger
+        CMPaymentsLogger $logger,
+        MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdToQuoteId,
+        QuoteManagement $quoteManagement
     ) {
         $this->orderRepository = $orderRepository;
         $this->paymentClient = $paymentClient;
@@ -104,6 +131,10 @@ class PaymentService implements PaymentServiceInterface
         $this->cmPaymentRepository = $cmPaymentRepository;
         $this->eventManager = $eventManager;
         $this->logger = $logger;
+        $this->cartRepository = $cartRepository;
+        $this->orderService = $orderService;
+        $this->maskedQuoteIdToQuoteId = $maskedQuoteIdToQuoteId;
+        $this->quoteManagement = $quoteManagement;
     }
 
     /**
@@ -113,7 +144,11 @@ class PaymentService implements PaymentServiceInterface
     {
         $order = $this->orderRepository->get($orderId);
         $cmOrder = $this->cmOrderRepository->getByOrderId((int)$order->getEntityId());
-        $paymentCreateRequest = $this->paymentRequestBuilder->create($order, $cmOrder->getOrderKey());
+        $paymentCreateRequest = $this->paymentRequestBuilder->create(
+            $order->getIncrementId(),
+            $cmOrder->getOrderKey(),
+            $order
+        );
 
         $this->logger->info(
             'CM Create payment request',
@@ -184,5 +219,56 @@ class PaymentService implements PaymentServiceInterface
         ]);
 
         return $cmPayment;
+    }
+
+    /**
+     * @param string $quoteId
+     * @param \CM\Payments\Api\Data\CardDetailsInterface $cardDetails
+     * @param \CM\Payments\Api\Data\BrowserDetailsInterface $browserDetails
+     *
+     * @return \CM\Payments\Client\Api\CMPaymentInterface
+     * @throws NoSuchEntityException
+     */
+    public function createByCardDetails(
+        string $quoteId,
+        CardDetailsInterface $cardDetails,
+        BrowserDetailsInterface $browserDetails
+    ): CMPaymentInterface {
+        $cartId = $this->maskedQuoteIdToQuoteId->execute($quoteId);
+        $quote = $this->cartRepository->getActive($cartId);
+        try {
+            $quote->reserveOrderId();
+
+            $cmOrder = $this->orderService->createByQuote($quote->getReservedOrderId(), $quote);
+
+            $paymentCreateRequest = $this->paymentRequestBuilder->create(
+                $quote->getReservedOrderId(),
+                $cmOrder->getOrderKey(),
+                null,
+                $cardDetails,
+                $browserDetails
+            );
+
+            $paymentCreateResponse = $this->paymentClient->create(
+                $paymentCreateRequest
+            );
+
+            $cmPayment = $this->cmPaymentFactory->create(
+                [
+                    'id' => $paymentCreateResponse->getId(),
+                    'status' => $paymentCreateResponse->getStatus(),
+                    'redirectUrl' => $paymentCreateResponse->getRedirectUrl(),
+                    'urls' => $paymentCreateResponse->getUrls()
+                ]
+            );
+
+            return $cmPayment;
+        } catch (\Exception $e) {
+
+            $quote->setIsActive(1)->setReservedOrderId(null);
+            $this->cartRepository->save($quote);
+
+            throw $e;
+        }
     }
 }

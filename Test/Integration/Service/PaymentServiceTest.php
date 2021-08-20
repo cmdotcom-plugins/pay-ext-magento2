@@ -242,7 +242,7 @@ class PaymentServiceTest extends IntegrationTestCase
                 'cmPaymentFactory' => $this->objectManager->create(CMPaymentFactory::class),
                 'cmPaymentRepository' => $this->objectManager->create(CMPaymentRepositoryInterface::class),
                 'cmOrderRepository' => $this->objectManager->create(CMOrderRepositoryInterface::class),
-                'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments'])
+                'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments']),
             ]
         );
     }

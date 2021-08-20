@@ -9,11 +9,13 @@ namespace CM\Payments\Service\Payment\Request\Part;
 use CM\Payments\Api\Data\BrowserDetailsInterface;
 use CM\Payments\Api\Data\CardDetailsInterface;
 use CM\Payments\Api\Service\Payment\Request\RequestPartInterface;
+use CM\Payments\Client\Model\Request\BrowserInformation;
+use CM\Payments\Client\Model\Request\EncryptedCardDetails;
 use CM\Payments\Client\Model\Request\PaymentCreate;
-use CM\Payments\Model\ConfigProvider;
 use Magento\Sales\Api\Data\OrderInterface;
+use CM\Payments\Client\Model\Request\CardDetails as CardDetailsModel;
 
-class ElvDetails implements RequestPartInterface
+class CardDetails implements RequestPartInterface
 {
     /**
      * @inheritDoc
@@ -24,16 +26,20 @@ class ElvDetails implements RequestPartInterface
         BrowserDetailsInterface $browserDetails = null,
         PaymentCreate $paymentCreate
     ): PaymentCreate {
-        if ($order->getPayment()->getMethod() !== ConfigProvider::CODE_ELV) {
+        if ($cardDetails === null || $browserDetails === null) {
             return $paymentCreate;
         }
 
-        $value = $this->getElvPaymentData($order);
-        $paymentCreate->setElvDetails(
-            [
-                'iban' => $value
-            ]
+        $paymentCreate->setMethod($cardDetails->getMethod());
+
+        $browserInformation = new BrowserInformation(
+            $browserDetails->getShopperIp(),
+            $browserDetails->getAccept(),
+            $browserDetails->getUserAgent()
         );
+        $encryptedCardDetails = new EncryptedCardDetails($cardDetails->getEncryptedCardData());
+        $paymentCardDetails = new CardDetailsModel($browserInformation, $encryptedCardDetails);
+        $paymentCreate->setCardDetails($paymentCardDetails);
 
         return $paymentCreate;
     }
@@ -43,21 +49,6 @@ class ElvDetails implements RequestPartInterface
      */
     public function needsOrder(): bool
     {
-        return true;
-    }
-
-    /**
-     * @param OrderInterface $order
-     * @return string
-     */
-    private function getElvPaymentData(OrderInterface $order): string
-    {
-        $additionalData = $order->getPayment()->getAdditionalInformation();
-
-        if (isset($additionalData['iban'])) {
-            return $additionalData['iban'];
-        }
-
-        return '';
+        return false;
     }
 }

@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Model;
 
-class CMPaymentUrl
+use CM\Payments\Client\Api\CMPaymentUrlInterface;
+
+class CMPaymentUrl implements CMPaymentUrlInterface
 {
     /** URL type */
     public const PURPOSE_REDIRECT = 'REDIRECT';

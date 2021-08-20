@@ -1,0 +1,69 @@
+<?php
+/**
+ * Copyright © CM.com. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+
+declare(strict_types=1);
+
+namespace CM\Payments\Api\Data;
+
+/**
+ * Interface BrowserDetailsInterface
+ *
+ * @api
+ */
+interface BrowserDetailsInterface
+{
+    /**
+     * Properties
+     */
+    public const SHOPPER_IP = 'shopper_ip';
+    public const ACCEPT = 'accept';
+    public const USER_AGENT = 'user_agent';
+
+    /**
+     * Get option shopperIp
+     *
+     * @return string
+     */
+    public function getShopperIp();
+
+    /**
+     * Set option shopperIp
+     *
+     * @param string $shopperIp
+     * @return $this
+     */
+    public function setShopperIp($shopperIp);
+
+    /**
+     * Get option accept
+     *
+     * @return string
+     */
+    public function getAccept();
+
+    /**
+     * Set option accept
+     *
+     * @param string $accept
+     * @return $this
+     */
+    public function setAccept(string $accept);
+
+    /**
+     * Get option userAgent
+     *
+     * @return string
+     */
+    public function getUserAgent();
+
+    /**
+     * Set option userAgent
+     *
+     * @param string $userAgent
+     * @return $this
+     */
+    public function setUserAgent(string $userAgent);
+}

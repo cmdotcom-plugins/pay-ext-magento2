@@ -218,13 +218,8 @@ class OrderServiceTest extends IntegrationTestCase
         $this->orderService = $this->objectManager->create(
             OrderService::class,
             [
-                'orderRepository' => $this->objectManager->create(OrderRepository::class),
                 'orderClient' => $orderClient,
-                'orderInterfaceFactory' => $this->objectManager->create(OrderInterfaceFactory::class),
-                'cmOrderRepository' => $this->objectManager->create(\CM\Payments\Model\OrderRepository::class),
-                'orderRequestBuilder' => $orderRequestBuilder,
-                'cmOrderInterfaceFactory' => $this->objectManager->create(CMOrderInterfaceFactory::class),
-                'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments'])
+                'orderRequestBuilder' => $orderRequestBuilder
             ]
         );
     }
