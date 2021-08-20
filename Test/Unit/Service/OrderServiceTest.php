@@ -13,10 +13,11 @@ use CM\Payments\Api\Model\Data\OrderInterfaceFactory as CMOrderFactory;
 use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
+use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Client\Order as ClientApiOrder;
 use CM\Payments\Client\Model\Request\OrderCreate;
+use CM\Payments\Client\Order as ClientApiOrder;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Data\Order;
@@ -62,6 +63,11 @@ class OrderServiceTest extends UnitTestCase
      * @var OrderRequestBuilderInterface|\PHPUnit\Framework\MockObject\MockObject
      */
     private $orderRequestBuilderMock;
+
+    /**
+     * @var OrderItemsRequestBuilderInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $orderItemsRequestBuilderMock;
 
     /**
      * @var CMOrderInterfaceFactory|\PHPUnit\Framework\MockObject\MockObject
@@ -151,12 +157,18 @@ class OrderServiceTest extends UnitTestCase
 
         $this->eventManagerMock->expects($this->exactly(2))->method('dispatch')->withConsecutive(
             ['cmpayments_before_order_create', ['order' => $order, 'orderCreateRequest' => $orderCreateRequest]],
-            ['cmpayments_after_order_create', ['order' => $order, 'cmOrder' => new CMOrder(
-                $orderCreateResponse->getUrl(),
-                '000000001',
-                $orderCreateResponse->getOrderKey(),
-                $orderCreateResponse->getExpiresOn(),
-            )]]
+            [
+                'cmpayments_after_order_create',
+                [
+                    'order' => $order,
+                    'cmOrder' => new CMOrder(
+                        $orderCreateResponse->getUrl(),
+                        '000000001',
+                        $orderCreateResponse->getOrderKey(),
+                        $orderCreateResponse->getExpiresOn(),
+                    )
+                ]
+            ]
         );
 
         $this->orderService->create('1');
@@ -179,6 +191,10 @@ class OrderServiceTest extends UnitTestCase
             ->getMock();
 
         $this->orderRequestBuilderMock = $this->getMockBuilder(OrderRequestBuilderInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->orderItemsRequestBuilderMock = $this->getMockBuilder(OrderItemsRequestBuilderInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -231,6 +247,7 @@ class OrderServiceTest extends UnitTestCase
             $this->orderInterfaceFactoryMock,
             $this->cmOrderRepositoryMock,
             $this->orderRequestBuilderMock,
+            $this->orderItemsRequestBuilderMock,
             $this->cmOrderInterfaceFactoryMock,
             $this->eventManagerMock,
             $this->cmPaymentsLoggerMock
@@ -251,7 +268,7 @@ class OrderServiceTest extends UnitTestCase
         );
 
         $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
-            ->setMethods(['getAdditionalInformation', 'setAdditionalInformation'])
+            ->onlyMethods(['getAdditionalInformation', 'setAdditionalInformation'])
             ->getMockForAbstractClass();
         $paymentMock->method('getAdditionalInformation')->willReturn([]);
         $paymentMock->method('setAdditionalInformation')->willReturnSelf();
@@ -260,7 +277,7 @@ class OrderServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $orderMock->method('getEntityId')->willReturn(1);
+        $orderMock->method('getEntityId')->willReturn('1');
         $orderMock->method('getIncrementId')->willReturn('000000001');
         $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
         $orderMock->method('getStoreId')->willReturn(1);

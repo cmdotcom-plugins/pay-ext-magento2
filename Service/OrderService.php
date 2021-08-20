@@ -13,6 +13,7 @@ use CM\Payments\Api\Model\Data\OrderInterfaceFactory as CMOrderFactory;
 use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
+use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Api\OrderInterface as CMOrderClientInterface;
@@ -20,8 +21,12 @@ use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Exception\EmptyOrderKeyException;
 use CM\Payments\Logger\CMPaymentsLogger;
+use CM\Payments\Model\ConfigProvider;
+use GuzzleHttp\Exception\RequestException;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Model\Quote;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
 class OrderService implements OrderServiceInterface
@@ -52,14 +57,14 @@ class OrderService implements OrderServiceInterface
     private $orderRequestBuilder;
 
     /**
+     * @var OrderItemsRequestBuilder
+     */
+    private $orderItemsRequestBuilder;
+
+    /**
      * @var CMOrderInterfaceFactory
      */
     private $cmOrderInterfaceFactory;
-
-    /**
-     * @var CMPaymentsLogger
-     */
-    private $logger;
 
     /**
      * @var ManagerInterface
@@ -67,13 +72,19 @@ class OrderService implements OrderServiceInterface
     private $eventManager;
 
     /**
-     * OrderService constructor.
+     * @var CMPaymentsLogger
+     */
+    private $logger;
+
+    /**
+     * OrderService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
      * @param CMOrderClientInterface $orderClient
      * @param CMOrderFactory $cmOrderFactory
      * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param OrderRequestBuilderInterface $orderRequestBuilder
+     * @param OrderItemsRequestBuilderInterface $orderItemsRequestBuilder
      * @param CMOrderInterfaceFactory $cmOrderInterfaceFactory
      * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $cmPaymentsLogger
@@ -84,6 +95,7 @@ class OrderService implements OrderServiceInterface
         CMOrderFactory $cmOrderFactory,
         CMOrderRepositoryInterface $cmOrderRepository,
         OrderRequestBuilderInterface $orderRequestBuilder,
+        OrderItemsRequestBuilderInterface $orderItemsRequestBuilder,
         CMOrderInterfaceFactory $cmOrderInterfaceFactory,
         ManagerInterface $eventManager,
         CMPaymentsLogger $cmPaymentsLogger
@@ -93,6 +105,7 @@ class OrderService implements OrderServiceInterface
         $this->cmOrderFactory = $cmOrderFactory;
         $this->cmOrderRepository = $cmOrderRepository;
         $this->orderRequestBuilder = $orderRequestBuilder;
+        $this->orderItemsRequestBuilder = $orderItemsRequestBuilder;
         $this->cmOrderInterfaceFactory = $cmOrderInterfaceFactory;
         $this->eventManager = $eventManager;
         $this->logger = $cmPaymentsLogger;
@@ -127,7 +140,14 @@ class OrderService implements OrderServiceInterface
             throw new EmptyOrderKeyException(__('Empty order key'));
         }
 
-        $this->saveCmOrder($order->getIncrementId(), $orderCreateResponse, (int) $order->getEntityId());
+        if ($order->getPayment()->getMethod() == ConfigProvider::CODE_KLARNA) {
+            $this->createItems(
+                $orderCreateResponse->getOrderKey(),
+                $order
+            );
+        }
+
+        $this->saveCmOrder($order->getIncrementId(), $orderCreateResponse, (int)$order->getEntityId());
 
         $additionalInformation = $order->getPayment()->getAdditionalInformation();
         if ($orderCreateResponse->getExpiresOn()) {
@@ -151,6 +171,9 @@ class OrderService implements OrderServiceInterface
         return $cmOrder;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function createByQuote(string $incrementId, Quote $quote): CMOrderInterface
     {
         $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote);
@@ -186,6 +209,59 @@ class OrderService implements OrderServiceInterface
         ]);
 
         return $cmOrder;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createItems(
+        string $orderKey,
+        OrderInterface $order
+    ): bool {
+        $orderCreateItemsRequest = $this->orderItemsRequestBuilder->create(
+            $orderKey,
+            $order->getAllVisibleItems()
+        );
+
+        $this->logger->info(
+            'CM Create order items request',
+            [
+                'orderId' => $order->getId(),
+                'requestPayload' => $orderCreateItemsRequest->getPayload()
+            ]
+        );
+
+        try {
+            $this->eventManager->dispatch('cmpayments_before_order_items_create', [
+                'order' => $order,
+                'orderCreateItemsRequest' => $orderCreateItemsRequest
+            ]);
+
+            $this->orderClient->createItems($orderCreateItemsRequest);
+
+            $this->eventManager->dispatch('cmpayments_after_order_items_create', [
+                'order' => $order
+            ]);
+        } catch (RequestException $exception) {
+            $this->logger->info(
+                'CM Create order items request error',
+                [
+                    'orderId' => $order->getId(),
+                    'orderReference' => $orderKey,
+                    'exceptionMessage' => $exception->getMessage()
+                ]
+            );
+
+            throw new LocalizedException(
+                __(
+                    'The order items for order with ID "%1" and reference "%2" were not created properly.',
+                    $order->getId(),
+                    $orderKey
+                )
+            );
+        }
+
+        return true;
     }
 
     /**

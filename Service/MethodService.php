@@ -11,6 +11,7 @@ namespace CM\Payments\Service;
 use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
 use CM\Payments\Api\Service\Method\ExtendMethodInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
+use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Client\Api\OrderInterface as OrderClientInterface;
 use CM\Payments\Client\Model\Response\OrderCreate;
@@ -19,6 +20,7 @@ use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Config\Config as ConfigService;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
+use Exception;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterfaceFactory;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
@@ -42,6 +44,11 @@ class MethodService implements MethodServiceInterface
      * @var OrderRequestBuilderInterface
      */
     private $orderRequestBuilder;
+
+    /**
+     * @var OrderItemsRequestBuilderInterface
+     */
+    private $orderItemsRequestBuilder;
 
     /**
      * @var OrderGetMethodsRequestFactory
@@ -74,6 +81,7 @@ class MethodService implements MethodServiceInterface
      * @param ConfigService $configService
      * @param OrderClientInterface $orderClient
      * @param OrderRequestBuilderInterface $orderRequestBuilder
+     * @param OrderItemsRequestBuilderInterface $orderItemsRequestBuilder
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
      * @param PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory
      * @param ExtendMethodInterface[] $methods
@@ -84,6 +92,7 @@ class MethodService implements MethodServiceInterface
         ConfigService $configService,
         OrderClientInterface $orderClient,
         OrderRequestBuilderInterface $orderRequestBuilder,
+        OrderItemsRequestBuilderInterface $orderItemsRequestBuilder,
         OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
         PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory,
         array $methods,
@@ -93,6 +102,7 @@ class MethodService implements MethodServiceInterface
         $this->configService = $configService;
         $this->orderClient = $orderClient;
         $this->orderRequestBuilder = $orderRequestBuilder;
+        $this->orderItemsRequestBuilder = $orderItemsRequestBuilder;
         $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
         $this->paymentMethodAdditionalDataFactory = $paymentMethodAdditionalDataFactory;
         $this->methods = $methods;
@@ -107,6 +117,10 @@ class MethodService implements MethodServiceInterface
         CartInterface $quote,
         PaymentDetailsInterface $paymentDetails
     ): PaymentDetailsInterface {
+        if ($quote->getGrandTotal() <= 0) {
+            return $paymentDetails;
+        }
+
         $availablePaymentMethods = $paymentDetails->getPaymentMethods();
         try {
             $cmOrder = $this->createCmOrder($quote);
@@ -114,6 +128,9 @@ class MethodService implements MethodServiceInterface
                 throw new LocalizedException(
                     __("The Methods were not requested properly because of CM Order creation problem.")
                 );
+            } else {
+                // Needed for Klarna availability
+                $this->createCmOrderItems($quote, $cmOrder->getOrderKey());
             }
 
             $cmPaymentMethods = $this->orderClient->getMethods(
@@ -149,7 +166,7 @@ class MethodService implements MethodServiceInterface
 
             $paymentDetails->setExtensionAttributes($paymentDetailsExtension);
             $paymentDetails->setPaymentMethods($availablePaymentMethods);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error(
                 'CM Get Available Methods request',
                 [
@@ -166,6 +183,36 @@ class MethodService implements MethodServiceInterface
         }
 
         return $paymentDetails;
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @return OrderCreate
+     * @throws LocalizedException
+     */
+    private function createCmOrder(CartInterface $quote): OrderCreate
+    {
+        $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote);
+
+        return $this->orderClient->create(
+            $orderCreateRequest
+        );
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @param string $orderKey
+     * @return void
+     * @throws LocalizedException
+     */
+    private function createCmOrderItems(CartInterface $quote, string $orderKey): void
+    {
+        $orderCreateItemsRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
+            $orderKey,
+            $quote->getAllVisibleItems()
+        );
+
+        $this->orderClient->createItems($orderCreateItemsRequest);
     }
 
     /**
@@ -189,20 +236,6 @@ class MethodService implements MethodServiceInterface
         }
 
         return $methods;
-    }
-
-    /**
-     * @param CartInterface $quote
-     * @return OrderCreate
-     * @throws LocalizedException
-     */
-    private function createCmOrder(CartInterface $quote): OrderCreate
-    {
-        $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote, true);
-        $cmOrder = $this->orderClient->create(
-            $orderCreateRequest
-        );
-        return $cmOrder;
     }
 
     /**

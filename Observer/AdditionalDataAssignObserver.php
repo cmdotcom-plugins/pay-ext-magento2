@@ -20,7 +20,8 @@ class AdditionalDataAssignObserver extends AbstractDataAssignObserver
     private $additionalInformationList;
 
     /**
-     * AdditionalDataAssignObserver constructor.
+     * AdditionalDataAssignObserver constructor
+     *
      * @param string[] $additionalInformationList
      */
     public function __construct(array $additionalInformationList)

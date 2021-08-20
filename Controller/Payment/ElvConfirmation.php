@@ -55,7 +55,7 @@ class ElvConfirmation extends Action implements HttpGetActionInterface
     private $logger;
 
     /**
-     * Elv constructor
+     * ElvConfirmation constructor
      *
      * @param Context $context
      * @param MessageManagerInterface $messageManager

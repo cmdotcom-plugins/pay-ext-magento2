@@ -64,7 +64,12 @@ class OrderCreate
     private $expiry;
 
     /**
-     * Order constructor
+     * @var string
+     */
+    private $billingAddressKey;
+
+    /**
+     * OrderCreate constructor
      *
      * @param ?string $orderId
      * @param ?int $amount
@@ -75,6 +80,7 @@ class OrderCreate
      * @param ?string $paymentProfile
      * @param ?array $returnUrls
      * @param ?array $expiry
+     * @param ?string $billingAddressKey
      */
     public function __construct(
         ?string $orderId = null,
@@ -85,7 +91,8 @@ class OrderCreate
         ?string $country = null,
         ?string $paymentProfile = null,
         ?array $returnUrls = null,
-        ?array $expiry = null
+        ?array $expiry = null,
+        ?string $billingAddressKey = null
     ) {
         $this->orderId = $orderId;
         $this->amount = $amount;
@@ -96,6 +103,7 @@ class OrderCreate
         $this->paymentProfile = $paymentProfile;
         $this->returnUrls = $returnUrls;
         $this->expiry = $expiry;
+        $this->billingAddressKey = $billingAddressKey;
     }
 
     /**
@@ -115,7 +123,8 @@ class OrderCreate
             'country' => $this->country,
             'profile' => $this->paymentProfile,
             'return_urls' => $this->returnUrls,
-            'expiry' => $this->expiry
+            'expiry' => $this->expiry,
+            'billing_address_key' => $this->billingAddressKey
         ]);
     }
 
@@ -261,5 +270,21 @@ class OrderCreate
     public function setExpiry(array $expiry): void
     {
         $this->expiry = $expiry;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBillingAddressKey(): ?string
+    {
+        return $this->billingAddressKey;
+    }
+
+    /**
+     * @param string $billingAddressKey
+     */
+    public function setBillingAddressKey(string $billingAddressKey): void
+    {
+        $this->billingAddressKey = $billingAddressKey;
     }
 }
