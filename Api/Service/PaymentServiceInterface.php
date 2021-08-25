@@ -28,17 +28,29 @@ interface PaymentServiceInterface
      * @param string $quoteId
      * @param CardDetailsInterface $cardDetails
      * @param BrowserDetailsInterface $browserDetails
-     *
-     * @return \CM\Payments\Client\Api\CMPaymentInterface
-     *
+     * @return CMPaymentInterface
      * @throws NoSuchEntityException
      * @throws EmptyPaymentIdException
+     * @throws \Exception
+     */
+    public function createByGuestCardDetails(
+        string $quoteId,
+        CardDetailsInterface $cardDetails,
+        BrowserDetailsInterface $browserDetails
+    ): CMPaymentInterface;
+
+    /**
+     * @param string $quoteId
+     * @param CardDetailsInterface $cardDetails
+     * @param BrowserDetailsInterface $browserDetails
+     * @return CMPaymentInterface
+     * @throws NoSuchEntityException
+     * @throws EmptyPaymentIdException
+     * @throws \Exception
      */
     public function createByCardDetails(
         string $quoteId,
-        CardDetailsInterface
-        $cardDetails,
-        BrowserDetailsInterface
-        $browserDetails
+        CardDetailsInterface $cardDetails,
+        BrowserDetailsInterface $browserDetails
     ): CMPaymentInterface;
 }

@@ -4,12 +4,23 @@
   ~ See LICENSE.txt for license details.
   -->
 
-<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
-    <!-- Customer Group Service-->
-    <route url="/V1/cmpayments/payment/card/:quoteId" method="POST">
-        <service class="CM\Payments\Api\Service\PaymentServiceInterface" method="createByCardDetails"/>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+    <!-- Customer Guest CC Payment Service-->
+    <route url="/V1/cmpayments/guest-payment/credit-card/:quoteId" method="POST">
+        <service class="CM\Payments\Api\Service\PaymentServiceInterface" method="createByGuestCardDetails"/>
         <resources>
             <resource ref="anonymous" />
         </resources>
+    </route>
+    <!-- Customer CC Payment Service-->
+    <route url="/V1/cmpayments/mine-payment/credit-card" method="POST">
+        <service class="CM\Payments\Api\Service\PaymentServiceInterface" method="createByCardDetails"/>
+        <resources>
+            <resource ref="self" />
+        </resources>
+        <data>
+            <parameter name="quoteId" force="true">%cart_id%</parameter>
+        </data>
     </route>
 </routes>

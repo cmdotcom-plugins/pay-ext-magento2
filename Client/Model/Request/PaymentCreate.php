@@ -25,6 +25,7 @@ class PaymentCreate
      * @var array
      */
     private $elvDetails;
+
     /**
      * @var CardDetails
      */

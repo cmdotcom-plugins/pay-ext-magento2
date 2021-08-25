@@ -23,13 +23,13 @@ use CM\Payments\Client\Model\CMPaymentFactory;
 use CM\Payments\Exception\EmptyPaymentIdException;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
+use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use GuzzleHttp\Exception\GuzzleException;
 
 class PaymentService implements PaymentServiceInterface
 {
@@ -77,18 +77,22 @@ class PaymentService implements PaymentServiceInterface
      * @var ManagerInterface
      */
     private $eventManager;
+
     /**
      * @var CartRepositoryInterface
      */
     private $cartRepository;
+
     /**
      * @var OrderServiceInterface
      */
     private $orderService;
+
     /**
      * @var MaskedQuoteIdToQuoteIdInterface
      */
     private $maskedQuoteIdToQuoteId;
+
     /**
      * @var QuoteManagement
      */
@@ -98,14 +102,18 @@ class PaymentService implements PaymentServiceInterface
      * PaymentService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
+     * @param CartRepositoryInterface $cartRepository
      * @param CMPaymentClientInterface $paymentClient
      * @param PaymentRequestBuilderInterface $paymentRequestBuilder
      * @param CMPaymentDataFactory $cmPaymentDataFactory
+     * @param OrderServiceInterface $orderService
      * @param CMPaymentFactory $cmPaymentFactory
      * @param CMPaymentRepositoryInterface $cmPaymentRepository
      * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $logger
+     * @param MaskedQuoteIdToQuoteIdInterface $maskedQuoteIdToQuoteId
+     * @param QuoteManagement $quoteManagement
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
@@ -222,20 +230,31 @@ class PaymentService implements PaymentServiceInterface
     }
 
     /**
-     * @param string $quoteId
-     * @param \CM\Payments\Api\Data\CardDetailsInterface $cardDetails
-     * @param \CM\Payments\Api\Data\BrowserDetailsInterface $browserDetails
-     *
-     * @return \CM\Payments\Client\Api\CMPaymentInterface
-     * @throws NoSuchEntityException
+     * @inheritDoc
+     */
+    public function createByGuestCardDetails(
+        string $quoteId,
+        CardDetailsInterface $cardDetails,
+        BrowserDetailsInterface $browserDetails
+    ): CMPaymentInterface {
+        $quoteId = (string)$this->maskedQuoteIdToQuoteId->execute($quoteId);
+
+        return $this->createByCardDetails(
+            $quoteId,
+            $cardDetails,
+            $browserDetails
+        );
+    }
+
+    /**
+     * @inheritDoc
      */
     public function createByCardDetails(
         string $quoteId,
         CardDetailsInterface $cardDetails,
         BrowserDetailsInterface $browserDetails
     ): CMPaymentInterface {
-        $cartId = $this->maskedQuoteIdToQuoteId->execute($quoteId);
-        $quote = $this->cartRepository->getActive($cartId);
+        $quote = $this->cartRepository->getActive($quoteId);
         try {
             $quote->reserveOrderId();
 
@@ -253,7 +272,7 @@ class PaymentService implements PaymentServiceInterface
                 $paymentCreateRequest
             );
 
-            $cmPayment = $this->cmPaymentFactory->create(
+            return $this->cmPaymentFactory->create(
                 [
                     'id' => $paymentCreateResponse->getId(),
                     'status' => $paymentCreateResponse->getStatus(),
@@ -261,10 +280,7 @@ class PaymentService implements PaymentServiceInterface
                     'urls' => $paymentCreateResponse->getUrls()
                 ]
             );
-
-            return $cmPayment;
-        } catch (\Exception $e) {
-
+        } catch (Exception $e) {
             $quote->setIsActive(1)->setReservedOrderId(null);
             $this->cartRepository->save($quote);
 

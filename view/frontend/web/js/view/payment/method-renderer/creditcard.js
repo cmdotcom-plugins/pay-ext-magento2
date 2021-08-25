@@ -6,15 +6,17 @@
 define([
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/action/redirect-on-success',
-    'mage/url',
-    'jquery',
-    'creditcard-3dsv2-validation'
+    'Magento_Checkout/js/model/full-screen-loader',
+    'creditcard-init-payment',
+    'creditcard-3dsv2-validation',
+    'jquery'
 ], function (
     Component,
     redirectOnSuccessAction,
-    url,
-    $,
-    cc3DSv2Validation
+    loader,
+    initCCPaymentAction,
+    cc3DSv2Validation,
+    $
 ) {
     'use strict';
     return Component.extend({
@@ -26,7 +28,8 @@ define([
             cvv: null,
             selectedMonth: null,
             selectedYear: null,
-            paymentConfig: ''
+            paymentConfig: '',
+            placeOrderHandler: null
         },
 
         /**
@@ -52,6 +55,13 @@ define([
         },
 
         /**
+         * @param {Function} handler
+         */
+        setPlaceOrderHandler: function (handler) {
+            this.placeOrderHandler = handler;
+        },
+
+        /**
          * Get payment method form
          *
          * @returns {*|define.amd.jQuery|HTMLElement}
@@ -63,7 +73,7 @@ define([
         /**
          * Get the gateway image
          *
-         * @returns {string}
+         * @returns {String}
          */
         getImage: function () {
             return this.paymentConfig.image;
@@ -83,16 +93,30 @@ define([
             };
         },
 
+        /**
+         * Load Encryption library
+         *
+         * @param callback
+         */
         loadEncryptionLibrary: function (callback) {
             $.getScript(this.paymentConfig.encryption_library, callback);
         },
 
+        /**
+         * Load Nsa3Ds library
+         *
+         * @param callback
+         */
         loadNsa3DsLibrary: function (callback) {
             $.getScript(this.paymentConfig.nsa3ds_library, callback);
         },
 
+        /**
+         *
+         * @return {boolean|*}
+         */
         encryptCreditCardFields: function () {
-            if (window.cseEncrypt === undefined) {
+            if (typeof window.cseEncrypt === 'undefined') {
                 console.error('CM.com encryption library is not loaded');
                 return false;
             }
@@ -117,6 +141,7 @@ define([
 
         /**
          * Get array of months
+         *
          * @returns {string[]}
          */
         getMonths: function () {
@@ -125,29 +150,42 @@ define([
 
         /**
          * Get array of years
+         *
          * @returns {string[]}
          */
         getYears: function () {
-            var currentYear = new Date().getFullYear().toString().substr(-2), years = [];
-            var endYear = currentYear + 20;
+            let currentYear = new Date().getFullYear().toString().substr(-2), years = [],
+                endYear = currentYear + 20;
             while ( currentYear <= endYear ) {
                 years.push(currentYear++);
             }
+
             return years;
         },
 
         /**
+         * Get Card Holder
          *
-         * @returns {null}
+         * @returns {String}
          */
         getCardHolder: function () {
             return this.cardHolder;
         },
 
+        /**
+         * Get Card Number
+         *
+         * @returns {String}
+         */
         getCardNumber: function () {
             return this.cardNumber;
         },
 
+        /**
+         * Get Cvv
+         *
+         * @returns {String}
+         */
         getCvv: function () {
             return this.cvv;
         },
@@ -155,7 +193,7 @@ define([
         /**
          * Get selected year
          *
-         * @returns string
+         * @returns {String}
          */
         getSelectedYear: function () {
             return this.selectedYear;
@@ -164,11 +202,23 @@ define([
         /**
          * Get selected month
          *
-         * @returns string
+         * @returns {String}
          */
         getSelectedMonth: function () {
             return this.selectedMonth;
         },
+
+        /**
+         * Get encrypted credit card data
+         *
+         * @returns {Object}
+         */
+        getEncryptedCreditCardData: function () {
+            return {
+                "data": this.encryptCreditCardFields()
+            };
+        },
+
         /**
          * Validate form
          *
@@ -181,29 +231,35 @@ define([
             return this.data && $form.validation() && $form.validation('isValid');
         },
 
+        /**
+         * Place order function
+         *
+         * @return {boolean}
+         */
         placeOrder: function () {
-            // Todo: create cm order + cm payment and validate 3d secure.
-
-            let responseExample = {
-                "status": "REDIRECTED_FOR_AUTHENTICATION",
-                "urls": [{
-                    "purpose": "HIDDEN_IFRAME",
-                    "method": "POST",
-                    "url": "https://testsecure.docdatapayments.com/ps/api/public/3dsv2/v1/transactions/3ds-method-notification",
-                    "order": 1,
-                    "parameters": {
-                        "threeDSMethodData": "eyJ0aHJlZURTTWV0aG9kTm90aWZpY2F0aW9uVVJMIjoiaHR0cHM6Ly90ZXN0c2VjdXJlLmRvY2RhdGFwYXltZW50cy5jb20vcHMvYXBpL3B1YmxpYy8zZHN2Mi92MS90cmFuc2FjdGlvbnMvM2RzLW1ldGhvZC1ub3RpZmljYXRpb24iLCJ0aHJlZURTU2VydmVyVHJhbnNJRCI6IjZlNDRmN2IxLWEzYzMtNDNhNi1iNjQ2LWMwMDEwMmY1YWM1ZSJ9"
+            let self = this;
+            if (this.validate() &&
+                this.isPlaceOrderActionAllowed() === true
+            ) {
+                loader.startLoader();
+                this.isPlaceOrderActionAllowed(false);
+                $.when(
+                    initCCPaymentAction(this.messageContainer, self.getData())
+                ).done(
+                    function (response) {
+                        if (response) {
+                            if (cc3DSv2Validation.perform3DsSteps(response, self.messageContainer)) {
+                                self.isPlaceOrderActionAllowed(true);
+                            }
+                        }
                     }
-                },
-                {
-                    "purpose": "IFRAME",
-                    "method": "POST",
-                    "url": "https://testsecure.docdatapayments.com/ps/api/public/3dsv2/v1/transactions/6e44f7b1-a3c3-43a6-b646-c00102f5ac5e/references/4911282291/authenticate",
-                    "order": 2
-                }]
-            };
-            debugger;
-            let result = cc3DSv2Validation.perform3DsSteps(responseExample);
+                ).always(
+                    function () {
+                        self.isPlaceOrderActionAllowed(true);
+                        loader.stopLoader();
+                    }
+                );
+            }
 
             return false;
         },

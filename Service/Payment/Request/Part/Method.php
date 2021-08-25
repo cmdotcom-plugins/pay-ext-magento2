@@ -19,10 +19,10 @@ class Method implements RequestPartInterface
      * @inheritDoc
      */
     public function process(
+        PaymentCreate $paymentCreate,
         OrderInterface $order = null,
         CardDetailsInterface $cardDetails = null,
-        BrowserDetailsInterface $browserDetails = null,
-        PaymentCreate $paymentCreate
+        BrowserDetailsInterface $browserDetails = null
     ): PaymentCreate {
         $paymentCreate->setMethod($this->getMethod($order));
 

@@ -19,10 +19,10 @@ class ElvDetails implements RequestPartInterface
      * @inheritDoc
      */
     public function process(
+        PaymentCreate $paymentCreate,
         OrderInterface $order = null,
         CardDetailsInterface $cardDetails = null,
-        BrowserDetailsInterface $browserDetails = null,
-        PaymentCreate $paymentCreate
+        BrowserDetailsInterface $browserDetails = null
     ): PaymentCreate {
         if ($order->getPayment()->getMethod() !== ConfigProvider::CODE_ELV) {
             return $paymentCreate;

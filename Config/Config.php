@@ -240,7 +240,7 @@ class Config implements ConfigInterface
     {
         $baseUrl = 'https://secure.docdatapayments.com/cse/';
         if ($this->getMode() === Mode::TEST) {
-            return 'https://testsecure.docdatapayments.com/cse/';
+            $baseUrl = 'https://testsecure.docdatapayments.com/cse/';
         }
 
         return $baseUrl . $this->getMerchantKey();

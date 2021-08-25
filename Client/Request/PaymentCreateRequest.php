@@ -32,7 +32,7 @@ class PaymentCreateRequest implements RequestInterface
      * PaymentCreateRequest constructor
      *
      * @param string $orderKey
-     * @param PaymentCreate $orderCreate
+     * @param PaymentCreate $paymentCreate
      */
     public function __construct(
         string $orderKey,

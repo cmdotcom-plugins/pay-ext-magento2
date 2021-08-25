@@ -70,7 +70,7 @@ class PaymentRequestBuilder implements PaymentRequestBuilderInterface
                 continue;
             }
 
-            $paymentCreate = $part->process($order, $cardDetails, $browserDetails, $paymentCreate);
+            $paymentCreate = $part->process($paymentCreate, $order, $cardDetails, $browserDetails);
         }
 
         return $this->paymentCreateRequestFactory->create(

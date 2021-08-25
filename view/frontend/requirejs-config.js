@@ -17,6 +17,7 @@ var config = {
     map: {
         '*': {
             'creditcard-3dsv2-validation': 'CM_Payments/js/model/creditcard/3dsv2-validation',
+            'creditcard-init-payment': 'CM_Payments/js/action/creditcard/init-payment-information'
         }
     }
 };

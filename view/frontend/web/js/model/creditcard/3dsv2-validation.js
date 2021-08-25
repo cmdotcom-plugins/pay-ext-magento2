@@ -7,10 +7,14 @@ define([
     'jquery',
     'mage/translate',
     'Magento_Ui/js/modal/alert',
+    'Magento_Checkout/js/model/error-processor',
+    'Magento_Checkout/js/model/full-screen-loader'
 ], function (
     $,
     $t,
-    alert
+    alert,
+    errorProcessor,
+    loader
 ) {
     'use strict';
 
@@ -34,6 +38,22 @@ define([
     const RESULT_CANCELED = 'CANCELED';
 
     return {
+        threeDsPassedResult: false,
+
+        /**
+         * @return {Boolean} threeDsPassedResult
+         */
+        get3DsPassedResult: function () {
+            return this.threeDsPassedResult;
+        },
+
+        /**
+         * @param {Boolean} threeDsPassedResult
+         */
+        set3DsPassedResult: function (threeDsPassedResult) {
+            this.threeDsPassedResult = threeDsPassedResult;
+        },
+
         /**
          * Performing of 3D Secure Steps
          *
@@ -41,8 +61,14 @@ define([
          * @return {Boolean}
          */
         perform3DsSteps: function (
-            responseData
+            responseData,
+            messageContainer
         ) {
+            if (typeof window.nca3DSWebSDK === 'undefined') {
+                console.error('CM.com NSA 3D Secure library is not loaded');
+                return false;
+            }
+
             let acsMethodData = this.findUrlWithPurpose(responseData.urls, PURPOSE_HIDDEN_IFRAME),
                 authenticationData = this.findUrlWithPurpose(responseData.urls, PURPOSE_IFRAME),
                 acsMethodUrl = '',
@@ -51,7 +77,9 @@ define([
 
             if (acsMethodData) {
                 acsMethodUrl = acsMethodData.url;
-                acsThreeDSMethodData = acsMethodData.parameters.threeDSMethodData;
+                if (typeof acsMethodData.parameters !== 'undefined') {
+                    acsThreeDSMethodData = acsMethodData.parameters.threeDSMethodData;
+                }
             }
 
             if (authenticationData) {
@@ -66,8 +94,44 @@ define([
                 acsThreeDSMethodData,
                 authenticationUrl,
                 authenticationData,
+                messageContainer,
                 false
             );
+        },
+
+        /**
+         * Get Deferred Object of 3Ds Authentication
+         *
+         * @param {String} authenticationUrl
+         * @param {Object} authenticationData
+         * @param {Object} messageContainer
+         * @return {Boolean}
+         */
+        get3DsAuthenticationDeferredObject: function (
+            authenticationUrl,
+            authenticationData,
+            messageContainer
+        ) {
+            let self = this;
+
+            loader.startLoader();
+            $.when(
+                this.handle3DsAuthentication(
+                    authenticationUrl,
+                    authenticationData,
+                    messageContainer
+                )
+            ).done(
+                function () {
+                    return self.get3DsPassedResult();
+                }
+            ).always(
+                function () {
+                    loader.stopLoader();
+                }
+            );
+
+            return false;
         },
 
         /**
@@ -77,6 +141,7 @@ define([
          * @param {Object} acsThreeDSMethodData
          * @param {String} authenticationUrl
          * @param {Object} authenticationData
+         * @param {Object} messageContainer
          * @param {Boolean} forceAuthentication
          * @return {Boolean}
          */
@@ -85,18 +150,22 @@ define([
             acsThreeDSMethodData,
             authenticationUrl,
             authenticationData,
+            messageContainer,
             forceAuthentication
         ) {
-            let component = this,
-                success = false;
+            let self = this;
             if (!authenticationUrl || !authenticationData) {
                 this.showError('Not all ACS Authentication parameters provided');
             }
 
             authenticationData.forceAuthentication = forceAuthentication;
-            if (!acsMethodUrl) {
+            if (!acsMethodUrl || !acsThreeDSMethodData) {
                 // No ACS method URL, so can skip that part. Directly authenticate the shopper.
-                success = this.handle3DsAuthentication(authenticationUrl, authenticationData);
+                return this.get3DsAuthenticationDeferredObject(
+                    authenticationUrl,
+                    authenticationData,
+                    messageContainer
+                );
             } else {
                 if (!acsThreeDSMethodData) {
                     this.showError('Not all ACS 3DS method parameters provided');
@@ -109,15 +178,14 @@ define([
                     'threeDSMethodIFrame',
                     document.body,
                     function () {
-                        success = component.handle3DsAuthentication(
+                        return self.get3DsAuthenticationDeferredObject(
                             authenticationUrl,
-                            authenticationData
+                            authenticationData,
+                            messageContainer
                         )
                     }
                 );
             }
-
-            return success;
         },
 
         /**
@@ -125,16 +193,16 @@ define([
          *
          * @param {String} authenticationUrl
          * @param {Object} authenticationData
-         * @return {Boolean}
+         * @param {Object} messageContainer
+         * @return {*}
          */
         handle3DsAuthentication: function (
             authenticationUrl,
-            authenticationData
+            authenticationData,
+            messageContainer
         ) {
-            let component = this,
-                success = false;
-            $.ajax({
-                showLoader: true,
+            let self = this;
+            return $.ajax({
                 url: authenticationUrl,
                 data: JSON.stringify(authenticationData),
                 type: "POST",
@@ -142,30 +210,30 @@ define([
                 contentType: "application/json; charset=utf-8",
             }).done(function (response) {
                 if (response) {
-                    debugger;
                     switch (response.result) {
                         case RESULT_CHALLENGE:
-                            let redirectUrlData = component.findUrlWithPurpose(response.urls, 'REDIRECT');
+                            let redirectUrlData = self.findUrlWithPurpose(response.urls, 'REDIRECT');
                             if (redirectUrlData) {
-                                component.redirectForAuthentication(redirectUrlData.url, redirectUrlData.parameters);
+                                self.redirectForAuthentication(redirectUrlData.url, redirectUrlData.parameters);
+                                self.set3DsPassedResult(true);
                             } else {
                                 /* We have some knowledge of the returned data here. All the URLs require POST and the parameter
                                  * names are known. The parameter name is 'creq', which is the same as what is required in the form
                                  * that needs to be posted to the ACS (see also EMVco 3DSv2 specification; table A.3 - CReq/CRes POST data).
                                  */
-                                let challengeUrlData = component.findUrlWithPurpose(response.urls, 'IFRAME');
+                                let challengeUrlData = self.findUrlWithPurpose(response.urls, 'IFRAME');
                                 if (challengeUrlData) {
                                     // The authentication frame is created and maintained by the OPC menu. The i-frame itself must have
                                     // a name/identifier.
-                                    let authenticationFrame = component.generateAuthenticationFrame('challengeFrame');
-                                    window.nca3DSWebSDK.init3DSChallengeRequest(
+                                    window.nca3DSWebSDK.createIFrameAndInit3DSChallengeRequest(
                                         challengeUrlData.url,
-                                        challengeUrlData.parameters['creq'],
-                                        authenticationFrame
+                                        challengeUrlData.parameters['creq']
                                     );
+
+                                    self.set3DsPassedResult(true);
                                 } else {
-                                    success = false;
-                                    component.showError($t('Unable to finish 3D Secure Challenge Request. Please, try' +
+                                    self.set3DsPassedResult(false);
+                                    self.showError($t('Unable to finish 3D Secure Challenge Request. Please, try' +
                                         ' later.'));
                                 }
                             }
@@ -180,8 +248,8 @@ define([
                              * using the same (parameter) name (see also EMVco 3DSv2 specification; table A.2 - 3DS Method Data).
                              */
 
-                            let acsMethodData = component.findUrlWithPurpose(response.urls, PURPOSE_HIDDEN_IFRAME),
-                                authenticationData = component.findUrlWithPurpose(response.urls, PURPOSE_IFRAME),
+                            let acsMethodData = self.findUrlWithPurpose(response.urls, PURPOSE_HIDDEN_IFRAME),
+                                authenticationData = self.findUrlWithPurpose(response.urls, PURPOSE_IFRAME),
                                 acsMethodUrl = '',
                                 acsThreeDSMethodData = '',
                                 authenticationUrl = '';
@@ -194,40 +262,45 @@ define([
                             if (authenticationData) {
                                 authenticationUrl = authenticationData.url;
                                 authenticationData = {
-                                    'browser_info': component.getBrowserInfo()
+                                    'force_authentication': false,
+                                    'browser_info': self.getBrowserInfo()
                                 };
                             }
 
-                            success = component.perform3DsAuthentication(
+                            return self.perform3DsAuthentication(
                                 acsMethodUrl,
                                 acsThreeDSMethodData,
                                 authenticationUrl,
                                 authenticationData,
+                                messageContainer,
                                 true
                             );
 
                             break;
                         case RESULT_AUTHORIZED:
-                            success = true;
+                            self.set3DsPassedResult(true);
                             break;
                         case RESULT_ERROR:
                         case RESULT_CANCELED:
-                            success = false;
                             if (response.error.message) {
-                                component.showError(response.error.message);
+                                self.showError(response.error.message);
                             } else {
-                                component.showError($t('Unable to finish 3D Secure Authentication. Please, try later.'));
+                                self.showError($t('Unable to finish 3D Secure Authentication. Please, try later.'));
                             }
+
+                            self.set3DsPassedResult(false);
                             break;
                     }
                 } else {
-                    component.showError($t('Unable to finish 3D Secure Authentication. Please, try later.'));
+                    self.showError($t('Unable to finish 3D Secure Authentication. Please, try later.'));
+                    self.set3DsPassedResult(false);
+                };
+            }).fail(
+                function (response) {
+                    errorProcessor.process(response, messageContainer);
+                    self.set3DsPassedResult(false);
                 }
-            }).fail(function (jqXHR, textStatus) {
-                component.showError(textStatus);
-            });
-
-            return success;
+            );
         },
 
         /**
@@ -268,7 +341,7 @@ define([
         /**
          * Getting of Browser Info for Authentication request
          *
-         * @return {Object)
+         * @return {Object}
          */
         getBrowserInfo: function () {
             return {
@@ -307,17 +380,6 @@ define([
             }
 
             form.submit();
-        },
-
-        /**
-         * @param {String} name
-         * @return {HTMLElement}
-         */
-        generateAuthenticationFrame: function (name) {
-            let iFrame = document.createElement('iframe');
-            iFrame.name = name;
-
-            return iFrame;
         }
     };
 });
