@@ -9,14 +9,24 @@
     <preference for="CM\Payments\Client\Api\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
     <preference for="CM\Payments\Client\Api\OrderInterface" type="CM\Payments\Client\Order" />
     <preference for="CM\Payments\Client\Api\PaymentInterface" type="CM\Payments\Client\Payment" />
+    <preference for="CM\Payments\Client\Api\ShopperInterface" type="CM\Payments\Client\Shopper" />
     <preference for="CM\Payments\Api\Service\OrderServiceInterface" type="CM\Payments\Service\OrderService" />
-    <preference for="CM\Payments\Api\Service\OrderTransactionServiceInterface" type="CM\Payments\Service\OrderTransactionService" />
+    <preference for="CM\Payments\Api\Service\OrderTransactionServiceInterface"
+                type="CM\Payments\Service\OrderTransactionService" />
     <preference for="CM\Payments\Api\Service\PaymentServiceInterface" type="CM\Payments\Service\PaymentService" />
     <preference for="CM\Payments\Api\Service\MethodServiceInterface" type="CM\Payments\Service\MethodService" />
     <preference for="CM\Payments\Api\Service\VersionServiceInterface" type="CM\Payments\Service\VersionService" />
     <preference for="CM\Payments\Api\Service\ApiTestServiceInterface" type="CM\Payments\Service\ApiTestService" />
-    <preference for="CM\Payments\Api\Service\OrderRequestBuilderInterface" type="CM\Payments\Service\OrderRequestBuilder" />
-    <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface" type="CM\Payments\Service\PaymentRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\ShopperServiceInterface" type="CM\Payments\Service\ShopperService" />
+    <preference for="CM\Payments\Api\Service\AddressServiceInterface" type="CM\Payments\Service\AddressService" />
+    <preference for="CM\Payments\Api\Service\OrderRequestBuilderInterface"
+                type="CM\Payments\Service\OrderRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\OrderItemsRequestBuilderInterface"
+                type="CM\Payments\Service\OrderItemsRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface"
+                type="CM\Payments\Service\PaymentRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\ShopperRequestBuilderInterface"
+                type="CM\Payments\Service\ShopperRequestBuilder" />
     <preference for="CM\Payments\Api\Client\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
     <preference for="CM\Payments\Api\Model\OrderRepositoryInterface" type="CM\Payments\Model\OrderRepository" />
     <preference for="CM\Payments\Api\Model\PaymentRepositoryInterface" type="CM\Payments\Model\PaymentRepository" />
@@ -58,6 +68,7 @@
                 <item name="paymentProfile" xsi:type="object">CM\Payments\Service\Order\Request\Part\PaymentProfile</item>
                 <item name="returnUrls" xsi:type="object">CM\Payments\Service\Order\Request\Part\ReturnUrls</item>
                 <item name="expiry" xsi:type="object">CM\Payments\Service\Order\Request\Part\Expiry</item>
+                <item name="billing_address_key" xsi:type="object">CM\Payments\Service\Order\Request\Part\BillingAddressKey</item>
             </argument>
             <argument name="quoteRequestParts" xsi:type="array">
                 <item name="orderId" xsi:type="object">CM\Payments\Service\Quote\Request\Part\OrderId</item>
@@ -69,6 +80,38 @@
                 <item name="paymentProfile" xsi:type="object">CM\Payments\Service\Quote\Request\Part\PaymentProfile</item>
                 <item name="returnUrls" xsi:type="object">CM\Payments\Service\Quote\Request\Part\ReturnUrls</item>
                 <item name="expiry" xsi:type="object">CM\Payments\Service\Quote\Request\Part\Expiry</item>
+                <item name="billing_address_key" xsi:type="object">CM\Payments\Service\Quote\Request\Part\BillingAddressKey</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="CM\Payments\Service\OrderItemsRequestBuilder">
+        <arguments>
+            <argument name="orderItemRequestParts" xsi:type="array">
+                <item name="itemId" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\ItemId</item>
+                <item name="sku" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Sku</item>
+                <item name="name" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Name</item>
+                <item name="description" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Description</item>
+                <item name="type" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Type</item>
+                <item name="quantity" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Quantity</item>
+                <item name="currency" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Currency</item>
+                <item name="unitAmount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\UnitAmount</item>
+                <item name="amount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Amount</item>
+                <item name="vat_amount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\VatAmount</item>
+                <item name="vat_rate" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\VatRate</item>
+            </argument>
+            <argument name="quoteItemRequestParts" xsi:type="array">
+                <item name="itemId" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\ItemId</item>
+                <item name="sku" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Sku</item>
+                <item name="name" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Name</item>
+                <item name="description" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Description</item>
+                <item name="type" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Type</item>
+                <item name="quantity" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Quantity</item>
+                <item name="currency" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Currency</item>
+                <item name="unitAmount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\UnitAmount</item>
+                <item name="amount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Amount</item>
+                <item name="vat_amount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\VatAmount</item>
+                <item name="vat_rate" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\VatRate</item>
             </argument>
         </arguments>
     </type>
@@ -78,6 +121,30 @@
             <argument name="additionalInformationList" xsi:type="array">
                 <item name="selected_issuer" xsi:type="string">selected_issuer</item>
                 <item name="iban" xsi:type="string">iban</item>
+                <item name="dob" xsi:type="string">dob</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="CM\Payments\Service\ShopperRequestBuilder">
+        <arguments>
+            <argument name="orderAddressRequestParts" xsi:type="array">
+                <item name="shopperId" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\ShopperId</item>
+                <item name="name" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\Name</item>
+                <item name="address" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\Address</item>
+                <item name="email" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\Email</item>
+                <item name="gender" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\Gender</item>
+                <item name="dateOfBirth" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\DateOfBirth</item>
+                <item name="phoneNumber" xsi:type="object">CM\Payments\Service\Order\Address\Request\Part\PhoneNumber</item>
+            </argument>
+            <argument name="quoteAddressRequestParts" xsi:type="array">
+                <item name="shopperId" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\ShopperId</item>
+                <item name="name" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\Name</item>
+                <item name="address" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\Address</item>
+                <item name="email" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\Email</item>
+                <item name="gender" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\Gender</item>
+                <item name="dateOfBirth" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\DateOfBirth</item>
+                <item name="phoneNumber" xsi:type="object">CM\Payments\Service\Quote\Address\Request\Part\PhoneNumber</item>
             </argument>
         </arguments>
     </type>
@@ -474,6 +541,57 @@
         </arguments>
     </virtualType>
     <!-- END CM Payments (ELV) Method -->
+
+    <!-- BEGIN CM Payments (Klarna) Method -->
+    <virtualType name="CMPaymentsKlarnaFacade" type="CMPaymentsFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_KLARNA</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMKlarnaValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">CMKlarnaValidatorPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMKlarnaConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMKlarnaGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_KLARNA</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMKlarnaCountryValidator</item>
+                <item name="currency" xsi:type="string">CMKlarnaCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMKlarnaGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMKlarnaGenericConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (Klarna) Method -->
 
     <!-- BEGIN CM Payments (Logger) -->
     <type name="CM\Payments\Logger\Handler">

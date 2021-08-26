@@ -16,7 +16,7 @@ use CM\Payments\Client\Request\PaymentCreateRequest;
 class Payment implements PaymentInterface
 {
     /**
-     * ApiClientInterface
+     * @var ApiClientInterface
      */
     private $apiClient;
 

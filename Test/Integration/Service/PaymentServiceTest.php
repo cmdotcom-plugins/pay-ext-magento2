@@ -145,21 +145,6 @@ class PaymentServiceTest extends IntegrationTestCase
     }
 
     /**
-     * @param string $orderId
-     * @return OrderInterface
-     */
-    private function loadOrderById($orderId)
-    {
-        $orderRepository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $searchCriteriaBuilder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $searchCriteriaBuilder->addFilter('increment_id', $orderId, 'eq')->create();
-
-        $orderList = $orderRepository->getList($searchCriteria)->getItems();
-
-        return array_shift($orderList);
-    }
-
-    /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testSavePaymentInDatabase()
