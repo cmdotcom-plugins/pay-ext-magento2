@@ -548,6 +548,16 @@
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_KLARNA</argument>
             <argument name="valueHandlerPool" xsi:type="object">CMKlarnaValueHandlerPool</argument>
             <argument name="validatorPool" xsi:type="object">CMKlarnaValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMKlarnaCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
         </arguments>
     </virtualType>
 

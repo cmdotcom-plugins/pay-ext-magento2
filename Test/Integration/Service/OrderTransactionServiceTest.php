@@ -8,7 +8,6 @@ namespace CM\Payments\Test\Integration\Service;
 
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
-use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Data\Order;
 use CM\Payments\Service\OrderTransactionService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
@@ -16,12 +15,9 @@ use CM\Payments\Test\Mock\MockApiResponse;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\OrderRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class OrderTransactionServiceTest extends IntegrationTestCase

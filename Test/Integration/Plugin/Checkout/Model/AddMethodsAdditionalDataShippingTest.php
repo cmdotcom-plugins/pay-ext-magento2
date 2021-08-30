@@ -56,11 +56,8 @@ use CM\Payments\Test\Integration\IntegrationTestCase;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Checkout\Api\Data\ShippingInformationInterface;
 use Magento\Checkout\Api\ShippingInformationManagementInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Payment\Model\PaymentMethod;
-use Magento\Quote\Api\CartRepositoryInterface;
-use Magento\Quote\Api\Data\CartInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class AddMethodsAdditionalDataShippingTest extends IntegrationTestCase
