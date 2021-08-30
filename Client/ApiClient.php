@@ -65,6 +65,10 @@ class ApiClient implements ApiClientInterface
             $request->getEndpoint(),
             $options
         );
+        $responseBody = $guzzleResponse->getBody()->getContents();
+        if (!empty($responseBody)) {
+            return \GuzzleHttp\json_decode($responseBody, true);
+        }
 
         $response = $guzzleResponse->getBody()->getContents();
         if (!$response) {
