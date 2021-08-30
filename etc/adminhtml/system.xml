@@ -351,6 +351,15 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="allowed_cctypes" translate="label comment" type="multiselect" sortOrder="35"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Allowed Credit Card Types</label>
+                    <source_model>CM\Payments\Model\Adminhtml\Source\Cctype</source_model>
+                    <config_path>payment/cm_payments_creditcard/allowed_cctypes</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Payment from Applicable Countries</label>

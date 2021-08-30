@@ -36,5 +36,11 @@
                 <value id="cm-payment-test" type="host">testsecure.docdatapayments.com</value>
             </values>
         </policy>
+        <policy id="child-src">
+            <values>
+                <value id="cm-payment-live" type="host">secure.docdatapayments.com</value>
+                <value id="cm-payment-test" type="host">testsecure.docdatapayments.com</value>
+            </values>
+        </policy>
     </policies>
 </csp_whitelist>

@@ -278,6 +278,18 @@ class Config implements ConfigInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getCreditCardAllowedTypes(): string
+    {
+        return $this->getConfig(
+            ConfigInterface::XML_PATH_PAYMENT_CREDIT_CARD_ALLOWED_TYPES,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
      * Get config value by path
      *
      * @param string $path

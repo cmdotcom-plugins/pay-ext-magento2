@@ -7,22 +7,28 @@ define([
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/action/redirect-on-success',
     'Magento_Checkout/js/model/full-screen-loader',
+    'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
     'creditcard-init-payment',
     'creditcard-3dsv2-validation',
-    'jquery'
+    'jquery',
+    'underscore',
+    'mage/translate'
 ], function (
     Component,
     redirectOnSuccessAction,
     loader,
+    cardNumberValidator,
     initCCPaymentAction,
     cc3DSv2Validation,
-    $
+    $,
+    _
 ) {
     'use strict';
     return Component.extend({
         defaults: {
             template: 'CM_Payments/payment/creditcard',
             encryptedData: null,
+            cardType: null,
             cardHolder: null,
             cardNumber: null,
             cvv: null,
@@ -38,7 +44,16 @@ define([
          * @returns {*}
          */
         initObservable: function () {
-            this._super();
+            this._super()
+                .observe([
+                    'cardType',
+                    'cardHolder',
+                    'cardNumber',
+                    'cvv',
+                    'selectedMonth',
+                    'selectedYear'
+                ]);
+
             this.paymentConfig = window.checkoutConfig.payment[this.item.method];
 
             this.loadEncryptionLibrary(function () {
@@ -52,6 +67,35 @@ define([
             })
 
             return this;
+        },
+
+        /**
+         * Init component
+         */
+        initialize: function () {
+            let self = this;
+
+            this._super();
+
+            this.cardNumber.subscribe(function (value) {
+                debugger;
+                let result;
+
+                self.cardType(null);
+
+                if (value === '' || value === null) {
+                    return false;
+                }
+                result = cardNumberValidator(value);
+
+                if (!result.isPotentiallyValid && !result.isValid) {
+                    return false;
+                }
+
+                if (result.card !== null) {
+                    self.cardType(result.card.type);
+                }
+            });
         },
 
         /**
@@ -140,27 +184,65 @@ define([
         },
 
         /**
+         * Get allowed CC types icons
+         *
+         * @returns {Boolean}
+         */
+        getCreditCardAllowedTypesIcons: function () {
+            return this.paymentConfig.allowedTypesIcons;
+        },
+
+        /**
+         * Get list of allowed credit card types
+         *
+         * @returns {Object}
+         */
+        getCreditCardAllowedTypes: function () {
+            let allowedTypes = this.paymentConfig.allowedTypes;
+
+            return _.map(allowedTypes, function (value, key) {
+                return {
+                    'value': key,
+                    'type': value
+                };
+            });
+        },
+
+        /**
          * Get array of months
          *
-         * @returns {string[]}
+         * @returns {String[]}
          */
         getMonths: function () {
-            return ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+            let months =  ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
+
+            return _.map(months, function (value) {
+                return {
+                    'value': value,
+                    'month': value
+                };
+            });
         },
 
         /**
          * Get array of years
          *
-         * @returns {string[]}
+         * @returns {String[]}
          */
         getYears: function () {
-            let currentYear = new Date().getFullYear().toString().substr(-2), years = [],
+            let currentYear = new Date().getFullYear(),
+                years = [],
                 endYear = currentYear + 20;
-            while ( currentYear <= endYear ) {
+            while (currentYear <= endYear) {
                 years.push(currentYear++);
             }
 
-            return years;
+            return _.map(years, function (value) {
+                return {
+                    'value': value,
+                    'year': value.toString().substr(-2)
+                };
+            });
         },
 
         /**

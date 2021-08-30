@@ -27,6 +27,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_MODE = 'payment/cm_payments_creditcard/mode';
+    public const XML_PATH_PAYMENT_CREDIT_CARD_ALLOWED_TYPES = 'payment/cm_payments_creditcard/allowed_cctypes';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
     public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
@@ -156,4 +157,12 @@ interface ConfigInterface
      * @return bool
      */
     public function isCreditCardDirect(): bool;
+
+    /**
+     * Get Credit Cart Allowed Types
+     *
+     * @return string
+     * @throws NoSuchEntityException
+     */
+    public function getCreditCardAllowedTypes(): string;
 }
