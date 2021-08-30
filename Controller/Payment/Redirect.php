@@ -98,11 +98,7 @@ class Redirect extends Action implements HttpGetActionInterface
                 return $this->redirectToCheckoutCart(__('No order id found.'));
             }
 
-            $isItemsCreationNeeded = false;
-            if ($order->getPayment()->getMethod() == ConfigProvider::CODE_KLARNA) {
-                $isItemsCreationNeeded = true;
-            }
-            $cmOrder = $this->orderService->create($order->getEntityId(), $isItemsCreationNeeded);
+            $cmOrder = $this->orderService->create($order->getEntityId());
             if (!$cmOrder->getOrderReference()) {
                 throw new LocalizedException(__('The order was not placed properly.'));
             }

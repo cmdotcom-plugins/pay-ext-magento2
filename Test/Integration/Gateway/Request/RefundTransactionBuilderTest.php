@@ -18,6 +18,7 @@ use Magento\Framework\DataObject;
 use Magento\Payment\Gateway\Data\PaymentDataObjectFactoryInterface;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Exception\CouldNotRefundException;
 use Magento\Sales\Model\Order\CreditmemoRepository;
 
@@ -91,7 +92,7 @@ class RefundTransactionBuilderTest extends IntegrationTestCase
     }
 
     /**
-     * @param $orderId
+     * @param string $orderId
      * @return OrderInterface
      */
     private function getCreditMemo($orderId)

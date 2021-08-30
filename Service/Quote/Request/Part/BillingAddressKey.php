@@ -35,7 +35,7 @@ class BillingAddressKey implements RequestPartByQuoteInterface
      */
     public function process(CartInterface $quote, OrderCreate $orderCreate): OrderCreate
     {
-        $shopper = $this->shopperService->createByQuoteAddress($quote->getBillingAddress());
+        $shopper = $this->shopperService->createByQuoteAddress($quote->getShippingAddress());
         $orderCreate->setBillingAddressKey($shopper->getAddressKey());
 
         return $orderCreate;

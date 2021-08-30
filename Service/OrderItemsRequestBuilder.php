@@ -143,7 +143,7 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $discountItem = clone $lastItem[0];
                 $discountItem->setOrder($order);
                 $discountItem->setIsVirtual(0);
-                $discountItem->setItemId->setItemId(
+                $discountItem->setItemId(
                     isset($shippingItem) ? $shippingItem->getItemId() + 1 : $lastItem[0]->getItemId() + 1
                 );
                 $discountItem->setSku(self::ITEM_DISCOUNT_SKU);

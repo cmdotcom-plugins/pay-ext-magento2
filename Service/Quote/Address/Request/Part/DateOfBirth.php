@@ -38,16 +38,29 @@ class DateOfBirth implements RequestPartByQuoteAddressInterface
      */
     public function process(AddressInterface $quoteAddress, ShopperCreate $shopperCreate): ShopperCreate
     {
-        $shopperCreate->setDateOfBirth('');
-        if ($quoteAddress->getCustomerId()) {
+        $shopperCreate->setDateOfBirth($this->getDobFromCustomer((string)$quoteAddress->getCustomerId()));
+
+        return $shopperCreate;
+    }
+
+    /**
+     * Get Date of Birth from customer if exists
+     *
+     * @param ?string $customerId
+     * @return ?string
+     */
+    private function getDobFromCustomer(?string $customerId): ?string
+    {
+        $dob = '';
+        if ($customerId) {
             try {
-                $customer = $this->customerRepository->getById($quoteAddress->getCustomerId());
-                $shopperCreate->setDateOfBirth((string)$customer->getDob());
+                $customer = $this->customerRepository->getById($customerId);
+                $dob = $customer->getDob();
             } catch (LocalizedException | NoSuchEntityException $e) {
-                $shopperCreate->setDateOfBirth('');
+                $dob = '';
             }
         }
 
-        return $shopperCreate;
+        return $dob;
     }
 }

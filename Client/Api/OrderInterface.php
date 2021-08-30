@@ -48,7 +48,7 @@ interface OrderInterface
 
     /**
      * @param OrderItemsCreateRequest $orderItemsCreateRequest
-     * @return void
+     * @return array
      * @throws RequestException
      */
     public function createItems(OrderItemsCreateRequest $orderItemsCreateRequest): array;
