@@ -183,7 +183,7 @@ class ConfigProvider implements ConfigProviderInterface
                 strtolower($type['value']) . '.svg');
             $placeholder = $this->assetSource->findSource($asset);
             if ($placeholder) {
-                list($width, $height) = getimagesizefromstring(file_get_contents($asset->getSourceFile()));
+                list($width, $height) = getimagesizefromstring($asset->getContent());
                 $icons[] = [
                     'url' => $asset->getUrl(),
                     'width' => $width ?? 60,
