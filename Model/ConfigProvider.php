@@ -186,7 +186,7 @@ class ConfigProvider implements ConfigProviderInterface
             $placeholder = $this->assetSource->findSource($asset);
             if ($placeholder) {
                 list($width, $height) = getimagesize($asset->getSourceFile());
-                $icons[$type['value']] = [
+                $icons[] = [
                     'url' => $asset->getUrl(),
                     'width' => $width ?? 60,
                     'height' => $height ?? 60,

@@ -42,6 +42,17 @@ interface MethodServiceInterface
     ];
 
     /**
+     * Mapping of CM Credit Cards methods to Magento (by credit card type)
+     */
+    public const METHODS_CC_MAPPING = [
+        'VI' => 'VISA',
+        'MC' => 'MASTERCARD',
+        'MD' => 'MAESTRO',
+        'MI' => 'MAESTRO',
+        'AE' => 'AMEX'
+    ];
+
+    /**
      * Mapping of Magento Payment methods to CM Api Payment methods
      */
     public const API_METHODS_MAPPING = [

@@ -8,6 +8,7 @@ namespace CM\Payments\Service\Payment\Request\Part;
 
 use CM\Payments\Api\Data\BrowserDetailsInterface;
 use CM\Payments\Api\Data\CardDetailsInterface;
+use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\Payment\Request\RequestPartInterface;
 use CM\Payments\Client\Model\Request\BrowserInformation;
 use CM\Payments\Client\Model\Request\CardDetails as CardDetailsModel;
@@ -56,7 +57,7 @@ class CardDetails implements RequestPartInterface
             return $paymentCreate;
         }
 
-        $paymentCreate->setMethod($cardDetails->getMethod());
+        $paymentCreate->setMethod(MethodServiceInterface::METHODS_CC_MAPPING[$cardDetails->getMethod()]);
 
         $browserInformation = new BrowserInformation(
             $browserDetails->getShopperIp() ?? $this->getShopperIp(),

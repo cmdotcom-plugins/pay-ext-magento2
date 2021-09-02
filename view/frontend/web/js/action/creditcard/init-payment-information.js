@@ -20,7 +20,6 @@ define([
     errorProcessor,
     customer,
     loader
-
 ) {
     'use strict';
 
@@ -29,7 +28,7 @@ define([
             payload = {
                 quoteId: quote.getQuoteId(),
                 cardDetails: {
-                    'method': 'VISA',
+                    'method': paymentData.additional_data.cc_type,
                     'encrypted_card_data': paymentData.additional_data.data
                 },
                 browserDetails: {

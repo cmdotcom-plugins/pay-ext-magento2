@@ -7,16 +7,20 @@ define([
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/action/redirect-on-success',
     'Magento_Checkout/js/model/full-screen-loader',
+    'Magento_Payment/js/model/credit-card-validation/credit-card-data',
     'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
     'creditcard-init-payment',
     'creditcard-3dsv2-validation',
     'jquery',
     'underscore',
-    'mage/translate'
+    'mage/translate',
+    'Magento_Payment/js/model/credit-card-validation/validator',
+    'creditcard-additional-validators'
 ], function (
     Component,
     redirectOnSuccessAction,
     loader,
+    creditCardData,
     cardNumberValidator,
     initCCPaymentAction,
     cc3DSv2Validation,
@@ -78,23 +82,50 @@ define([
             this._super();
 
             this.cardNumber.subscribe(function (value) {
-                debugger;
-                let result;
+                let result,
+                    ccNumberField = self.getCreditCardNumberField();
 
                 self.cardType(null);
 
                 if (value === '' || value === null) {
+                    ccNumberField.removeClass().addClass('input-cc');
+
                     return false;
                 }
                 result = cardNumberValidator(value);
 
                 if (!result.isPotentiallyValid && !result.isValid) {
+                    ccNumberField.removeClass().addClass('input-cc');
+
                     return false;
                 }
 
                 if (result.card !== null) {
                     self.cardType(result.card.type);
+                    creditCardData.creditCard = result.card;
+                    ccNumberField.removeClass().addClass('input-' + result.card.type.toLowerCase());
                 }
+
+                if (result.isValid) {
+                    creditCardData.creditCardNumber = value;
+                    self.cardType(result.card.type);
+                    ccNumberField.removeClass().addClass('input-' + result.card.type.toLowerCase());
+                }
+            });
+
+            //Set expiration year to credit card data object
+            this.selectedYear.subscribe(function (value) {
+                creditCardData.expirationYear = value;
+            });
+
+            //Set expiration month to credit card data object
+            this.selectedMonth.subscribe(function (value) {
+                creditCardData.expirationMonth = value;
+            });
+
+            //Set cvv code to credit card data object
+            this.cvv.subscribe(function (value) {
+                creditCardData.cvvCode = value;
             });
         },
 
@@ -115,6 +146,15 @@ define([
         },
 
         /**
+         * Get CC number field
+         *
+         * @returns {*|define.amd.jQuery|HTMLElement}
+         */
+        getCreditCardNumberField: function () {
+            return $('#' + this.item.method + '-form').find('input[name="payment[cc_number]"]');
+        },
+
+        /**
          * Get the gateway image
          *
          * @returns {String}
@@ -132,7 +172,8 @@ define([
             return {
                 'method': this.item.method,
                 'additional_data': {
-                    "data": this.data
+                    'data': this.data,
+                    'cc_type': this.getCardType()
                 }
             };
         },
@@ -240,9 +281,18 @@ define([
             return _.map(years, function (value) {
                 return {
                     'value': value,
-                    'year': value.toString().substr(-2)
+                    'year': value
                 };
             });
+        },
+
+        /**
+         * Get Card Type
+         *
+         * @returns {String}
+         */
+        getCardType: function () {
+            return this.cardType();
         },
 
         /**
@@ -251,7 +301,7 @@ define([
          * @returns {String}
          */
         getCardHolder: function () {
-            return this.cardHolder;
+            return this.cardHolder();
         },
 
         /**
@@ -260,7 +310,7 @@ define([
          * @returns {String}
          */
         getCardNumber: function () {
-            return this.cardNumber;
+            return this.cardNumber();
         },
 
         /**
@@ -269,7 +319,7 @@ define([
          * @returns {String}
          */
         getCvv: function () {
-            return this.cvv;
+            return this.cvv();
         },
 
         /**
@@ -278,7 +328,12 @@ define([
          * @returns {String}
          */
         getSelectedYear: function () {
-            return this.selectedYear;
+            let selectedYear = this.selectedYear();
+
+            if (typeof selectedYear !== 'undefined') {
+                selectedYear = selectedYear.toString().substr(-2);
+            }
+            return selectedYear;
         },
 
         /**
@@ -287,7 +342,7 @@ define([
          * @returns {String}
          */
         getSelectedMonth: function () {
-            return this.selectedMonth;
+            return this.selectedMonth();
         },
 
         /**
@@ -307,8 +362,8 @@ define([
          * @returns {*}
          */
         validate: function () {
-            let $form = this.getForm().validation()
-            this.data = this.encryptCreditCardFields()
+            let $form = this.getForm().validation();
+            this.data = this.encryptCreditCardFields();
 
             return this.data && $form.validation() && $form.validation('isValid');
         },
