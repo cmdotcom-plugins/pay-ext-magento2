@@ -147,7 +147,6 @@ class ConfigProvider implements ConfigProviderInterface
         return $this->assetRepository->getUrl('CM_Payments::images/methods/' . $code . '.svg');
     }
 
-
     /**
      * Retrieve allowed credit card types
      *
@@ -169,7 +168,6 @@ class ConfigProvider implements ConfigProviderInterface
         return $availableTypes;
     }
 
-
     /**
      * Get icons for allowed credit card types
      *
@@ -185,7 +183,7 @@ class ConfigProvider implements ConfigProviderInterface
                 strtolower($type['value']) . '.svg');
             $placeholder = $this->assetSource->findSource($asset);
             if ($placeholder) {
-                list($width, $height) = getimagesize($asset->getSourceFile());
+                list($width, $height) = getimagesizefromstring(file_get_contents($asset->getSourceFile()));
                 $icons[] = [
                     'url' => $asset->getUrl(),
                     'width' => $width ?? 60,
