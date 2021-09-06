@@ -93,6 +93,11 @@ class Notification extends Action implements HttpGetActionInterface, CsrfAwareAc
             $resultPage->setHttpResponseCode(400);
 
             return $resultPage;
+        } catch (\Exception $e) {
+            $this->logger->error($e->getMessage(), $e->getTrace());
+            $resultPage->setHttpResponseCode(500);
+
+            return $resultPage;
         }
     }
 

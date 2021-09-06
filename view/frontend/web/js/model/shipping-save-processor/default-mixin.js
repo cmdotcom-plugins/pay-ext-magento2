@@ -31,7 +31,6 @@ define([
     'use strict';
 
     return function (defaultProcessor) {
-        //TODO: Use Original function in case of module disabled (replacing on wrapper)
         defaultProcessor.saveShippingInformation = function () {
             let payload;
 

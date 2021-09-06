@@ -8,22 +8,24 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
-use CM\Payments\Api\Data\IssuerInterface;
-use CM\Payments\Api\Data\IssuerInterfaceFactory;
-use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterface;
 use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
+use CM\Payments\Api\Service\Method\ExtendMethodInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
+use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Client\Api\OrderInterface as OrderClientInterface;
-use CM\Payments\Client\Model\Response\Method\IdealIssuer;
+use CM\Payments\Client\Model\Response\OrderCreate;
+use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
 use CM\Payments\Config\Config as ConfigService;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
+use Exception;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterfaceFactory;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\CartInterface;
 
 class MethodService implements MethodServiceInterface
@@ -44,6 +46,11 @@ class MethodService implements MethodServiceInterface
     private $orderRequestBuilder;
 
     /**
+     * @var OrderItemsRequestBuilderInterface
+     */
+    private $orderItemsRequestBuilder;
+
+    /**
      * @var OrderGetMethodsRequestFactory
      */
     private $orderGetMethodsRequestFactory;
@@ -54,9 +61,9 @@ class MethodService implements MethodServiceInterface
     private $paymentMethodAdditionalDataFactory;
 
     /**
-     * @var IssuerInterfaceFactory
+     * @var ExtendMethodInterface[]
      */
-    private $issuerFactory;
+    private $methods;
 
     /**
      * @var PaymentDetailsExtensionInterfaceFactory
@@ -74,9 +81,10 @@ class MethodService implements MethodServiceInterface
      * @param ConfigService $configService
      * @param OrderClientInterface $orderClient
      * @param OrderRequestBuilderInterface $orderRequestBuilder
+     * @param OrderItemsRequestBuilderInterface $orderItemsRequestBuilder
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
      * @param PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory
-     * @param IssuerInterfaceFactory $issuerFactory
+     * @param ExtendMethodInterface[] $methods
      * @param PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
@@ -84,18 +92,20 @@ class MethodService implements MethodServiceInterface
         ConfigService $configService,
         OrderClientInterface $orderClient,
         OrderRequestBuilderInterface $orderRequestBuilder,
+        OrderItemsRequestBuilderInterface $orderItemsRequestBuilder,
         OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
         PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory,
-        IssuerInterfaceFactory $issuerFactory,
+        array $methods,
         PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->configService = $configService;
         $this->orderClient = $orderClient;
         $this->orderRequestBuilder = $orderRequestBuilder;
+        $this->orderItemsRequestBuilder = $orderItemsRequestBuilder;
         $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
         $this->paymentMethodAdditionalDataFactory = $paymentMethodAdditionalDataFactory;
-        $this->issuerFactory = $issuerFactory;
+        $this->methods = $methods;
         $this->paymentDetailsExtensionFactory = $paymentDetailsExtensionFactory;
         $this->logger = $cmPaymentsLogger;
     }
@@ -107,121 +117,133 @@ class MethodService implements MethodServiceInterface
         CartInterface $quote,
         PaymentDetailsInterface $paymentDetails
     ): PaymentDetailsInterface {
+        if ($quote->getGrandTotal() <= 0) {
+            return $paymentDetails;
+        }
+
         $availablePaymentMethods = $paymentDetails->getPaymentMethods();
-        $availableProfileMethods = $this->getAvailablePaymentMethods($quote);
-        $issuers = [];
-
-        $paymentDetailsExtension = $paymentDetails->getExtensionAttributes();
-        if ($paymentDetailsExtension == null) {
-            /** @var PaymentDetailsExtensionInterface $paymentDetailsExtension */
-            $paymentDetailsExtension = $this->paymentDetailsExtensionFactory->create();
-        }
-
-        foreach ($availablePaymentMethods as $id => $paymentMethod) {
-            if (strpos($paymentMethod->getCode(), ConfigProvider::CODE . '_') === false) {
-                continue;
-            }
-
-            if (!isset($availableProfileMethods[$paymentMethod->getCode()])) {
-                unset($availablePaymentMethods[$id]);
-            }
-
-            if ($paymentMethod->getCode() == ConfigProvider::CODE_IDEAL) {
-                if (isset($availableProfileMethods[$paymentMethod->getCode()])) {
-                    $methodData = $availableProfileMethods[$paymentMethod->getCode()];
-                    if (!empty($methodData['ideal_details']['issuers'])) {
-                        foreach ($methodData['ideal_details']['issuers'] as $issuer) {
-                            /** @var IssuerInterface $issuerObject */
-                            $issuerObject = $this->issuerFactory->create();
-                            $issuerObject->addData($issuer);
-                            $issuers[] = $issuerObject;
-                        }
-                    }
-                }
-
-                /** @var PaymentMethodAdditionalDataInterface $paymentMethodAdditionalData */
-                $paymentMethodAdditionalData = $this->paymentMethodAdditionalDataFactory->create();
-                $paymentMethodAdditionalData->setIssuers($issuers);
-                $paymentDetailsExtension->setData($paymentMethod->getCode(), $paymentMethodAdditionalData);
-            }
-        }
-
-        $paymentDetails->setExtensionAttributes($paymentDetailsExtension);
-        $paymentDetails->setPaymentMethods($availablePaymentMethods);
-
-        return $paymentDetails;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAvailablePaymentMethods(CartInterface $quote): array
-    {
-        $availableMethods = [];
         try {
-            $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote, true);
-            $response = $this->orderClient->create(
-                $orderCreateRequest
-            );
-
-            if (!empty($response->getOrderKey())) {
-                $quote->setData('cm_order_key', $response->getOrderKey());
-
-                $availableProfileMethods = $this->orderClient->getMethods(
-                    $response->getOrderKey()
-                );
-
-                foreach ($availableProfileMethods as $availableProfileMethod) {
-                    $availableProfileMethodCode = $availableProfileMethod->getMethod();
-
-                    if (!isset(self::METHODS_MAPPING[$availableProfileMethodCode])) {
-                        continue;
-                    }
-
-                    $mappedMethodCode = self::METHODS_MAPPING[$availableProfileMethodCode];
-                    if ($this->configService->isPaymentMethodActive($mappedMethodCode)) {
-                        $methodData = [];
-                        if (!empty($availableProfileMethod->getIdealIssuers())) {
-                            $methodData['ideal_details']['issuers']
-                                = $this->prepareIdealIssuers($availableProfileMethod->getIdealIssuers());
-                        }
-
-                        $availableMethods[$mappedMethodCode] = $methodData;
-                    }
-                }
-            } else {
+            $cmOrder = $this->createCmOrder($quote);
+            if (empty($cmOrder->getOrderKey())) {
                 throw new LocalizedException(
                     __("The Methods were not requested properly because of CM Order creation problem.")
                 );
+            } else {
+                // Needed for Klarna availability
+                $this->createCmOrderItems($quote, $cmOrder->getOrderKey());
             }
-        } catch (LocalizedException $e) {
-            $this->logger->info(
+
+            $cmPaymentMethods = $this->orderClient->getMethods(
+                $cmOrder->getOrderKey()
+            );
+            $cmPaymentMethods = $this->getMappedCmPaymentMethods($cmPaymentMethods);
+
+            $paymentDetailsExtension = $paymentDetails->getExtensionAttributes();
+            if ($paymentDetailsExtension == null) {
+                /** @var PaymentDetailsExtensionInterface $paymentDetailsExtension */
+                $paymentDetailsExtension = $this->paymentDetailsExtensionFactory->create();
+            }
+
+            foreach ($availablePaymentMethods as $id => $paymentMethod) {
+                if (!$this->isCmPaymentsMethod($paymentMethod->getCode())) {
+                    continue;
+                }
+
+                if (!isset($cmPaymentMethods[$paymentMethod->getCode()])) {
+                    unset($availablePaymentMethods[$id]);
+                }
+
+                foreach ($this->methods as $method) {
+                    if (isset($cmPaymentMethods[$paymentMethod->getCode()])) {
+                        $paymentDetailsExtension = $method->extend(
+                            $paymentMethod->getCode(),
+                            $cmPaymentMethods[$paymentMethod->getCode()],
+                            $paymentDetailsExtension
+                        );
+                    }
+                }
+            }
+
+            $paymentDetails->setExtensionAttributes($paymentDetailsExtension);
+            $paymentDetails->setPaymentMethods($availablePaymentMethods);
+        } catch (Exception $e) {
+            $this->logger->error(
                 'CM Get Available Methods request',
                 [
                     'error' => $e->getMessage(),
                 ]
             );
+
+            // Remove cm_payments_ideal if available because of missing issuer list.
+            $availablePaymentMethods = array_filter($availablePaymentMethods, function ($method) {
+                return $method->getCode() !== ConfigProvider::CODE_IDEAL;
+            });
+
+            $paymentDetails->setPaymentMethods($availablePaymentMethods);
         }
 
-        return $availableMethods;
+        return $paymentDetails;
     }
 
     /**
-     * @param IdealIssuer[] $issuerList
-     * @return array
+     * @param CartInterface $quote
+     * @return OrderCreate
+     * @throws LocalizedException
      */
-    private function prepareIdealIssuers(array $issuerList): array
+    private function createCmOrder(CartInterface $quote): OrderCreate
     {
-        $issuers = $resultIssuerList = [];
-        foreach ($issuerList as $issuer) {
-            $issuers[$issuer->getId()] = $issuer->getName();
-        }
-        asort($issuers, SORT_NATURAL | SORT_FLAG_CASE);
+        $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote);
 
-        foreach ($issuers as $code => $title) {
-            $resultIssuerList[] = ['code' => $code, 'title' => $title];
+        return $this->orderClient->create(
+            $orderCreateRequest
+        );
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @param string $orderKey
+     * @return void
+     * @throws LocalizedException
+     */
+    private function createCmOrderItems(CartInterface $quote, string $orderKey): void
+    {
+        $orderCreateItemsRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
+            $orderKey,
+            $quote->getAllVisibleItems()
+        );
+
+        $this->orderClient->createItems($orderCreateItemsRequest);
+    }
+
+    /**
+     * @param PaymentMethod[] $cmPaymentMethods
+     * @return array<string, PaymentMethod>
+     *
+     * @throws NoSuchEntityException
+     */
+    private function getMappedCmPaymentMethods(array $cmPaymentMethods): array
+    {
+        $methods = [];
+        foreach ($cmPaymentMethods as $cmPaymentMethod) {
+            if (!isset(self::METHODS_MAPPING[$cmPaymentMethod->getMethod()])) {
+                continue;
+            }
+
+            $mappedMethodCode = self::METHODS_MAPPING[$cmPaymentMethod->getMethod()];
+            if ($this->configService->isPaymentMethodActive($mappedMethodCode)) {
+                $methods[$mappedMethodCode] = $cmPaymentMethod;
+            }
         }
 
-        return $resultIssuerList;
+        return $methods;
+    }
+
+    /**
+     * @param string $paymentMethodCode
+     * @return bool
+     */
+    private function isCmPaymentsMethod(string $paymentMethodCode): bool
+    {
+        return strpos($paymentMethodCode, ConfigProvider::CODE . '_') !== false;
     }
 }

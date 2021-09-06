@@ -13,10 +13,11 @@ use CM\Payments\Api\Model\Data\OrderInterfaceFactory as CMOrderFactory;
 use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
+use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
+use CM\Payments\Client\Model\Request\OrderCreate;
 use CM\Payments\Client\Order as ClientApiOrder;
-use CM\Payments\Client\Model\OrderCreate;
 use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Data\Order;
@@ -24,6 +25,7 @@ use CM\Payments\Model\Domain\CMOrder;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Exception;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -63,6 +65,11 @@ class OrderServiceTest extends UnitTestCase
     private $orderRequestBuilderMock;
 
     /**
+     * @var OrderItemsRequestBuilderInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $orderItemsRequestBuilderMock;
+
+    /**
      * @var CMOrderInterfaceFactory|\PHPUnit\Framework\MockObject\MockObject
      */
     private $cmOrderInterfaceFactoryMock;
@@ -71,6 +78,11 @@ class OrderServiceTest extends UnitTestCase
      * @var CMPaymentsLogger|\PHPUnit\Framework\MockObject\MockObject
      */
     private $cmPaymentsLoggerMock;
+
+    /**
+     * @var ManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+     */
+    private $eventManagerMock;
 
     public function testCreateOrder()
     {
@@ -110,6 +122,92 @@ class OrderServiceTest extends UnitTestCase
         $this->orderService->create('1');
     }
 
+    public function testEventDispatch()
+    {
+        $orderCreateResponse = new \CM\Payments\Client\Model\Response\OrderCreate(
+            [
+                'order_key' => '0287A1617D93780EF28044B98438BF2F',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ]
+        );
+
+        $this->orderClientMock->method('create')->willReturn(
+            $orderCreateResponse
+        );
+        $order = $this->getOrderMock();
+        $orderCreateRequest = new OrderCreateRequest(
+            new OrderCreate(
+                '000000001',
+                2000,
+                'EUR',
+                self::ADDRESS_DATA['email_address'],
+                self::LANGUAGE,
+                self::ADDRESS_DATA['country_code'],
+                self::PAYMENT_PROFILE,
+                [
+                    'success' => '',
+                    'pending' => '',
+                    'cancelled' => '',
+                    'error' => ''
+                ]
+            )
+        );
+
+        $this->eventManagerMock->expects($this->exactly(2))->method('dispatch')->withConsecutive(
+            ['cmpayments_before_order_create', ['order' => $order, 'orderCreateRequest' => $orderCreateRequest]],
+            [
+                'cmpayments_after_order_create',
+                [
+                    'order' => $order,
+                    'cmOrder' => new CMOrder(
+                        $orderCreateResponse->getUrl(),
+                        '000000001',
+                        $orderCreateResponse->getOrderKey(),
+                        $orderCreateResponse->getExpiresOn(),
+                    )
+                ]
+            ]
+        );
+
+        $this->orderService->create('1');
+    }
+
+    /**
+     * @return OrderInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getOrderMock()
+    {
+        $shippingAddressMock = $this->createConfiguredMock(
+            OrderAddressInterface::class,
+            [
+                'getEmail' => static::ADDRESS_DATA['email_address'],
+                'getCountryId' => static::ADDRESS_DATA['country_code']
+            ]
+        );
+
+        $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
+            ->onlyMethods(['getAdditionalInformation', 'setAdditionalInformation'])
+            ->getMockForAbstractClass();
+        $paymentMock->method('getAdditionalInformation')->willReturn([]);
+        $paymentMock->method('setAdditionalInformation')->willReturnSelf();
+
+        $orderMock = $this->getMockBuilder(SalesOrder::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $orderMock->method('getEntityId')->willReturn('1');
+        $orderMock->method('getIncrementId')->willReturn('000000001');
+        $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
+        $orderMock->method('getStoreId')->willReturn(1);
+        $orderMock->method('getBillingAddress')->willReturn($shippingAddressMock);
+        $orderMock->method('getGrandTotal')->willReturn(50.99);
+        $orderMock->method('getPayment')->willReturn($paymentMock);
+
+        return $orderMock;
+    }
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -130,6 +228,10 @@ class OrderServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->orderItemsRequestBuilderMock = $this->getMockBuilder(OrderItemsRequestBuilderInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->orderInterfaceFactoryMock = $this->getMockupFactory(
             Order::class,
             OrderInterface::class
@@ -141,6 +243,10 @@ class OrderServiceTest extends UnitTestCase
         );
 
         $this->cmPaymentsLoggerMock = $this->getMockBuilder(CMPaymentsLogger::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->eventManagerMock = $this->getMockBuilder(ManagerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -175,42 +281,10 @@ class OrderServiceTest extends UnitTestCase
             $this->orderInterfaceFactoryMock,
             $this->cmOrderRepositoryMock,
             $this->orderRequestBuilderMock,
+            $this->orderItemsRequestBuilderMock,
             $this->cmOrderInterfaceFactoryMock,
+            $this->eventManagerMock,
             $this->cmPaymentsLoggerMock
         );
-    }
-
-    /**
-     * @return OrderInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getOrderMock()
-    {
-        $shippingAddressMock = $this->createConfiguredMock(
-            OrderAddressInterface::class,
-            [
-                'getEmail' => static::ADDRESS_DATA['email_address'],
-                'getCountryId' => static::ADDRESS_DATA['country_code']
-            ]
-        );
-
-        $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
-            ->setMethods(['getAdditionalInformation', 'setAdditionalInformation'])
-            ->getMockForAbstractClass();
-        $paymentMock->method('getAdditionalInformation')->willReturn([]);
-        $paymentMock->method('setAdditionalInformation')->willReturnSelf();
-
-        $orderMock = $this->getMockBuilder(SalesOrder::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $orderMock->method('getEntityId')->willReturn('1');
-        $orderMock->method('getIncrementId')->willReturn('000000001');
-        $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
-        $orderMock->method('getStoreId')->willReturn(1);
-        $orderMock->method('getBillingAddress')->willReturn($shippingAddressMock);
-        $orderMock->method('getGrandTotal')->willReturn(50.99);
-        $orderMock->method('getPayment')->willReturn($paymentMock);
-
-        return $orderMock;
     }
 }

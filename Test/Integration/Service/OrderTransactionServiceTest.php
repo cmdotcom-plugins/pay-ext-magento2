@@ -8,7 +8,6 @@ namespace CM\Payments\Test\Integration\Service;
 
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
-use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Data\Order;
 use CM\Payments\Service\OrderTransactionService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
@@ -16,12 +15,9 @@ use CM\Payments\Test\Mock\MockApiResponse;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\OrderRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class OrderTransactionServiceTest extends IntegrationTestCase
@@ -156,21 +152,6 @@ class OrderTransactionServiceTest extends IntegrationTestCase
         $magentoOrder = $this->loadOrderById('100000001');
 
         $this->assertSame('pid4911203603t', $magentoOrder->getPayment()->getLastTransId());
-    }
-
-    /**
-     * @param $orderId
-     * @return OrderInterface
-     */
-    private function loadOrderById($orderId)
-    {
-        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $builder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $builder->addFilter('increment_id', $orderId, 'eq')->create();
-
-        $orderList = $repository->getList($searchCriteria)->getItems();
-
-        return array_shift($orderList);
     }
 
     /**

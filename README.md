@@ -1,5 +1,13 @@
 # CM.com Payments Magento 2 module
 
+1. [Get started](#get-started)
+2. [Installation & Update the CM.com Payments Magento 2 plugin](#installation--update-the-cmcom-payments-magento-2-plugin)
+2. [About CM.com Payments](#about-cmcom-payments)
+3. [Supported CM.com Payments Methods](#supported-cmcom-payments-methods)
+4. [Requirements](#requirements)
+5. [Setup local development environment](#setup-local-development-environment)
+5. [Payment methods](#payment-methods)
+
 ## Get started
 
 Before you begin to integrate Magento with the CM.com payments platform, make sure that you have performed the following steps: 
@@ -102,3 +110,42 @@ bin/magento setup:upgrade
 
 **Docker setup**
 https://github.com/markshust/docker-magento
+
+## Payment methods
+### Fetch payment methods by order
+CM.com api requires an order to retrieve all the payment methods, to accomplish this in the Magento checkout this module creates a temporary order based on the Magento quote. These temporary orders will always have a 'Q_' prefix. 
+
+## Payment method configuration
+### General
+Each payment method is configurable in Magento. There are a few default settings: 
+- Enabled
+- Title
+- Applicable countries
+- Applicable currencies
+- Minimum order total
+- Maximum order total
+- Sort order
+
+**Note** The payment methods will only visible if they enabled in both Magento as CM.com portal. 
+
+### CM.com redirect to Menu
+This payment method redirects to the CM.com payment menu.
+
+### Ideal
+This method shows the bank issuers in the Magento checkout and redirects directly to the selected issuer. 
+
+### Paypal
+This method directly redirects to the Paypal payment page.
+
+### Creditcard
+All the 'Creditcard' payment methods are mapped under one Magento payment method called `cm_payments_creditcard`
+This includes the following CM.com payment methods:
+`VISA`
+`MASTERCARD`
+`MAESTRO`
+
+**Configuration**\
+The creditcard payment redirects to the CM.com payment menu. It's recommended to create a separate 'Creditcard' payment profile in the CM.com portal to show only the credit card methods in the CM.com payment menu.
+
+### BanContact
+The BanContact payment redirects to the CM.com payment menu. It's recommended to create a separate 'BanContact' payment profile in the CM.com portal to show only the BanContact method in the CM.com payment menu.

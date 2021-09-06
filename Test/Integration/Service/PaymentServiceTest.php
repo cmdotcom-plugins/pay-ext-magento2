@@ -21,9 +21,6 @@ use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Service\PaymentRequestBuilder;
 use CM\Payments\Service\PaymentService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\OrderRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -78,35 +75,70 @@ class PaymentServiceTest extends IntegrationTestCase
     }
 
     /**
-     * @param string $orderId
-     * @return OrderInterface
+     * @magentoDataFixture Magento/Sales/_files/order.php
      */
-    private function loadOrderById($orderId)
+    public function testCreatePaypalPayment()
     {
-        $orderRepository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $searchCriteriaBuilder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $searchCriteriaBuilder->addFilter('increment_id', $orderId, 'eq')->create();
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
-        $orderList = $orderRepository->getList($searchCriteria)->getItems();
+        $cmOrderFactory = $this->objectManager->create(OrderInterfaceFactory::class);
+        $cmOrderOrder = $cmOrderFactory->create();
+        $cmOrderRepository = $this->objectManager->get(CMOrderRepositoryInterface::class);
+        $cmOrderOrder->setIncrementId($magentoOrder->getIncrementId());
+        $cmOrderOrder->setOrderId((int)$magentoOrder->getEntityId());
+        $cmOrderOrder->setOrderKey('0287A1617D93780EF28044B98438BF2F');
+        $cmOrderRepository->save($cmOrderOrder);
 
-        return array_shift($orderList);
+        $this->clientMock->expects($this->once())->method('execute')->willReturn(
+            [
+                'id' => 'pid4911261016t',
+                'status' => 'REDIRECTED_FOR_AUTHORIZATION',
+                'urls' => [
+                    0 => [
+                        'purpose' => 'REDIRECT',
+                        'method' => 'GET',
+                        //phpcs:ignore
+                        'url' => 'https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&useraction=commit&token=EC-0HD94326F3768884E',
+                        'order' => 1,
+                    ],
+                ]
+            ]
+        );
+
+        $payment = $this->paymentService->create($magentoOrder->getId());
+        $this->assertNotNull(
+            $payment->getId()
+        );
     }
 
     /**
-     * @param OrderInterface $magentoOrder
-     * @return OrderInterface
+     * @magentoDataFixture Magento/Sales/_files/order.php
      */
-    private function addCurrencyToOrder(OrderInterface $magentoOrder): OrderInterface
+    public function testCreateElvPayment()
     {
-        /** @var OrderInterface $magentoOrder */
-        $magentoOrder
-            ->setOrderCurrencyCode('EUR')
-            ->setBaseCurrencyCode('EUR');
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
-        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $repository->save($magentoOrder);
+        $cmOrderFactory = $this->objectManager->create(OrderInterfaceFactory::class);
+        $cmOrderOrder = $cmOrderFactory->create();
+        $cmOrderRepository = $this->objectManager->get(CMOrderRepositoryInterface::class);
+        $cmOrderOrder->setIncrementId($magentoOrder->getIncrementId());
+        $cmOrderOrder->setOrderId((int)$magentoOrder->getEntityId());
+        $cmOrderOrder->setOrderKey('0287A1617D93780EF28044B98438BF2M');
+        $cmOrderRepository->save($cmOrderOrder);
 
-        return $magentoOrder;
+        $this->clientMock->expects($this->once())->method('execute')->willReturn(
+            [
+                'id' => 'pid4911261022t',
+                'status' => 'AUTHORIZED'
+            ]
+        );
+
+        $payment = $this->paymentService->create($magentoOrder->getId());
+        $this->assertNotNull(
+            $payment->getId()
+        );
     }
 
     /**

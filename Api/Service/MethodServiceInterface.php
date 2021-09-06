@@ -10,6 +10,7 @@ namespace CM\Payments\Api\Service;
 
 use CM\Payments\Model\ConfigProvider;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\CartInterface;
 
 interface MethodServiceInterface
@@ -21,7 +22,9 @@ interface MethodServiceInterface
         ConfigProvider::CODE_CREDIT_CARD,
         ConfigProvider::CODE_IDEAL,
         ConfigProvider::CODE_PAYPAL,
-        ConfigProvider::CODE_BANCONTACT
+        ConfigProvider::CODE_BANCONTACT,
+        ConfigProvider::CODE_ELV,
+        ConfigProvider::CODE_KLARNA
     ];
 
     /**
@@ -33,7 +36,9 @@ interface MethodServiceInterface
         'MAESTRO' => ConfigProvider::CODE_CREDIT_CARD,
         'IDEAL' => ConfigProvider::CODE_IDEAL,
         'PAYPAL_EXPRESS_CHECKOUT' => ConfigProvider::CODE_PAYPAL,
-        'BANCONTACT' => ConfigProvider::CODE_BANCONTACT
+        'BANCONTACT' => ConfigProvider::CODE_BANCONTACT,
+        'ELV' => ConfigProvider::CODE_ELV,
+        'KLARNA' => ConfigProvider::CODE_KLARNA
     ];
 
     /**
@@ -41,14 +46,10 @@ interface MethodServiceInterface
      */
     public const API_METHODS_MAPPING = [
         ConfigProvider::CODE_IDEAL => 'IDEAL',
-        ConfigProvider::CODE_PAYPAL => 'PAYPAL'
+        ConfigProvider::CODE_PAYPAL => 'PAYPAL',
+        ConfigProvider::CODE_ELV => 'ELV',
+        ConfigProvider::CODE_KLARNA => 'KLARNA'
     ];
-
-    /**
-     * @param CartInterface $quote
-     * @return array
-     */
-    public function getAvailablePaymentMethods(CartInterface $quote): array;
 
     /**
      * @param CartInterface $quote
