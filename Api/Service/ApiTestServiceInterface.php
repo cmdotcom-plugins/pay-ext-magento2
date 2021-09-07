@@ -14,8 +14,9 @@ use Magento\Framework\Exception\NoSuchEntityException;
 interface ApiTestServiceInterface
 {
     /**
+     * @param array $merchantData
      * @return array
      * @throws GuzzleException|NoSuchEntityException
      */
-    public function testApiConnection(): array;
+    public function testApiConnection(array $merchantData): array;
 }

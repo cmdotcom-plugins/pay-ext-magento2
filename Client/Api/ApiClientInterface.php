@@ -11,7 +11,8 @@ namespace CM\Payments\Client\Api;
 interface ApiClientInterface
 {
     /**
-     * Execute a request against the CM Payments Api.
+     * Execute a request against the CM Payments Api
+     *
      * @throws GuzzleException
      */
     public function execute(RequestInterface $request): array;
