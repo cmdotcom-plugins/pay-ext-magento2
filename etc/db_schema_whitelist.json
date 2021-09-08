@@ -1,0 +1,25 @@
+{
+    "cm_payments_order": {
+        "column": {
+            "id": true,
+            "order_id": true,
+            "increment_id": true,
+            "order_key": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "CM_PAYMENTS_ORDER_ORDER_ID": true,
+            "CM_PAYMENTS_ORDER_ORDER_KEY": true,
+            "CM_PAYMENTS_ORDER_INCREMENT_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "quote": {
+        "column": {
+            "cm_order_key": true
+        }
+    }
+}
