@@ -54,9 +54,10 @@ class CheckApiConnection extends Action
         /** @var JsonResult $jsonResult */
         $jsonResult = $this->jsonResultFactory->create();
         $success = true;
+        $merchantData = $this->getRequest()->getParam('merchantData');
 
         try {
-            $resultData = $this->apiTestService->testApiConnection();
+            $resultData = $this->apiTestService->testApiConnection($merchantData);
 
             if (!empty($resultData['errors'])) {
                 array_unshift($resultData['errors'], __("The connection was unsuccessful."));
