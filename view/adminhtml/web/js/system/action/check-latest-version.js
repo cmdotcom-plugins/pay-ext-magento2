@@ -69,7 +69,7 @@ define([
                             + '</strong>';
                     } else {
                         let translatedResult = $.mage.__('There is a new version available <span>(%1)</span>.')
-                            .replace('%1', latestVersion);
+                            .replace('%1', 'v' + latestVersion.toString());
 
                         resultHtml = '<strong class="cmpayments-version-is-not-latest"">'
                             + translatedResult
