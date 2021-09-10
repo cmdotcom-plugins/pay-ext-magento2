@@ -60,6 +60,7 @@ class ApiClient implements ApiClientInterface
                 'json' => $request->getPayload()
             ];
         }
+
         $guzzleResponse = $this->getClient()->request(
             $request->getRequestMethod(),
             $request->getEndpoint(),

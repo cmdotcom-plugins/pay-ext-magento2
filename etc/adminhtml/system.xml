@@ -27,7 +27,7 @@
                     <config_path>cm_payments/general/current_version</config_path>
                 </field>
                 <field id="enabled" translate="label" type="select" sortOrder="2" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>cm_payments/general/enabled</config_path>
@@ -51,8 +51,8 @@
                 <frontend_model>CM\Payments\Block\Adminhtml\System\Config\Fieldset\ApiDetails</frontend_model>
                 <label>API Details</label>
                 <field id="mode" translate="label" type="select" sortOrder="10" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Api mode (test|live)</label>
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Api mode (test|production)</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\Mode</source_model>
                     <config_path>cm_payments/general/mode</config_path>
                 </field>
@@ -106,6 +106,7 @@
                 </depends>
             </group>
         </section>
+
         <section id="cm_payments_methods" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
                  translate="label">
             <label>Payment Methods</label>
@@ -115,14 +116,15 @@
             <group id="cm_payments" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Menu Redirect by CM.com</label>
+                <frontend_model>CM\Payments\Block\Adminhtml\System\Config\Fieldset\PaymentMethods</frontend_model>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/cm_payments/active</config_path>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Title</label>
                     <config_path>payment/cm_payments/title</config_path>
                     <depends>
@@ -140,7 +142,7 @@
                     </depends>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment from Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                     <config_path>payment/cm_payments/allowspecific</config_path>
@@ -159,8 +161,8 @@
                     </depends>
                 </field>
                 <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Currencies</label>
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment in Applicable Currencies</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\AllSpecificCurrencies</source_model>
                     <config_path>payment/cm_payments/allow_specific_currency</config_path>
                     <depends>
@@ -174,7 +176,7 @@
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments/specific_currency</config_path>
                     <depends>
-                        <field id="allow_specific_currency">1</field>
+                        <field id="active">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
@@ -194,7 +196,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Unit</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
                     <config_path>payment/cm_payments/order_expiry_unit</config_path>
@@ -203,7 +205,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Duration</label>
                     <config_path>payment/cm_payments/order_expiry_duration</config_path>
                     <depends>
@@ -211,7 +213,7 @@
                     </depends>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments/sort_order</config_path>
                     <depends>
@@ -224,13 +226,13 @@
                    showInWebsite="1" showInStore="1">
                 <label>iDeal by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/cm_payments_ideal/active</config_path>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Title</label>
                     <config_path>payment/cm_payments_ideal/title</config_path>
                     <depends>
@@ -238,7 +240,7 @@
                     </depends>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment from Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                     <config_path>payment/cm_payments_ideal/allowspecific</config_path>
@@ -257,8 +259,8 @@
                     </depends>
                 </field>
                 <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Currencies</label>
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment in Applicable Currencies</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\AllSpecificCurrencies</source_model>
                     <config_path>payment/cm_payments_ideal/allow_specific_currency</config_path>
                     <depends>
@@ -272,7 +274,7 @@
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments_ideal/specific_currency</config_path>
                     <depends>
-                        <field id="allow_specific_currency">1</field>
+                        <field id="active">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
@@ -292,7 +294,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Unit</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
                     <config_path>payment/cm_payments_ideal/order_expiry_unit</config_path>
@@ -301,7 +303,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Duration</label>
                     <config_path>payment/cm_payments_ideal/order_expiry_duration</config_path>
                     <depends>
@@ -309,7 +311,7 @@
                     </depends>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_ideal/sort_order</config_path>
                     <depends>
@@ -322,7 +324,7 @@
                    showInWebsite="1" showInStore="1">
                 <label>Credit Card by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/cm_payments_creditcard/active</config_path>
@@ -334,7 +336,7 @@
                     <config_path>payment/cm_payments_creditcard/mode</config_path>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Title</label>
                     <config_path>payment/cm_payments_creditcard/title</config_path>
                     <depends>
@@ -361,7 +363,7 @@
                     </depends>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment from Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                     <config_path>payment/cm_payments_creditcard/allowspecific</config_path>
@@ -380,8 +382,8 @@
                     </depends>
                 </field>
                 <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Currencies</label>
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment in Applicable Currencies</label>
                     <source_model>CM\Payments\Model\AdminHtml\Source\AllSpecificCurrencies</source_model>
                     <config_path>payment/cm_payments_creditcard/allow_specific_currency</config_path>
                     <depends>
@@ -395,7 +397,7 @@
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments_creditcard/specific_currency</config_path>
                     <depends>
-                        <field id="allow_specific_currency">1</field>
+                        <field id="active">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
@@ -415,7 +417,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Unit</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
                     <config_path>payment/cm_payments_creditcard/order_expiry_unit</config_path>
@@ -424,7 +426,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Duration</label>
                     <config_path>payment/cm_payments_creditcard/order_expiry_duration</config_path>
                     <depends>
@@ -432,7 +434,7 @@
                     </depends>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_creditcard/sort_order</config_path>
                     <depends>
@@ -445,13 +447,13 @@
                    showInWebsite="1" showInStore="1">
                 <label>PayPal by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/cm_payments_paypal/active</config_path>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Title</label>
                     <config_path>payment/cm_payments_paypal/title</config_path>
                     <depends>
@@ -459,7 +461,7 @@
                     </depends>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment from Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                     <config_path>payment/cm_payments_paypal/allowspecific</config_path>
@@ -478,8 +480,8 @@
                     </depends>
                 </field>
                 <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Currencies</label>
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment in Applicable Currencies</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\AllSpecificCurrencies</source_model>
                     <config_path>payment/cm_payments_paypal/allow_specific_currency</config_path>
                     <depends>
@@ -493,7 +495,7 @@
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments_paypal/specific_currency</config_path>
                     <depends>
-                        <field id="allow_specific_currency">1</field>
+                        <field id="active">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
@@ -513,7 +515,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Unit</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
                     <config_path>payment/cm_payments_paypal/order_expiry_unit</config_path>
@@ -522,7 +524,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Duration</label>
                     <config_path>payment/cm_payments_paypal/order_expiry_duration</config_path>
                     <depends>
@@ -530,7 +532,7 @@
                     </depends>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_paypal/sort_order</config_path>
                     <depends>
@@ -543,13 +545,13 @@
                    showInWebsite="1" showInStore="1">
                 <label>Bancontact by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/cm_payments_bancontact/active</config_path>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Title</label>
                     <config_path>payment/cm_payments_bancontact/title</config_path>
                     <depends>
@@ -567,7 +569,7 @@
                     </depends>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="40" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment from Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                     <config_path>payment/cm_payments_bancontact/allowspecific</config_path>
@@ -586,8 +588,8 @@
                     </depends>
                 </field>
                 <field id="allow_specific_currency" translate="label" type="select" sortOrder="51" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Currencies</label>
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment in Applicable Currencies</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\AllSpecificCurrencies</source_model>
                     <config_path>payment/cm_payments_bancontact/allow_specific_currency</config_path>
                     <depends>
@@ -601,7 +603,7 @@
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments_bancontact/specific_currency</config_path>
                     <depends>
-                        <field id="allow_specific_currency">1</field>
+                        <field id="active">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="60" showInDefault="1"
@@ -621,7 +623,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_unit" translate="label" type="select" sortOrder="80" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Unit</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
                     <config_path>payment/cm_payments_bancontact/order_expiry_unit</config_path>
@@ -630,7 +632,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_duration" translate="label" type="text" sortOrder="90" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Duration</label>
                     <config_path>payment/cm_payments_bancontact/order_expiry_duration</config_path>
                     <depends>
@@ -638,7 +640,7 @@
                     </depends>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_bancontact/sort_order</config_path>
                     <depends>
@@ -651,13 +653,13 @@
                    showInWebsite="1" showInStore="1">
                 <label>ELV by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/cm_payments_elv/active</config_path>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Title</label>
                     <config_path>payment/cm_payments_elv/title</config_path>
                     <depends>
@@ -665,7 +667,7 @@
                     </depends>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="30" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment from Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                     <config_path>payment/cm_payments_elv/allowspecific</config_path>
@@ -684,8 +686,8 @@
                     </depends>
                 </field>
                 <field id="allow_specific_currency" translate="label" type="select" sortOrder="50" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Currencies</label>
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment in Applicable Currencies</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\AllSpecificCurrencies</source_model>
                     <config_path>payment/cm_payments_elv/allow_specific_currency</config_path>
                     <depends>
@@ -699,7 +701,7 @@
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments_elv/specific_currency</config_path>
                     <depends>
-                        <field id="allow_specific_currency">1</field>
+                        <field id="active">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="70" showInDefault="1"
@@ -719,7 +721,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_unit" translate="label" type="select" sortOrder="90" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Unit</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
                     <config_path>payment/cm_payments_elv/order_expiry_unit</config_path>
@@ -728,7 +730,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_duration" translate="label" type="text" sortOrder="100" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Duration</label>
                     <config_path>payment/cm_payments_elv/order_expiry_duration</config_path>
                     <depends>
@@ -736,7 +738,7 @@
                     </depends>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_elv/sort_order</config_path>
                     <depends>
@@ -749,13 +751,13 @@
                    showInWebsite="1" showInStore="1">
                 <label>Klarna by CM.com</label>
                 <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/cm_payments_klarna/active</config_path>
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Title</label>
                     <config_path>payment/cm_payments_klarna/title</config_path>
                     <depends>
@@ -763,7 +765,7 @@
                     </depends>
                 </field>
                 <field id="allowspecific" translate="label" type="allowspecific" sortOrder="30" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment from Applicable Countries</label>
                     <source_model>Magento\Payment\Model\Config\Source\Allspecificcountries</source_model>
                     <config_path>payment/cm_payments_klarna/allowspecific</config_path>
@@ -782,8 +784,8 @@
                     </depends>
                 </field>
                 <field id="allow_specific_currency" translate="label" type="select" sortOrder="50" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Payment from Applicable Currencies</label>
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment in Applicable Currencies</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\AllSpecificCurrencies</source_model>
                     <config_path>payment/cm_payments_klarna/allow_specific_currency</config_path>
                     <depends>
@@ -797,7 +799,7 @@
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments_klarna/specific_currency</config_path>
                     <depends>
-                        <field id="allow_specific_currency">1</field>
+                        <field id="active">1</field>
                     </depends>
                 </field>
                 <field id="min_order_total" translate="label" type="text" sortOrder="70" showInDefault="1"
@@ -817,7 +819,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_unit" translate="label" type="select" sortOrder="90" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Unit</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\OrderExpiryUnit</source_model>
                     <config_path>payment/cm_payments_klarna/order_expiry_unit</config_path>
@@ -826,7 +828,7 @@
                     </depends>
                 </field>
                 <field id="order_expiry_duration" translate="label" type="text" sortOrder="100" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
+                       showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Order Expiry Duration</label>
                     <config_path>payment/cm_payments_klarna/order_expiry_duration</config_path>
                     <depends>
@@ -834,7 +836,7 @@
                     </depends>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
+                       showInStore="1" canRestore="1">
                     <label>Sort Order</label>
                     <config_path>payment/cm_payments_klarna/sort_order</config_path>
                     <depends>

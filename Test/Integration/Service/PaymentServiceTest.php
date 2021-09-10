@@ -21,9 +21,6 @@ use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Service\PaymentRequestBuilder;
 use CM\Payments\Service\PaymentService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\OrderRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 

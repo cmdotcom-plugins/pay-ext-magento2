@@ -21,6 +21,9 @@ class IntegrationTestCase extends TestCase
      */
     protected $objectManager;
 
+    /**
+     * Setup function
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -30,7 +33,8 @@ class IntegrationTestCase extends TestCase
 
     /**
      * Get Magento order by increment id
-     * @param $orderId
+     *
+     * @param string $orderId
      * @return OrderInterface
      */
     protected function loadOrderById($orderId)
@@ -46,6 +50,7 @@ class IntegrationTestCase extends TestCase
 
     /**
      * Get Magento quote by order id
+     *
      * @param string $orderId
      * @return CartInterface
      */
@@ -62,6 +67,7 @@ class IntegrationTestCase extends TestCase
 
     /**
      * Adds currency code to order
+     *
      * @param OrderInterface $magentoOrder
      * @return OrderInterface
      */

@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Test\Unit\Service;
 
-use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Client\Model\Request\PaymentCreate;
 use CM\Payments\Client\Request\PaymentCreateRequest;
 use CM\Payments\Service\Payment\Request\Part\IdealDetails;

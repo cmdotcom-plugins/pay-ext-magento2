@@ -210,6 +210,7 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
             </argument>
         </arguments>
     </virtualType>
@@ -222,10 +223,29 @@
         </arguments>
     </virtualType>
 
+    <!-- CM Refund command -->
+    <virtualType name="CMRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CMRefundRequestBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">CM\Payments\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">CM\Payments\Gateway\Http\Client\RefundClient</argument>
+            <argument name="handler" xsi:type="object">CM\Payments\Gateway\Response\RefundResponseHandler</argument>
+        </arguments>
+    </virtualType>
+
     <virtualType name="CMInitializeRequestBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
         <arguments>
             <argument name="builders" xsi:type="array">
                 <item name="transaction" xsi:type="string">CM\Payments\Gateway\Request\Builder\RedirectTransactionBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- CM Refund Request -->
+    <virtualType name="CMRefundRequestBuilder" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transaction" xsi:type="string">CM\Payments\Gateway\Request\Builder\RefundTransactionBuilder</item>
             </argument>
         </arguments>
     </virtualType>
@@ -237,6 +257,7 @@
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_CREDIT_CARD</argument>
             <argument name="valueHandlerPool" xsi:type="object">CMCreditCardValueHandlerPool</argument>
             <argument name="validatorPool" xsi:type="object">CMCreditCardValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMCreditCardCommandPool</argument>
         </arguments>
     </virtualType>
 
@@ -248,9 +269,21 @@
         </arguments>
     </virtualType>
 
-    <virtualType name="CMCreditCardConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+    <virtualType name="CMCreditCardValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
         <arguments>
-            <argument name="configInterface" xsi:type="object">CMCreditCardGenericConfig</argument>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMCreditCardCountryValidator</item>
+                <item name="currency" xsi:type="string">CMCreditCardCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCreditCardCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
         </arguments>
     </virtualType>
 
@@ -260,12 +293,9 @@
         </arguments>
     </virtualType>
 
-    <virtualType name="CMCreditCardValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+    <virtualType name="CMCreditCardConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
         <arguments>
-            <argument name="validators" xsi:type="array">
-                <item name="country" xsi:type="string">CMCreditCardCountryValidator</item>
-                <item name="currency" xsi:type="string">CMCreditCardCurrencyValidator</item>
-            </argument>
+            <argument name="configInterface" xsi:type="object">CMCreditCardGenericConfig</argument>
         </arguments>
     </virtualType>
 
@@ -288,6 +318,16 @@
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_IDEAL</argument>
             <argument name="valueHandlerPool" xsi:type="object">CMIdealValueHandlerPool</argument>
             <argument name="validatorPool" xsi:type="object">CMIdealValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMIdealCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMIdealCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
         </arguments>
     </virtualType>
 
@@ -339,6 +379,16 @@
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_PAYPAL</argument>
             <argument name="valueHandlerPool" xsi:type="object">CMPaypalValueHandlerPool</argument>
             <argument name="validatorPool" xsi:type="object">CMPaypalValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMPaypalCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMPaypalCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
         </arguments>
     </virtualType>
 
@@ -390,6 +440,16 @@
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_BANCONTACT</argument>
             <argument name="valueHandlerPool" xsi:type="object">CMBanContactValueHandlerPool</argument>
             <argument name="validatorPool" xsi:type="object">CMBanContactValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMBanContactCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMBanContactCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
         </arguments>
     </virtualType>
 
@@ -492,6 +552,16 @@
             <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_KLARNA</argument>
             <argument name="valueHandlerPool" xsi:type="object">CMKlarnaValueHandlerPool</argument>
             <argument name="validatorPool" xsi:type="object">CMKlarnaValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMKlarnaCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMKlarnaCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
         </arguments>
     </virtualType>
 
