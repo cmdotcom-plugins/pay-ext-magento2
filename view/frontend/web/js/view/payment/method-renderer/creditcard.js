@@ -9,13 +9,13 @@ define([
     'Magento_Checkout/js/model/full-screen-loader',
     'Magento_Payment/js/model/credit-card-validation/credit-card-data',
     'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
-    'creditcard-init-payment',
-    'creditcard-3dsv2-validation',
+    'CM_Payments/js/action/creditcard/init-payment-information',
+    'CM_Payments/js/model/creditcard/3dsv2-validation',
     'jquery',
     'underscore',
-    'mage/translate',
     'Magento_Payment/js/model/credit-card-validation/validator',
-    'creditcard-additional-validators'
+    'CM_Payments/js/model/validators/allowed-card-type-validator',
+    'mage/translate'
 ], function (
     Component,
     redirectOnSuccessAction,

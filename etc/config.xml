@@ -71,7 +71,7 @@
             <cm_payments_creditcard>
                 <active>0</active>
                 <mode>redirect</mode>
-                <allowed_cctypes>AE,VI,MC,MI,MD</allowed_cctypes>
+                <allowed_cctypes>AE,VI,MC</allowed_cctypes>
                 <model>CMPaymentsCreditCardFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>

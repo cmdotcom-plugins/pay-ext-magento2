@@ -10,5 +10,5 @@ namespace CM\Payments\Model\Adminhtml\Source;
 
 class Cctype extends \Magento\Payment\Model\Source\Cctype
 {
-    protected $_allowedTypes = ['VI', 'MC', 'AE', 'MI', 'MD'];
+    protected $_allowedTypes = ['VI', 'MC', 'AE'];
 }
