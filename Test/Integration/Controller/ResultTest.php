@@ -7,6 +7,7 @@
 namespace CM\Payments\Test\Integration\Controller\Checkout;
 
 use CM\Payments\Client\Model\Request\OrderCreate;
+use CM\Payments\Service\OrderTransactionService;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\Message\MessageInterface;
@@ -18,6 +19,10 @@ class ResultTest extends AbstractController
 {
     public function testRedirectToCheckoutWhenOrderReferenceNotProvided()
     {
+        $orderTransactionServiceMock = $this->createMock(OrderTransactionService::class);
+        $orderTransactionServiceMock->expects($this->never())->method('process');
+        $this->_objectManager->addSharedInstance($orderTransactionServiceMock, OrderTransactionService::class);
+
         $this->getRequest()->setParam('status', 'SUCCESS');
         $this->dispatch('cmpayments/payment/result');
 
@@ -31,6 +36,10 @@ class ResultTest extends AbstractController
 
     public function testRedirectToCheckoutWhenStatusNotProvided()
     {
+        $orderTransactionServiceMock = $this->createMock(OrderTransactionService::class);
+        $orderTransactionServiceMock->expects($this->never())->method('process');
+        $this->_objectManager->addSharedInstance($orderTransactionServiceMock, OrderTransactionService::class);
+
         $this->getRequest()->setParam('order_reference', '100000001');
         $this->dispatch('cmpayments/payment/result');
 
@@ -50,6 +59,10 @@ class ResultTest extends AbstractController
         $sessionMock = $this->createMock(Session::class);
         $sessionMock->expects($this->once())->method('getLastRealOrder')->willReturn($this->loadOrderById('100000001'));
         $this->_objectManager->addSharedInstance($sessionMock, Session::class);
+
+        $orderTransactionServiceMock = $this->createMock(OrderTransactionService::class);
+        $orderTransactionServiceMock->expects($this->never())->method('process');
+        $this->_objectManager->addSharedInstance($orderTransactionServiceMock, OrderTransactionService::class);
 
         $this->getRequest()->setParam('order_reference', '100000002');
         $this->getRequest()->setParam('status', 'SUCCESS');
@@ -71,6 +84,10 @@ class ResultTest extends AbstractController
         $sessionMock->method('getLastRealOrder')->willReturn($this->loadOrderById('100000001'));
         $this->_objectManager->addSharedInstance($sessionMock, Session::class);
 
+        $orderTransactionServiceMock = $this->createMock(OrderTransactionService::class);
+        $orderTransactionServiceMock->expects($this->never())->method('process');
+        $this->_objectManager->addSharedInstance($orderTransactionServiceMock, OrderTransactionService::class);
+
         $this->getRequest()->setParam('order_reference', '100000001');
         $this->getRequest()->setParam('status', OrderCreate::STATUS_CANCELLED);
         $this->dispatch('cmpayments/payment/result');
@@ -90,6 +107,10 @@ class ResultTest extends AbstractController
         $sessionMock = $this->createMock(Session::class);
         $sessionMock->method('getLastRealOrder')->willReturn($this->loadOrderById('100000001'));
         $this->_objectManager->addSharedInstance($sessionMock, Session::class);
+
+        $orderTransactionServiceMock = $this->createMock(OrderTransactionService::class);
+        $orderTransactionServiceMock->expects($this->never())->method('process');
+        $this->_objectManager->addSharedInstance($orderTransactionServiceMock, OrderTransactionService::class);
 
         $this->getRequest()->setParam('order_reference', '100000001');
         $this->getRequest()->setParam('status', OrderCreate::STATUS_ERROR);
@@ -111,6 +132,10 @@ class ResultTest extends AbstractController
         $sessionMock->method('getLastRealOrder')->willThrowException(new \Exception('[TEST] Something went wrong'));
         $this->_objectManager->addSharedInstance($sessionMock, Session::class);
 
+        $orderTransactionServiceMock = $this->createMock(OrderTransactionService::class);
+        $orderTransactionServiceMock->expects($this->never())->method('process');
+        $this->_objectManager->addSharedInstance($orderTransactionServiceMock, OrderTransactionService::class);
+
         $this->getRequest()->setParam('order_reference', '100000001');
         $this->getRequest()->setParam('status', OrderCreate::STATUS_SUCCESS);
         $this->dispatch('cmpayments/payment/result');
@@ -130,6 +155,10 @@ class ResultTest extends AbstractController
         $sessionMock = $this->createMock(Session::class);
         $sessionMock->method('getLastRealOrder')->willReturn($this->loadOrderById('100000001'));
         $this->_objectManager->addSharedInstance($sessionMock, Session::class);
+
+        $orderTransactionServiceMock = $this->createMock(OrderTransactionService::class);
+        $orderTransactionServiceMock->expects($this->once())->method('process');
+        $this->_objectManager->addSharedInstance($orderTransactionServiceMock, OrderTransactionService::class);
 
         $this->getRequest()->setParam('order_reference', '100000001');
         $this->getRequest()->setParam('status', OrderCreate::STATUS_SUCCESS);

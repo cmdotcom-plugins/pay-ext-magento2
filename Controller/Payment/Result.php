@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace CM\Payments\Controller\Payment;
 
+use CM\Payments\Api\Service\OrderTransactionServiceInterface;
 use CM\Payments\Client\Model\Request\OrderCreate;
+use CM\Payments\Logger\CMPaymentsLogger;
 use Exception;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Action\Action;
@@ -52,6 +54,10 @@ class Result extends Action implements HttpGetActionInterface
      * @var LoggerInterface
      */
     private $logger;
+    /**
+     * @var OrderTransactionServiceInterface
+     */
+    private $orderTransactionService;
 
     /**
      * Result constructor
@@ -62,7 +68,8 @@ class Result extends Action implements HttpGetActionInterface
      * @param CheckoutSession $checkoutSession
      * @param RedirectFactory $redirectFactory
      * @param OrderManagementInterface $orderManagement
-     * @param LoggerInterface $logger
+     * @param OrderTransactionServiceInterface $orderTransactionServic
+     * @param CMPaymentsLogger $logger
      */
     public function __construct(
         Context $context,
@@ -71,13 +78,15 @@ class Result extends Action implements HttpGetActionInterface
         CheckoutSession $checkoutSession,
         RedirectFactory $redirectFactory,
         OrderManagementInterface $orderManagement,
-        LoggerInterface $logger
+        OrderTransactionServiceInterface $orderTransactionService,
+        CMPaymentsLogger $logger
     ) {
         $this->request = $request;
         $this->messageManager = $messageManager;
         $this->checkoutSession = $checkoutSession;
         $this->redirectFactory = $redirectFactory;
         $this->orderManagement = $orderManagement;
+        $this->orderTransactionService = $orderTransactionService;
         $this->logger = $logger;
 
         parent::__construct($context);
@@ -111,6 +120,12 @@ class Result extends Action implements HttpGetActionInterface
 
                 return $this->redirectToCheckout();
             };
+
+            try {
+                $this->orderTransactionService->process($orderIncrementId);
+            } catch (\Exception $exception) {
+                $this->logger->error($exception);
+            }
 
             return $this->redirectFactory->create()
                 ->setPath('checkout/onepage/success');
