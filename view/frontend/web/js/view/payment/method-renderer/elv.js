@@ -7,7 +7,8 @@ define([
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/action/redirect-on-success',
     'mage/url',
-    'jquery'
+    'jquery',
+    'CM_Payments/js/model/validators/iban-validator'
 ], function (
     Component,
     redirectOnSuccessAction,
