@@ -32,25 +32,21 @@ class IntegrationTestCase extends TestCase
     }
 
     /**
-     * Get Magento order by increment id
-     *
      * @param string $orderId
      * @return OrderInterface
      */
     protected function loadOrderById($orderId)
     {
-        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
-        $builder = $this->objectManager->create(SearchCriteriaBuilder::class);
-        $searchCriteria = $builder->addFilter('increment_id', $orderId, 'eq')->create();
+        $orderRepository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $searchCriteriaBuilder = $this->objectManager->create(SearchCriteriaBuilder::class);
+        $searchCriteria = $searchCriteriaBuilder->addFilter('increment_id', $orderId, 'eq')->create();
 
-        $orderList = $repository->getList($searchCriteria)->getItems();
+        $orderList = $orderRepository->getList($searchCriteria)->getItems();
 
         return array_shift($orderList);
     }
 
     /**
-     * Get Magento quote by order id
-     *
      * @param string $orderId
      * @return CartInterface
      */

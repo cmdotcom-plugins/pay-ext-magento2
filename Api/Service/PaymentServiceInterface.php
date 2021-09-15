@@ -49,7 +49,7 @@ interface PaymentServiceInterface
      * @throws \Exception
      */
     public function createByCardDetails(
-        string $quoteId,
+        int $quoteId,
         CardDetailsInterface $cardDetails,
         BrowserDetailsInterface $browserDetails
     ): CMPaymentInterface;

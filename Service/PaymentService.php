@@ -26,6 +26,7 @@ use CM\Payments\Model\ConfigProvider;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
 use Magento\Quote\Model\QuoteManagement;
@@ -237,7 +238,7 @@ class PaymentService implements PaymentServiceInterface
         CardDetailsInterface $cardDetails,
         BrowserDetailsInterface $browserDetails
     ): CMPaymentInterface {
-        $quoteId = (string)$this->maskedQuoteIdToQuoteId->execute($quoteId);
+        $quoteId = $this->maskedQuoteIdToQuoteId->execute($quoteId);
 
         return $this->createByCardDetails(
             $quoteId,
@@ -250,11 +251,16 @@ class PaymentService implements PaymentServiceInterface
      * @inheritDoc
      */
     public function createByCardDetails(
-        string $quoteId,
+        int $quoteId,
         CardDetailsInterface $cardDetails,
         BrowserDetailsInterface $browserDetails
     ): CMPaymentInterface {
         $quote = $this->cartRepository->getActive($quoteId);
+
+        if (empty($quoteId) || empty($quote)) {
+            throw new NoSuchEntityException(__('Quote not found'));
+        }
+
         try {
             $quote->reserveOrderId();
 
