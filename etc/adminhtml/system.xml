@@ -171,7 +171,7 @@
                 </field>
                 <field id="specific_currency" translate="label" type="multiselect" sortOrder="52" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Payment from Specific Currencies</label>
+                    <label>Payment in Specific Currencies</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\Currency</source_model>
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments/specific_currency</config_path>
