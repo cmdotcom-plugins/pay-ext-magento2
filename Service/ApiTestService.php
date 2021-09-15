@@ -14,7 +14,6 @@ use CM\Payments\Client\Api\RequestInterface;
 use CM\Payments\Client\ApiClient;
 use CM\Payments\Model\Adminhtml\Source\Mode;
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\ClientFactory as HttpClientFactory;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
@@ -36,22 +35,14 @@ class ApiTestService implements ApiTestServiceInterface
     private $config;
 
     /**
-     * @var HttpClientFactory
-     */
-    private $httpClientFactory;
-
-    /**
      * ApiTestService constructor
      *
      * @param ConfigInterface $config
-     * @param HttpClientFactory $httpClientFactory
      */
     public function __construct(
-        ConfigInterface $config,
-        HttpClientFactory $httpClientFactory
+        ConfigInterface $config
     ) {
         $this->config = $config;
-        $this->httpClientFactory = $httpClientFactory;
 
         try {
             $this->apiConnectionData = [
@@ -159,7 +150,7 @@ class ApiTestService implements ApiTestServiceInterface
             $this->apiConnectionData['merchantName'] . ':' . $this->apiConnectionData['merchantPassword']
         );
 
-        return $this->httpClientFactory->create(
+        return new HttpClient(
             [
                 'base_uri' => $baseApiUrl,
                 'headers'  => [
