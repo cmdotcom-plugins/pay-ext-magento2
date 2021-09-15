@@ -35,7 +35,7 @@ class Mode implements OptionSourceInterface
         if (!$this->options) {
             $this->options = [
                 ['value' => self::TEST, 'label' => __('Test')],
-                ['value' => self::LIVE, 'label' => __('Live')]
+                ['value' => self::LIVE, 'label' => __('Production')]
             ];
         }
 

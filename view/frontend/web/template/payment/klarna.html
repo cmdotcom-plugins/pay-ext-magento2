@@ -22,11 +22,11 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <div class="payment-method-iban">
+        <div class="payment-method-form">
             <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
                 <div class="fieldset">
                     <div class="field required">
-                        <label data-bind="attr: {for: 'dob'}" class="label">
+                        <label data-bind="attr: {for: getCode() + '-dob'}" class="label">
                             <span data-bind="i18n: 'Date Of Birth:'"></span>
                         </label>
                         <div class="control">
@@ -35,7 +35,7 @@
                                    data-bind="datepicker: {storage: dob,
                                     options: {'dateFormat': 'yyyy-mm-dd', 'changeMonth': true, 'maxDate': '-18Y',
                                     'changeYear': true, 'yearRange': '-110:-18'}},
-                                    value: dob, attr: {id: 'dob', readonly: true}"
+                                    value: dob, attr: {id: getCode() + '-dob', readonly: true, name: 'payment[dob]'}"
                                    data-validate="{required:true, 'validate-date': {dateFormat: 'yyyy-mm-dd'}}">
                         </div>
                     </div>

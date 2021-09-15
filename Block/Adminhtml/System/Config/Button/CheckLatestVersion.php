@@ -89,7 +89,7 @@ class CheckLatestVersion extends Field
     {
         $buttonData = [
             'class' => 'cmpayments_button_version',
-            'label' => __('Check the Latest Version'),
+            'label' => __('Check for Updates'),
             'data_attribute' => ['bind' => 'click: checkLatestVersion']
         ];
         try {

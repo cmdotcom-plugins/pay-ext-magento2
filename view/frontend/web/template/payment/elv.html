@@ -22,18 +22,27 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <div class="payment-method-iban">
+        <div class="payment-method-form">
             <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
                 <div class="fieldset">
                     <div class="field required">
-                        <label data-bind="attr: {for: 'elv-iban'}" class="label">
+                        <label data-bind="attr: {for: getCode() + '-iban'}" class="label">
                             <span data-bind="i18n: 'IBAN:'"></span>
                         </label>
                         <div class="control">
                             <input type="text"
                                    class="input-text"
-                                   data-bind="value: iban, attr: {id: 'elv-iban'}" data-validate="{required:true}">
+                                   data-bind="value: iban, attr: {id: getCode() + '-iban', name: 'payment[iban]'}"
+                                   data-validate="{required:true, 'validate-iban': {countryCode: 'DE'}}">
                         </div>
+                    </div>
+                    <div class="iban-agreements choice field required">
+                        <input type="checkbox" class="checkbox required-entry"
+                               data-bind="attr: {id: getCode() + '-iban-agreements', name: 'payment[iban-agreements]', value: '1'}"
+                               data-validate="{required:true}" />
+                        <label class="label" data-bind="attr: {for: getCode() + '-iban-agreements'}" >
+                            <span data-bind="i18n: 'Yes, I agree to debit my bank account with the above mentioned amount.'"></span>
+                        </label>
                     </div>
                 </div>
             </form>
