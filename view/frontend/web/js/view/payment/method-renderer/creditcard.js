@@ -8,13 +8,13 @@ define([
     'Magento_Checkout/js/action/redirect-on-success',
     'Magento_Checkout/js/model/full-screen-loader',
     'Magento_Payment/js/model/credit-card-validation/credit-card-data',
-    'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
+    'CM_Payments/js/model/validators/creditcard/card-number-validator',
     'CM_Payments/js/action/creditcard/init-payment-information',
-    'CM_Payments/js/model/creditcard/3dsv2-validation',
+    'CM_Payments/js/model/validators/creditcard/3dsv2-validator',
     'jquery',
     'underscore',
     'Magento_Payment/js/model/credit-card-validation/validator',
-    'CM_Payments/js/model/validators/allowed-card-type-validator',
+    'CM_Payments/js/model/validators/creditcard/allowed-card-type-validator',
     'mage/translate'
 ], function (
     Component,
@@ -23,7 +23,7 @@ define([
     creditCardData,
     cardNumberValidator,
     initCCPaymentAction,
-    cc3DSv2Validation,
+    cc3DSv2Validator,
     $,
     _
 ) {
@@ -38,8 +38,7 @@ define([
             cvv: null,
             selectedMonth: null,
             selectedYear: null,
-            paymentConfig: '',
-            placeOrderHandler: null
+            paymentConfig: ''
         },
 
         /**
@@ -80,7 +79,6 @@ define([
             let self = this;
 
             this._super();
-
             this.cardNumber.subscribe(function (value) {
                 let result,
                     ccNumberField = self.getCreditCardNumberField();
@@ -92,7 +90,7 @@ define([
 
                     return false;
                 }
-                result = cardNumberValidator(value);
+                result = cardNumberValidator(value, self.getCreditCardAllowedTypes());
 
                 if (!result.isPotentiallyValid && !result.isValid) {
                     ccNumberField.removeClass().addClass('input-cc');
@@ -103,13 +101,15 @@ define([
                 if (result.card !== null) {
                     self.cardType(result.card.type);
                     creditCardData.creditCard = result.card;
-                    ccNumberField.removeClass().addClass('input-' + result.card.type.toLowerCase());
                 }
 
                 if (result.isValid) {
                     creditCardData.creditCardNumber = value;
                     self.cardType(result.card.type);
-                    ccNumberField.removeClass().addClass('input-' + result.card.type.toLowerCase());
+                }
+
+                if (self.isCreditCardTypeAllowed(self.cardType())) {
+                    ccNumberField.removeClass().addClass('input-' + self.cardType().toLowerCase());
                 }
             });
 
@@ -127,13 +127,6 @@ define([
             this.cvv.subscribe(function (value) {
                 creditCardData.cvvCode = value;
             });
-        },
-
-        /**
-         * @param {Function} handler
-         */
-        setPlaceOrderHandler: function (handler) {
-            this.placeOrderHandler = handler;
         },
 
         /**
@@ -239,14 +232,33 @@ define([
          * @returns {Object}
          */
         getCreditCardAllowedTypes: function () {
-            let allowedTypes = this.paymentConfig.allowedTypes;
+            let configuredAllowedTypes = this.paymentConfig.allowedTypes,
+                allowedTypes = [];
 
-            return _.map(allowedTypes, function (value, key) {
-                return {
-                    'value': key,
-                    'type': value
-                };
-            });
+
+            for (let i = 0; i < configuredAllowedTypes.length; i++) {
+                allowedTypes.push(configuredAllowedTypes[i].value);
+            }
+
+            return allowedTypes;
+        },
+
+        /**
+         * Get list of allowed credit card types
+         *
+         * @param {String} cardType
+         * @returns {Boolean}
+         */
+        isCreditCardTypeAllowed: function (cardType) {
+            if (cardType) {
+                for (let i = 0; i < this.paymentConfig.allowedTypes.length; i++) {
+                    if (this.paymentConfig.allowedTypes[i].value == cardType) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         },
 
         /**
@@ -385,7 +397,7 @@ define([
                 ).done(
                     function (response) {
                         if (response) {
-                            if (cc3DSv2Validation.perform3DsSteps(response, self.messageContainer)) {
+                            if (cc3DSv2Validator.perform3DsSteps(response, self.messageContainer)) {
                                 self.isPlaceOrderActionAllowed(true);
                             }
                         }

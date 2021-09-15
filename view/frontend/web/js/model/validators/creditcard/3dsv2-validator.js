@@ -156,9 +156,14 @@ define([
             let self = this;
             if (!authenticationUrl || !authenticationData) {
                 this.showError('Not all ACS Authentication parameters provided');
+            } else {
+
             }
 
-            authenticationData.forceAuthentication = forceAuthentication;
+            if (authenticationData) {
+                authenticationData.forceAuthentication = forceAuthentication;
+            }
+
             if (!acsMethodUrl || !acsThreeDSMethodData) {
                 // No ACS method URL, so can skip that part. Directly authenticate the shopper.
                 return this.get3DsAuthenticationDeferredObject(

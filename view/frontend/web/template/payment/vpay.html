@@ -21,7 +21,6 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <!-- ko if: isDirect() -->
         <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
             <fieldset data-bind="attr: {class: 'fieldset payment items cm-payments-ccard ' + getCode(), id: 'payment_form_' + getCode()}">
                 <legend>
@@ -31,19 +30,6 @@
                 </legend>
                 <div class="field type">
                     <div class="control">
-                        <ul class="credit-card-types">
-                            <!-- ko foreach: {data: getCreditCardAllowedTypesIcons(), as: 'item'} -->
-                            <li class="item">
-                                <img data-bind="attr: {
-                                    'src': item.url,
-                                    'alt': item.title,
-                                    'title': item.title,
-                                    'width': item.width,
-                                    'height': item.height
-                                    }">
-                            </li>
-                            <!--/ko-->
-                        </ul>
                         <input type="hidden"
                                name="payment[cc_type]"
                                class="input-text"
@@ -154,7 +140,6 @@
                 </div>
             </fieldset>
         </form>
-        <!--/ko-->
 
         <div class="payment-method-billing-address">
             <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->

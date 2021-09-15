@@ -5,7 +5,7 @@
 
 define([
     'jquery',
-    'Magento_Payment/js/model/credit-card-validation/credit-card-number-validator',
+    'CM_Payments/js/model/validators/creditcard/card-number-validator',
     'mage/translate'
 ], function (
     $,
@@ -16,18 +16,15 @@ define([
     $.each({
         'validate-allowed-card-type': [
             function (number, item, allowedTypes) {
-                let cardInfo,
-                    i,
-                    l;
+                let cardInfo;
 
-                if (!creditCardNumberValidator(number).isValid) {
+                if (!creditCardNumberValidator(number, allowedTypes).isValid) {
                     return false;
                 }
 
-                cardInfo = creditCardNumberValidator(number).card;
-
-                for (i = 0, l = allowedTypes.length; i < l; i++) {
-                    if (cardInfo.type == allowedTypes[i].type.value) {
+                cardInfo = creditCardNumberValidator(number, allowedTypes).card;
+                for (let i = 0; i < allowedTypes.length; i++) {
+                    if (cardInfo.type == allowedTypes[i]) {
                         return true;
                     }
                 }

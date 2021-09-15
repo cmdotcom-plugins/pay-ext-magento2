@@ -19,6 +19,8 @@ use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
 use CM\Payments\Model\Adminhtml\Source\Cctype as CcTypeSource;
 
+use function Safe\swoole_async_write;
+
 class ConfigProvider implements ConfigProviderInterface
 {
     /**
@@ -30,6 +32,8 @@ class ConfigProvider implements ConfigProviderInterface
      * Available Methods Codes
      */
     public const CODE_CREDIT_CARD = 'cm_payments_creditcard';
+    public const CODE_MAESTRO = 'cm_payments_maestro';
+    public const CODE_VPAY = 'cm_payments_vpay';
     public const CODE_IDEAL = 'cm_payments_ideal';
     public const CODE_PAYPAL = 'cm_payments_paypal';
     public const CODE_BANCONTACT = 'cm_payments_bancontact';
@@ -109,12 +113,15 @@ class ConfigProvider implements ConfigProviderInterface
                     $config['payment'][$code]['issuers'] = [];
                 }
 
-                if ($code == self::CODE_CREDIT_CARD) {
+                if (in_array($code, [self::CODE_CREDIT_CARD, self::CODE_MAESTRO, self::CODE_VPAY])) {
                     $config['payment'][$code]['encryption_library'] = $this->configService->getEncryptLibrary();
                     $config['payment'][$code]['nsa3ds_library'] = $this->configService->getNsa3dsLibrary();
+                    $config['payment'][$code]['allowedTypes'] = $this->getCreditCardAllowedTypes($code);
+                }
+
+                if ($code == self::CODE_CREDIT_CARD) {
                     $config['payment'][$code]['is_direct'] = $this->configService->isCreditCardDirect();
-                    $config['payment'][$code]['allowedTypes'] = $this->getCreditCardAllowedTypes();
-                    $config['payment'][$code]['allowedTypesIcons'] = $this->getCreditCardAllowedTypesIcons();
+                    $config['payment'][$code]['allowedTypesIcons'] = $this->getCreditCardAllowedTypesIcons($code);
                 }
             }
         } catch (LocalizedException $e) {
@@ -150,20 +157,39 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * Retrieve allowed credit card types
      *
+     * @param string $code
      * @return array
      * @throws NoSuchEntityException
      */
-    public function getCreditCardAllowedTypes(): array
+    public function getCreditCardAllowedTypes(string $code): array
     {
-        $allowedTypes = explode(',', $this->configService->getCreditCardAllowedTypes());
-        $availableTypes = $this->ccTypeSource->toOptionArray();
-        if ($availableTypes) {
-            foreach ($availableTypes as $key => $type) {
-                if (!in_array($type['value'], $allowedTypes)) {
-                    unset($availableTypes[$key]);
+        $availableTypes = [];
+        switch ($code) {
+            case self::CODE_CREDIT_CARD:
+                $allowedTypes = explode(',', $this->configService->getCreditCardAllowedTypes());
+                $availableTypes = $this->ccTypeSource->toOptionArray();
+                foreach ($availableTypes as $key => $type) {
+                    if (!in_array($type['value'], $allowedTypes)) {
+                        unset($availableTypes[$key]);
+                    }
                 }
-            }
+
+                break;
+            case self::CODE_MAESTRO:
+                $availableTypes = [
+                    ['value' => 'MD', 'label' => 'Maestro Domestic'],
+                    ['value' => 'MI', 'label' => 'Maestro International']
+                ];
+
+                break;
+            case self::CODE_VPAY:
+                $availableTypes = [
+                    ['value' => 'VP', 'label' => 'V-Pay'],
+                ];
+
+                break;
         }
+
 
         return $availableTypes;
     }
@@ -171,23 +197,23 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * Get icons for allowed credit card types
      *
+     * @param string $code
      * @return array
      * @throws NoSuchEntityException|LocalizedException
      */
-    public function getCreditCardAllowedTypesIcons(): array
+    public function getCreditCardAllowedTypesIcons(string $code): array
     {
-        $types = $this->getCreditCardAllowedTypes();
+        $types = $this->getCreditCardAllowedTypes($code);
         $icons = [];
         foreach ($types as $type) {
             $asset = $this->assetRepository->createAsset('CM_Payments::images/creditcard/' .
                 strtolower($type['value']) . '.svg');
             $placeholder = $this->assetSource->findSource($asset);
             if ($placeholder) {
-                list($width, $height) = getimagesizefromstring($asset->getContent());
                 $icons[] = [
                     'url' => $asset->getUrl(),
-                    'width' => $width ?? 60,
-                    'height' => $height ?? 60,
+                    'width' => 60,
+                    'height' => 60,
                     'title' => __($type['label']),
                 ];
             }
