@@ -138,7 +138,7 @@ define([
             } else {
                 let translatedResult = $.mage.__('Your Test Merchant data is not filled properly. Please, check.');
                 if (this.mode == 'live') {
-                    translatedResult = $.mage.__('Your Live Merchant data is not filled properly. Please, check.');
+                    translatedResult = $.mage.__('Your Production Merchant data is not filled properly. Please check.');
                 }
 
                 resultHtml = '<strong class="cmpayments-api-connection-error">'

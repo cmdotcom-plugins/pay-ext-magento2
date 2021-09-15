@@ -75,18 +75,18 @@
                 </field>
                 <field id="live_merchant_name" translate="label" type="text" sortOrder="50" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Live Merchant Name</label>
+                    <label>Production Merchant Name</label>
                     <config_path>cm_payments/general/live_merchant_name</config_path>
                 </field>
                 <field id="live_merchant_password" translate="label" type="obscure" sortOrder="60" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Live Merchant Password</label>
+                    <label>Production Merchant Password</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <config_path>cm_payments/general/live_merchant_password</config_path>
                 </field>
                 <field id="live_merchant_key" translate="label" type="obscure" sortOrder="70" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Live Merchant Key</label>
+                    <label>Production Merchant Key</label>
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <config_path>cm_payments/general/live_merchant_key</config_path>
                 </field>
@@ -171,7 +171,7 @@
                 </field>
                 <field id="specific_currency" translate="label" type="multiselect" sortOrder="52" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Payment from Specific Currencies</label>
+                    <label>Payment in Specific Currencies</label>
                     <source_model>CM\Payments\Model\Adminhtml\Source\Currency</source_model>
                     <can_be_empty>1</can_be_empty>
                     <config_path>payment/cm_payments/specific_currency</config_path>
