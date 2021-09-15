@@ -190,7 +190,6 @@ class ConfigProvider implements ConfigProviderInterface
                 break;
         }
 
-
         return $availableTypes;
     }
 
