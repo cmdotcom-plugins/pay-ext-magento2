@@ -11,15 +11,12 @@ namespace CM\Payments\Model;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
 use CM\Payments\Logger\CMPaymentsLogger;
-use CM\Payments\Model\Adminhtml\Source\MethodMode;
-use Magento\Framework\View\Asset\Source as AssetSource;
+use CM\Payments\Model\Adminhtml\Source\Cctype as CcTypeSource;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Framework\Exception\NoSuchEntityException;
-use CM\Payments\Model\Adminhtml\Source\Cctype as CcTypeSource;
-
-use function Safe\swoole_async_write;
+use Magento\Framework\View\Asset\Repository as AssetRepository;
+use Magento\Framework\View\Asset\Source as AssetSource;
 
 class ConfigProvider implements ConfigProviderInterface
 {
@@ -101,7 +98,7 @@ class ConfigProvider implements ConfigProviderInterface
                 'payment' => [
                     $this->getCode() => [
                         'is_enabled' => $this->configService->isEnabled(),
-                        'image' => $this->getImage($this->getCode()),
+                        'image'      => $this->getImage($this->getCode()),
                     ],
                 ],
             ];
@@ -178,7 +175,7 @@ class ConfigProvider implements ConfigProviderInterface
             case self::CODE_MAESTRO:
                 $availableTypes = [
                     ['value' => 'MD', 'label' => 'Maestro Domestic'],
-                    ['value' => 'MI', 'label' => 'Maestro International']
+                    ['value' => 'MI', 'label' => 'Maestro International'],
                 ];
 
                 break;
@@ -210,10 +207,10 @@ class ConfigProvider implements ConfigProviderInterface
             $placeholder = $this->assetSource->findSource($asset);
             if ($placeholder) {
                 $icons[] = [
-                    'url' => $asset->getUrl(),
-                    'width' => 60,
+                    'url'    => $asset->getUrl(),
+                    'width'  => 60,
                     'height' => 60,
-                    'title' => __($type['label']),
+                    'title'  => __($type['label']),
                 ];
             }
         }
