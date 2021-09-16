@@ -156,8 +156,6 @@ define([
             let self = this;
             if (!authenticationUrl || !authenticationData) {
                 this.showError('Not all ACS Authentication parameters provided');
-            } else {
-
             }
 
             if (authenticationData) {

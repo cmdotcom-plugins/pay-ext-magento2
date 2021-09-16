@@ -4,12 +4,9 @@
  */
 
 define([
-    'CM_Payments/js/view/payment/method-renderer/creditcard',
-    'jquery',
-    'mage/translate'
+    'CM_Payments/js/view/payment/method-renderer/creditcard'
 ], function (
-    Component,
-    $,
+    Component
 ) {
     'use strict';
     return Component.extend({
