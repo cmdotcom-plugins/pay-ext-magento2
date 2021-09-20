@@ -85,6 +85,7 @@ class OrderTransactionService implements OrderTransactionServiceInterface
 
         try {
             $cmOrderDetails = $this->orderClient->getDetail($cmOrder->getOrderKey());
+            $this->logger->info('CM Order is safe '. $cmOrderDetails->isSafe());
         } catch (RequestException $exception) {
             $this->logger->error($exception->getMessage());
             throw new NoSuchEntityException(
@@ -101,6 +102,9 @@ class OrderTransactionService implements OrderTransactionServiceInterface
             'order' => $order,
             'cmOrderDetails' => $cmOrderDetails
         ]);
+
+        $this->logger->info('Create invoice and transaction for order '. $orderReference);
+        $this->logger->info('CM payment id'. $cmOrderDetails->getAuthorizedPayment()->getId());
 
         $payment->setTransactionId($cmOrderDetails->getAuthorizedPayment()->getId());
         $payment->setCurrencyCode($order->getBaseCurrencyCode());

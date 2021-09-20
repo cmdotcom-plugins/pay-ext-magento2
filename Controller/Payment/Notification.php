@@ -74,15 +74,15 @@ class Notification extends Action implements HttpGetActionInterface, CsrfAwareAc
     {
         /** @var Json $resultPage */
         $resultPage = $this->resultJsonFactory->create();
-        $cmOrderId = $this->request->getParam('id');
-        if (!$cmOrderId) {
+        $orderReference = $this->request->getParam('id');
+        if (!$orderReference) {
             $resultPage->setHttpResponseCode(404);
 
             return $resultPage;
         }
 
         try {
-            $this->orderTransactionService->process($cmOrderId);
+            $this->orderTransactionService->process($orderReference);
 
             $resultPage->setHttpResponseCode(200);
             $resultPage->setData([]);
