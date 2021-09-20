@@ -44,6 +44,42 @@ class ShopperRequestBuilderTest extends UnitTestCase
     private $shopperRequestBuilder;
 
     /**
+     * Test function of creation of shopper based on quote address
+     *
+     * @throws LocalizedException
+     */
+    public function testCreateShopperByQuoteAddressBuilder()
+    {
+        $quoteAddress = $this->getQuoteAddressMock();
+        $shopperRequest = $this->shopperRequestBuilder->createByQuoteAddress(
+            $quoteAddress
+        );
+
+        $this->assertSame(static::ADDRESS_DATA['email_address'], $shopperRequest->getPayload()['shopper_reference']);
+        $this->assertSame(
+            [
+                'first'  => static::ADDRESS_DATA['firstname'],
+                'middle' => static::ADDRESS_DATA['middlename'],
+                'last'   => static::ADDRESS_DATA['lastname'],
+            ],
+            $shopperRequest->getPayload()['name']
+        );
+        $this->assertSame(
+            [
+                'street'      => "Boerhaavelaan",
+                'housenumber' => "7",
+                'postal_code' => preg_replace('/\s+/', '', static::ADDRESS_DATA['postal_code']),
+                'city'        => static::ADDRESS_DATA['city'],
+                'country'     => static::ADDRESS_DATA['country_code'],
+            ],
+            $shopperRequest->getPayload()['address']
+        );
+        $this->assertSame(static::ADDRESS_DATA['email_address'], $shopperRequest->getPayload()['email']);
+        $this->assertSame(ShopperCreate::GENDER_UNKNOWN, $shopperRequest->getPayload()['gender']);
+        $this->assertSame(static::ADDRESS_DATA['phone_number'], $shopperRequest->getPayload()['phone_number']);
+    }
+
+    /**
      * Test function of creation of shopper based on order address
      *
      * @throws LocalizedException
@@ -58,26 +94,52 @@ class ShopperRequestBuilderTest extends UnitTestCase
         $this->assertSame(static::ADDRESS_DATA['email_address'], $shopperRequest->getPayload()['shopper_reference']);
         $this->assertSame(
             [
-                'first' => static::ADDRESS_DATA['firstname'],
+                'first'  => static::ADDRESS_DATA['firstname'],
                 'middle' => static::ADDRESS_DATA['middlename'],
-                'last' => static::ADDRESS_DATA['lastname'],
+                'last'   => static::ADDRESS_DATA['lastname'],
             ],
             $shopperRequest->getPayload()['name']
         );
         $this->assertSame(
             [
-                'street' => "Boerhaavelaan",
+                'street'      => "Boerhaavelaan",
                 'housenumber' => "7",
                 'postal_code' => preg_replace('/\s+/', '', static::ADDRESS_DATA['postal_code']),
-                'city' => static::ADDRESS_DATA['city'],
-                'country' => static::ADDRESS_DATA['country_code']
+                'city'        => static::ADDRESS_DATA['city'],
+                'country'     => static::ADDRESS_DATA['country_code'],
             ],
             $shopperRequest->getPayload()['address']
         );
         $this->assertSame(static::ADDRESS_DATA['email_address'], $shopperRequest->getPayload()['email']);
-        $this->assertSame('M', $shopperRequest->getPayload()['gender']);
+        $this->assertSame(ShopperCreate::GENDER_UNKNOWN, $shopperRequest->getPayload()['gender']);
         $this->assertSame('1980-11-12', $shopperRequest->getPayload()['date_of_birth']);
         $this->assertSame(static::ADDRESS_DATA['phone_number'], $shopperRequest->getPayload()['phone_number']);
+    }
+
+    /**
+     * Prepare the quote address mock object
+     *
+     * @return MockObject
+     */
+    protected function getQuoteAddressMock(): MockObject
+    {
+        return $this->createConfiguredMock(
+            AddressInterface::class,
+            [
+                'getFirstname'  => static::ADDRESS_DATA['firstname'],
+                'getMiddlename' => static::ADDRESS_DATA['middlename'],
+                'getLastname'   => static::ADDRESS_DATA['lastname'],
+                'getEmail'      => static::ADDRESS_DATA['email_address'],
+                'getStreet'     => [static::ADDRESS_DATA['street_address1']],
+                'getCity'       => static::ADDRESS_DATA['city'],
+                'getRegionCode' => static::ADDRESS_DATA['region_code'],
+                'getPostcode'   => static::ADDRESS_DATA['postal_code'],
+                'getCompany'    => static::ADDRESS_DATA['company'],
+                'getCountryId'  => static::ADDRESS_DATA['country_code'],
+                'getTelephone'  => static::ADDRESS_DATA['phone_number'],
+                'getCustomerId' => '',
+            ]
+        );
     }
 
     /**
@@ -88,25 +150,24 @@ class ShopperRequestBuilderTest extends UnitTestCase
     protected function getOrderAddressMock(): MockObject
     {
         $methodsMapping = [
-            'getFirstname' => static::ADDRESS_DATA['firstname'],
+            'getFirstname'  => static::ADDRESS_DATA['firstname'],
             'getMiddlename' => static::ADDRESS_DATA['middlename'],
-            'getLastname' => static::ADDRESS_DATA['lastname'],
-            'getEmail' => static::ADDRESS_DATA['email_address'],
-            'getStreet' => [static::ADDRESS_DATA['street_address1']],
-            'getCity' => static::ADDRESS_DATA['city'],
+            'getLastname'   => static::ADDRESS_DATA['lastname'],
+            'getEmail'      => static::ADDRESS_DATA['email_address'],
+            'getStreet'     => [static::ADDRESS_DATA['street_address1']],
+            'getCity'       => static::ADDRESS_DATA['city'],
             'getRegionCode' => static::ADDRESS_DATA['region_code'],
-            'getPostcode' => static::ADDRESS_DATA['postal_code'],
-            'getCompany' => static::ADDRESS_DATA['company'],
-            'getCountryId' => static::ADDRESS_DATA['country_code'],
-            'getTelephone' => static::ADDRESS_DATA['phone_number'],
+            'getPostcode'   => static::ADDRESS_DATA['postal_code'],
+            'getCompany'    => static::ADDRESS_DATA['company'],
+            'getCountryId'  => static::ADDRESS_DATA['country_code'],
+            'getTelephone'  => static::ADDRESS_DATA['phone_number'],
             'getCustomerId' => '',
-            'getOrder' => $this->getOrderMock()
+            'getOrder'      => $this->getOrderMock(),
         ];
 
         $orderAddressMock = $this->getMockBuilder(
             OrderAddressInterface::class
-        )->disableOriginalConstructor(
-        )->onlyMethods(
+        )->disableOriginalConstructor()->onlyMethods(
             [
                 'getFirstname',
                 'getMiddlename',
@@ -119,11 +180,11 @@ class ShopperRequestBuilderTest extends UnitTestCase
                 'getCompany',
                 'getCountryId',
                 'getTelephone',
-                'getCustomerId'
+                'getCustomerId',
             ]
         )->addMethods(
             [
-                'getOrder'
+                'getOrder',
             ]
         )->getMockForAbstractClass();
 
@@ -159,68 +220,6 @@ class ShopperRequestBuilderTest extends UnitTestCase
     }
 
     /**
-     * Test function of creation of shopper based on quote address
-     *
-     * @throws LocalizedException
-     */
-    public function testCreateShopperByQuoteAddressBuilder()
-    {
-        $quoteAddress = $this->getQuoteAddressMock();
-        $shopperRequest = $this->shopperRequestBuilder->createByQuoteAddress(
-            $quoteAddress
-        );
-
-        $this->assertSame(static::ADDRESS_DATA['email_address'], $shopperRequest->getPayload()['shopper_reference']);
-        $this->assertSame(
-            [
-                'first' => static::ADDRESS_DATA['firstname'],
-                'middle' => static::ADDRESS_DATA['middlename'],
-                'last' => static::ADDRESS_DATA['lastname'],
-            ],
-            $shopperRequest->getPayload()['name']
-        );
-        $this->assertSame(
-            [
-                'street' => "Boerhaavelaan",
-                'housenumber' => "7",
-                'postal_code' => preg_replace('/\s+/', '', static::ADDRESS_DATA['postal_code']),
-                'city' => static::ADDRESS_DATA['city'],
-                'country' => static::ADDRESS_DATA['country_code']
-            ],
-            $shopperRequest->getPayload()['address']
-        );
-        $this->assertSame(static::ADDRESS_DATA['email_address'], $shopperRequest->getPayload()['email']);
-        $this->assertSame('M', $shopperRequest->getPayload()['gender']);
-        $this->assertSame(static::ADDRESS_DATA['phone_number'], $shopperRequest->getPayload()['phone_number']);
-    }
-
-    /**
-     * Prepare the quote address mock object
-     *
-     * @return MockObject
-     */
-    protected function getQuoteAddressMock(): MockObject
-    {
-        return $this->createConfiguredMock(
-            AddressInterface::class,
-            [
-                'getFirstname' => static::ADDRESS_DATA['firstname'],
-                'getMiddlename' => static::ADDRESS_DATA['middlename'],
-                'getLastname' => static::ADDRESS_DATA['lastname'],
-                'getEmail' => static::ADDRESS_DATA['email_address'],
-                'getStreet' => [static::ADDRESS_DATA['street_address1']],
-                'getCity' => static::ADDRESS_DATA['city'],
-                'getRegionCode' => static::ADDRESS_DATA['region_code'],
-                'getPostcode' => static::ADDRESS_DATA['postal_code'],
-                'getCompany' => static::ADDRESS_DATA['company'],
-                'getCountryId' => static::ADDRESS_DATA['country_code'],
-                'getTelephone' => static::ADDRESS_DATA['phone_number'],
-                'getCustomerId' => ''
-            ]
-        );
-    }
-
-    /**
      * Setup function
      */
     protected function setUp(): void
@@ -243,7 +242,7 @@ class ShopperRequestBuilderTest extends UnitTestCase
             new OrderAddressEmail(),
             new OrderAddressGender($customerRepositoryMock),
             new OrderAddressDateOfBirth($customerRepositoryMock),
-            new OrderAddressPhoneNumber()
+            new OrderAddressPhoneNumber(),
         ];
 
         $quoteAddressRequestParts = [
@@ -253,7 +252,7 @@ class ShopperRequestBuilderTest extends UnitTestCase
             new QuoteAddressEmail(),
             new QuoteAddressGender($customerRepositoryMock),
             new QuoteAddressDateOfBirth($customerRepositoryMock),
-            new QuoteAddressPhoneNumber()
+            new QuoteAddressPhoneNumber(),
         ];
 
         $this->shopperRequestBuilder = new ShopperRequestBuilder(

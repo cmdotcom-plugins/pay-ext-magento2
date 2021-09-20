@@ -37,7 +37,7 @@ class Address implements RequestPartByQuoteAddressInterface
     public function process(AddressInterface $quoteAddress, ShopperCreate $shopperCreate): ShopperCreate
     {
         $addressObject = [
-            'street' => implode('', $quoteAddress->getStreet()),
+            'street' => implode(' ', $quoteAddress->getStreet()),
             'housenumber' => '',
             'housenumber_addition' => '',
             'postal_code' => $quoteAddress->getPostcode(),

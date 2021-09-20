@@ -37,7 +37,7 @@ class Address implements RequestPartByOrderAddressInterface
     public function process(OrderAddressInterface $orderAddress, ShopperCreate $shopperCreate): ShopperCreate
     {
         $addressObject = [
-            'street' => implode('', $orderAddress->getStreet()),
+            'street' => implode(' ', $orderAddress->getStreet()),
             'housenumber' => '',
             'housenumber_addition' => '',
             'postal_code' => $orderAddress->getPostcode(),

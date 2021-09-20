@@ -51,9 +51,8 @@ class Gender implements RequestPartByOrderAddressInterface
             }
         }
 
-        //TODO: Replace on 'U' when will be fixed issue in API. Temporary solution, because the gender is mandatory.
         if (!$shopperCreate->getGender()) {
-            $shopperCreate->setGender(ShopperCreate::GENDER_MALE);
+            $shopperCreate->setGender(ShopperCreate::GENDER_UNKNOWN);
         }
 
         return $shopperCreate;
