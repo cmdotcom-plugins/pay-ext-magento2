@@ -121,6 +121,8 @@ class Result extends Action implements HttpGetActionInterface
                 return $this->redirectToCheckout();
             };
 
+            // In this state we always redirect the user to the success page and try to update the order status already.
+            // The order status will also be updated via the webhook if CM.com change the status of an order.
             try {
                 $this->orderTransactionService->process($orderIncrementId);
             } catch (\Exception $exception) {
