@@ -15,10 +15,10 @@ interface OrderTransactionServiceInterface
     /**
      * Process transaction
      *
-     * @param string $cmOrderKey
+     * @param string $orderReference
      * @return void
      *
      * @throws NoSuchEntityException
      */
-    public function process(string $cmOrderKey): void;
+    public function process(string $orderReference): void;
 }
