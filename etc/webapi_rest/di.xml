@@ -15,4 +15,9 @@
         <plugin name="cm_payments_checkout_model_add_methods_additional_data_payment_plugin"
                 type="CM\Payments\Plugin\Checkout\Model\AddMethodsAdditionalDataPayment" sortOrder="100" />
     </type>
+
+    <type name="CM\Payments\Api\PaymentMethodManagementInterface">
+        <plugin name="cm_payments_model_add_methods_additional_data_payment_method_management_plugin"
+                type="CM\Payments\Plugin\Model\AddMethodsAdditionalData" sortOrder="100" />
+    </type>
 </config>

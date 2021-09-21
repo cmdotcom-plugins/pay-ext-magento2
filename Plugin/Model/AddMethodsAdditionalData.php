@@ -6,17 +6,17 @@
 
 declare(strict_types=1);
 
-namespace CM\Payments\Plugin\Checkout\Model;
+namespace CM\Payments\Plugin\Model;
 
+use CM\Payments\Api\PaymentMethodManagementInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
-use Magento\Checkout\Api\Data\ShippingInformationInterface;
-use Magento\Checkout\Api\ShippingInformationManagementInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Api\Data\AddressInterface;
 
-class AddMethodsAdditionalDataShipping
+class AddMethodsAdditionalData
 {
     /**
      * @var ConfigService
@@ -34,7 +34,7 @@ class AddMethodsAdditionalDataShipping
     private $methodService;
 
     /**
-     * AddMethodsAdditionalDataShipping constructor
+     * AddMethodsAdditionalData constructor
      *
      * @param ConfigService $configService
      * @param CartRepositoryInterface $quoteRepository
@@ -51,18 +51,18 @@ class AddMethodsAdditionalDataShipping
     }
 
     /**
-     * @param ShippingInformationManagementInterface $subject
+     * @param PaymentMethodManagementInterface $subject
      * @param PaymentDetailsInterface $paymentDetails
      * @param int $cartId
-     * @param ShippingInformationInterface $addressInformation
+     * @param ?AddressInterface $shippingAddress
      * @return PaymentDetailsInterface
      * @throws NoSuchEntityException
      */
-    public function afterSaveAddressInformation(
-        ShippingInformationManagementInterface $subject,
+    public function afterGetPaymentMethods(
+        PaymentMethodManagementInterface $subject,
         PaymentDetailsInterface $paymentDetails,
-        $cartId,
-        ShippingInformationInterface $addressInformation
+        int $cartId,
+        ?AddressInterface $shippingAddress
     ): PaymentDetailsInterface {
         if ($this->configService->isEnabled()) {
             $quote = $this->quoteRepository->getActive($cartId);
