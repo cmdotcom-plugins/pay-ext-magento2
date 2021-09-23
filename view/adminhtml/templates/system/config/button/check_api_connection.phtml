@@ -7,9 +7,6 @@
 /**
  * @see \CM\Payments\Block\Adminhtml\System\Config\Button\CheckApiConnection
  * @var \CM\Payments\Block\Adminhtml\System\Config\Button\CheckApiConnection $block
- *
- * @see \Magento\Framework\Escaper
- * @var \Magento\Framework\Escaper $escaper
  */
 ?>
 
@@ -25,7 +22,7 @@
                 "сmpayments-check-api-connection": {
                     "component": "CM_Payments/js/system/action/check-api-connection",
                     "config": {
-                        "checkApiConnectionUrl": "<?= $escaper->escapeUrl($block->getApiConnectionCheckUrl()) ?>",
+                        "checkApiConnectionUrl": "<?= $block->escapeUrl($block->getApiConnectionCheckUrl()) ?>",
                         "resultContainerSelector": ".cmpayments-check-api-connection-result",
                         "modeContainerSelector": "#cm_payments_general_api_details_mode"
                     }

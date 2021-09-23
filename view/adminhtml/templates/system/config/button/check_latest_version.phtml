@@ -7,13 +7,10 @@
 /**
  * @see \CM\Payments\Block\Adminhtml\System\Config\Button\CheckLatestVersion
  * @var \CM\Payments\Block\Adminhtml\System\Config\Button\CheckLatestVersion $block
- *
- * @see \Magento\Framework\Escaper
- * @var \Magento\Framework\Escaper $escaper
  */
 ?>
 <div class="cmpayments-result-version-wrapper" data-bind="scope:'сmpayments-check-latest-version'">
-    <span><?= $escaper->escapeHtml($block->getCurrentVersion()); ?></span>
+    <span><?= $block->escapeHtml($block->getCurrentVersion()); ?></span>
     <?= $block->getButtonHtml() ?>
     <div class="cmpayments-result-version"></div>
 </div>
@@ -26,7 +23,7 @@
                     "component": "CM_Payments/js/system/action/check-latest-version",
                     "config": {
                         "wrapperContainerSelector": ".cmpayments-result-version-wrapper",
-                        "checkLatestVersionUrl": "<?= $escaper->escapeUrl($block->getCheckLatestVersionUrl()) ?>",
+                        "checkLatestVersionUrl": "<?= $block->escapeUrl($block->getCheckLatestVersionUrl()) ?>",
                         "resultContainerSelector": ".cmpayments-result-version"
                     }
                 }
