@@ -39,11 +39,11 @@
     <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config" />
 
     <preference for="CM\Payments\Api\GuestPaymentMethodManagementInterface"
-                type="CM\Payments\Model\GuestPaymentMethodManagement" />
+                type="CM\Payments\Webapi\GuestPaymentMethodManagement" />
     <preference for="CM\Payments\Api\PaymentMethodManagementInterface"
-                type="CM\Payments\Model\PaymentMethodManagement" />
+                type="CM\Payments\Webapi\PaymentMethodManagement" />
     <preference for="CM\Payments\Api\OrderManagementInterface"
-                type="CM\Payments\Model\OrderManagement" />
+                type="CM\Payments\Webapi\OrderManagement" />
 
     <type name="CM\Payments\Service\PaymentRequestBuilder">
         <arguments>

@@ -6,13 +6,14 @@
 
 declare(strict_types=1);
 
-namespace CM\Payments\Model;
+namespace CM\Payments\Webapi;
 
 use CM\Payments\Api\OrderManagementInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
 use CM\Payments\Client\Api\CMPaymentInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
@@ -58,6 +59,10 @@ class OrderManagement implements OrderManagementInterface
     ): CMPaymentInterface {
         /** @var OrderInterface $order */
         $order = $this->orderRepository->get($orderId);
+
+        if (!$order) {
+            throw new NoSuchEntityException(__('Order not found.'));
+        }
 
         $cmOrder = $this->orderService->create($order->getId());
         if (!$cmOrder->getOrderReference()) {
