@@ -64,10 +64,7 @@ class OrderManagement implements OrderManagementInterface
             throw new NoSuchEntityException(__('Order not found.'));
         }
 
-        $cmOrder = $this->orderService->create($order->getId());
-        if (!$cmOrder->getOrderReference()) {
-            throw new LocalizedException(__('The order was not placed properly.'));
-        }
+        $this->orderService->create($order->getId());
 
         $cmPayment = $this->paymentService->create($order->getId());
         if (!$cmPayment->getRedirectUrl()) {
