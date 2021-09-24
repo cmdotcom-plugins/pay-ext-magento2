@@ -150,8 +150,7 @@ class PaymentService implements PaymentServiceInterface
             $order->getPayment()->setAdditionalInformation($additionalInformation);
             $this->orderRepository->save($order);
         }
-
-        // Todo: validate and handle response status
+        
         if (!$paymentCreateResponse || !$paymentCreateResponse->getId()) {
             throw new EmptyPaymentIdException(__('Empty payment id'));
         }
