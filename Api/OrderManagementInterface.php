@@ -23,7 +23,7 @@ interface OrderManagementInterface
      * Process Order
      *
      * @param int $orderId
-     * @return CMPaymentInterface
+     * @return \CM\Payments\Client\Api\CMPaymentInterface
      * @throws LocalizedException
      */
     public function processOrder(int $orderId): CMPaymentInterface;

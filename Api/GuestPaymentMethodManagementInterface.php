@@ -26,7 +26,7 @@ interface GuestPaymentMethodManagementInterface
      *
      * @param string $cartId
      * @param AddressInterface|null $shippingAddress
-     * @return PaymentDetailsInterface
+     * @return \Magento\Checkout\Api\Data\PaymentDetailsInterface
      * @throws InputException
      * @throws StateException
      * @throws NoSuchEntityException
