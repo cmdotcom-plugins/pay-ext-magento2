@@ -6,14 +6,14 @@
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
-    <route url="/V1/guest-carts/:cartId/get-cm-payment-methods" method="POST">
+    <route url="/V1/guest-carts/:cartId/cmpayments/get-payment-methods" method="POST">
         <service class="CM\Payments\Api\GuestPaymentMethodManagementInterface" method="getPaymentMethods"/>
         <resources>
             <resource ref="anonymous"/>
         </resources>
     </route>
 
-    <route url="/V1/carts/mine/get-cm-payment-methods" method="POST">
+    <route url="/V1/carts/mine/cmpayments/get-payment-methods" method="POST">
         <service class="CM\Payments\Api\PaymentMethodManagementInterface" method="getPaymentMethods"/>
         <resources>
             <resource ref="self"/>
@@ -23,7 +23,7 @@
         </data>
     </route>
 
-    <route url="/V1/cm/orders/:orderId/process" method="POST">
+    <route url="/V1/cmpayments/orders/:orderId/process" method="POST">
         <service class="CM\Payments\Api\OrderManagementInterface" method="processOrder"/>
         <resources>
             <resource ref="anonymous"/>
