@@ -34,9 +34,16 @@
     <preference for="CM\Payments\Api\Model\Data\PaymentInterface" type="CM\Payments\Model\Data\Payment"/>
     <preference for="CM\Payments\Api\Data\PaymentMethodAdditionalDataInterface"
                 type="CM\Payments\Model\PaymentMethodAdditionalData"/>
-    <preference for="CM\Payments\Api\Data\IssuerInterface" type="CM\Payments\Model\Issuer"/>
-    <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder"/>
-    <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config"/>
+    <preference for="CM\Payments\Api\Data\IssuerInterface" type="CM\Payments\Model\Issuer" />
+    <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder" />
+    <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config" />
+
+    <preference for="CM\Payments\Api\GuestPaymentMethodManagementInterface"
+                type="CM\Payments\Webapi\GuestPaymentMethodManagement" />
+    <preference for="CM\Payments\Api\PaymentMethodManagementInterface"
+                type="CM\Payments\Webapi\PaymentMethodManagement" />
+    <preference for="CM\Payments\Api\OrderManagementInterface"
+                type="CM\Payments\Webapi\OrderManagement" />
 
     <type name="CM\Payments\Service\PaymentRequestBuilder">
         <arguments>

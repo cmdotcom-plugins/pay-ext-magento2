@@ -8,11 +8,10 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Model;
 
-class CMPaymentUrl
-{
-    /** URL type */
-    public const PURPOSE_REDIRECT = 'REDIRECT';
+use CM\Payments\Client\Api\CMPaymentUrlInterface;
 
+class CMPaymentUrl implements CMPaymentUrlInterface
+{
     /**
      * @var string
      */
