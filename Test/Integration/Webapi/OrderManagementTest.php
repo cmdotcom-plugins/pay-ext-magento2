@@ -31,7 +31,6 @@ class OrderManagementTest extends IntegrationTestCase
 
     /**
      * @magentoConfigFixture default_store cm_payments/general/enabled 1
-     *
      */
     public function testProcessOrderNotFound()
     {
@@ -44,7 +43,6 @@ class OrderManagementTest extends IntegrationTestCase
     /**
      * @magentoConfigFixture default_store cm_payments/general/enabled 1
      * @magentoDataFixture Magento/Sales/_files/order.php
-     *
      */
     public function testProcessOrderEmptyCMOrder()
     {
@@ -112,7 +110,6 @@ class OrderManagementTest extends IntegrationTestCase
     /**
      * @magentoConfigFixture default_store cm_payments/general/enabled 1
      * @magentoDataFixture Magento/Sales/_files/order.php
-     *
      */
     public function testProcessOrder()
     {
@@ -157,7 +154,7 @@ class OrderManagementTest extends IntegrationTestCase
         parent::setUp();
 
         $this->clientMock = $this->createMock(ApiClientInterface::class);
-        $this->orderManagement = $this->objectManager->create(OrderManagement::class);
         $this->objectManager->addSharedInstance($this->clientMock, ApiClient::class);
+        $this->orderManagement = $this->objectManager->create(OrderManagement::class);
     }
 }
