@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace CM\Payments\Model;
+namespace CM\Payments\Webapi;
 
 use CM\Payments\Api\PaymentMethodManagementInterface;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
