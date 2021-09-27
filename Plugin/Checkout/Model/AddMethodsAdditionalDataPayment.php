@@ -33,7 +33,7 @@ class AddMethodsAdditionalDataPayment
     private $methodService;
 
     /**
-     * PaymentInformationManagement constructor
+     * AddMethodsAdditionalDataPayment constructor
      *
      * @param ConfigService $configService
      * @param CartRepositoryInterface $quoteRepository

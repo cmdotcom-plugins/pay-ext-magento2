@@ -6,21 +6,27 @@
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
-    <!-- Customer Guest CC Payment Service-->
-    <route url="/V1/cmpayments/guest-payment/credit-card/:quoteId" method="POST">
-        <service class="CM\Payments\Api\Service\PaymentServiceInterface" method="createByGuestCardDetails"/>
+    <route url="/V1/guest-carts/:cartId/cmpayments/get-payment-methods" method="POST">
+        <service class="CM\Payments\Api\GuestPaymentMethodManagementInterface" method="getPaymentMethods"/>
         <resources>
-            <resource ref="anonymous" />
+            <resource ref="anonymous"/>
         </resources>
     </route>
-    <!-- Customer CC Payment Service-->
-    <route url="/V1/cmpayments/mine-payment/credit-card" method="POST">
-        <service class="CM\Payments\Api\Service\PaymentServiceInterface" method="createByCardDetails"/>
+
+    <route url="/V1/carts/mine/cmpayments/get-payment-methods" method="POST">
+        <service class="CM\Payments\Api\PaymentMethodManagementInterface" method="getPaymentMethods"/>
         <resources>
-            <resource ref="self" />
+            <resource ref="self"/>
         </resources>
         <data>
-            <parameter name="quoteId" force="true">%cart_id%</parameter>
+            <parameter name="cartId" force="true">%cart_id%</parameter>
         </data>
+    </route>
+
+    <route url="/V1/cmpayments/orders/:orderId/process" method="POST">
+        <service class="CM\Payments\Api\OrderManagementInterface" method="processOrder"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
     </route>
 </routes>

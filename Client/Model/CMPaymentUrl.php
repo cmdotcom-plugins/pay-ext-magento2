@@ -12,9 +12,6 @@ use CM\Payments\Client\Api\CMPaymentUrlInterface;
 
 class CMPaymentUrl implements CMPaymentUrlInterface
 {
-    /** URL type */
-    public const PURPOSE_REDIRECT = 'REDIRECT';
-
     /**
      * @var string
      */

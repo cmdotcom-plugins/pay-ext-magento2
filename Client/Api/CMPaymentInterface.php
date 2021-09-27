@@ -26,7 +26,7 @@ interface CMPaymentInterface
     public function getRedirectUrl(): ?string;
 
     /**
-     * @return \CM\Payments\Client\Api\CMPaymentUrlInterface[]
+     * @return \CM\Payments\Client\Api\CMPaymentUrlInterface[]|array
      */
     public function getUrls(): array;
 }

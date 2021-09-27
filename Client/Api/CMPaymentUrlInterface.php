@@ -10,6 +10,9 @@ namespace CM\Payments\Client\Api;
 
 interface CMPaymentUrlInterface
 {
+    /** URL type */
+    public const PURPOSE_REDIRECT = 'REDIRECT';
+
     /**
      * @return string
      */

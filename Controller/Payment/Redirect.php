@@ -119,7 +119,7 @@ class Redirect extends Action implements HttpGetActionInterface
     }
 
     /**
-     * Return to checkout cart with error message
+     * Return to cart with error message
      *
      * @param Phrase $message
      * @return ResultRedirect
