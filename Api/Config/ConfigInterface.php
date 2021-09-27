@@ -118,7 +118,6 @@ interface ConfigInterface
      */
     public function getAfterPayPaymentProfile(): ?string;
 
-
     /**
      * Get Payment Profile for CM Payments Menu Method
      *
