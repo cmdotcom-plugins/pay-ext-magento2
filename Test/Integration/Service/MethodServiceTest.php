@@ -15,16 +15,8 @@ use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Client\Order;
 use CM\Payments\Client\Shopper;
-use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Service\Method\Ideal;
 use CM\Payments\Service\MethodService;
-use CM\Payments\Service\Order\Address\Request\Part\Address as OrderAddressFull;
-use CM\Payments\Service\Order\Address\Request\Part\DateOfBirth as OrderAddressDateOfBirth;
-use CM\Payments\Service\Order\Address\Request\Part\Email as OrderAddressEmail;
-use CM\Payments\Service\Order\Address\Request\Part\Gender as OrderAddressGender;
-use CM\Payments\Service\Order\Address\Request\Part\Name as OrderAddressName;
-use CM\Payments\Service\Order\Address\Request\Part\PhoneNumber as OrderAddressPhoneNumber;
-use CM\Payments\Service\Order\Address\Request\Part\ShopperId as OrderAddressShopperId;
 use CM\Payments\Service\Order\Request\Part\Amount;
 use CM\Payments\Service\Order\Request\Part\BillingAddressKey;
 use CM\Payments\Service\Order\Request\Part\Country;
@@ -36,13 +28,6 @@ use CM\Payments\Service\Order\Request\Part\OrderId;
 use CM\Payments\Service\Order\Request\Part\PaymentProfile;
 use CM\Payments\Service\Order\Request\Part\ReturnUrls;
 use CM\Payments\Service\OrderRequestBuilder;
-use CM\Payments\Service\Quote\Address\Request\Part\Address as QuoteAddressFull;
-use CM\Payments\Service\Quote\Address\Request\Part\DateOfBirth as QuoteAddressDateOfBirth;
-use CM\Payments\Service\Quote\Address\Request\Part\Email as QuoteAddressEmail;
-use CM\Payments\Service\Quote\Address\Request\Part\Gender as QuoteAddressGender;
-use CM\Payments\Service\Quote\Address\Request\Part\Name as QuoteAddressName;
-use CM\Payments\Service\Quote\Address\Request\Part\PhoneNumber as QuoteAddressPhoneNumber;
-use CM\Payments\Service\Quote\Address\Request\Part\ShopperId as QuoteAddressShopperId;
 use CM\Payments\Service\Quote\Request\Part\Amount as QuoteAmount;
 use CM\Payments\Service\Quote\Request\Part\BillingAddressKey as QuoteBillingAddressKey;
 use CM\Payments\Service\Quote\Request\Part\Country as QuoteCountry;
@@ -53,12 +38,10 @@ use CM\Payments\Service\Quote\Request\Part\Language as QuoteLanguage;
 use CM\Payments\Service\Quote\Request\Part\OrderId as QuoteOrderId;
 use CM\Payments\Service\Quote\Request\Part\PaymentProfile as QuotePaymentProfile;
 use CM\Payments\Service\Quote\Request\Part\ReturnUrls as QuoteReturnUrls;
-use CM\Payments\Service\ShopperRequestBuilder;
 use CM\Payments\Service\ShopperService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use Exception;
 use Magento\Checkout\Model\PaymentDetails;
-use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Api\PaymentMethodManagementInterface;
@@ -447,35 +430,10 @@ class MethodServiceTest extends IntegrationTestCase
                 'apiClient' => $this->clientMock,
             ]
         );
-
-        $shopperRequestBuilder = $this->objectManager->create(ShopperRequestBuilder::class, [
-            'orderAddressRequestParts' => [
-                $this->objectManager->create(OrderAddressShopperId::class),
-                $this->objectManager->create(OrderAddressName::class),
-                $this->objectManager->create(OrderAddressFull::class),
-                $this->objectManager->create(OrderAddressEmail::class),
-                $this->objectManager->create(OrderAddressGender::class),
-                $this->objectManager->create(OrderAddressDateOfBirth::class),
-                $this->objectManager->create(OrderAddressPhoneNumber::class),
-            ],
-            'quoteAddressRequestParts' => [
-                $this->objectManager->create(QuoteAddressShopperId::class),
-                $this->objectManager->create(QuoteAddressName::class),
-                $this->objectManager->create(QuoteAddressFull::class),
-                $this->objectManager->create(QuoteAddressEmail::class),
-                $this->objectManager->create(QuoteAddressGender::class),
-                $this->objectManager->create(QuoteAddressDateOfBirth::class),
-                $this->objectManager->create(QuoteAddressPhoneNumber::class),
-            ]
-        ]);
-
         $this->shopperService = $this->objectManager->create(
             ShopperService::class,
             [
-                'shopperClient' => $shopperClient,
-                'shopperRequestBuilder' => $shopperRequestBuilder,
-                'eventManager' => $this->objectManager->create(ManagerInterface::class),
-                'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments'])
+                'shopperClient' => $shopperClient
             ]
         );
     }
