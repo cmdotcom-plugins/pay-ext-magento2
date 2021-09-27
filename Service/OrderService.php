@@ -137,7 +137,7 @@ class OrderService implements OrderServiceInterface
             throw new EmptyOrderKeyException(__('Empty order key'));
         }
 
-        if ($order->getPayment()->getMethod() == ConfigProvider::CODE_KLARNA) {
+        if (in_array($order->getPayment()->getMethod(), [ConfigProvider::CODE_KLARNA, ConfigProvider::CODE_AFTERPAY])) {
             $this->createItems(
                 $orderCreateResponse->getOrderKey(),
                 $order

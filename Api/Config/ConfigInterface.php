@@ -27,6 +27,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
+    public const XML_PATH_PAYMENT_AFTERPAY_PROFILE = 'payment/cm_payments_afterpay/profile';
     public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
     /**
@@ -108,6 +109,15 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getBanContactPaymentProfile(): ?string;
+
+    /**
+     * Get Payment Profile for AfterPay Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getAfterPayPaymentProfile(): ?string;
+
 
     /**
      * Get Payment Profile for CM Payments Menu Method

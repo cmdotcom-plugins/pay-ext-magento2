@@ -129,7 +129,7 @@ class MethodService implements MethodServiceInterface
                     __("The Methods were not requested properly because of CM Order creation problem.")
                 );
             } else {
-                // Needed for Klarna availability
+                // Needed for Klarna, AfterPay availability
                 $this->createCmOrderItems($quote, $cmOrder->getOrderKey());
             }
 
