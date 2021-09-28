@@ -11,21 +11,6 @@ namespace CM\Payments\Test\Integration\Service;
 use CM\Payments\Api\Service\ShopperServiceInterface;
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Shopper;
-use CM\Payments\Service\Order\Address\Request\Part\Address;
-use CM\Payments\Service\Quote\Address\Request\Part\Address as QuoteAddress;
-use CM\Payments\Service\Order\Address\Request\Part\DateOfBirth;
-use CM\Payments\Service\Quote\Address\Request\Part\DateOfBirth as QuoteDateOfBirth;
-use CM\Payments\Service\Order\Address\Request\Part\Gender;
-use CM\Payments\Service\Quote\Address\Request\Part\Gender as QuoteGender;
-use CM\Payments\Service\Order\Address\Request\Part\PhoneNumber;
-use CM\Payments\Service\Quote\Address\Request\Part\PhoneNumber as QuotePhoneNumber;
-use CM\Payments\Service\Order\Address\Request\Part\ShopperId;
-use CM\Payments\Service\Quote\Address\Request\Part\ShopperId as QuoteShopperId;
-use CM\Payments\Service\Order\Address\Request\Part\Name;
-use CM\Payments\Service\Quote\Address\Request\Part\Name as QuoteName;
-use CM\Payments\Service\Order\Address\Request\Part\Email;
-use CM\Payments\Service\Quote\Address\Request\Part\Email as QuoteEmail;
-use CM\Payments\Service\ShopperRequestBuilder;
 use CM\Payments\Service\ShopperService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use GuzzleHttp\Exception\RequestException;
@@ -196,32 +181,10 @@ class ShopperServiceTest extends IntegrationTestCase
             ]
         );
 
-        $shopperRequestBuilder = $this->objectManager->create(ShopperRequestBuilder::class, [
-            'orderAddressRequestParts' => [
-                $this->objectManager->create(ShopperId::class),
-                $this->objectManager->create(Name::class),
-                $this->objectManager->create(Address::class),
-                $this->objectManager->create(Email::class),
-                $this->objectManager->create(Gender::class),
-                $this->objectManager->create(DateOfBirth::class),
-                $this->objectManager->create(PhoneNumber::class)
-            ],
-            'quoteAddressRequestParts' => [
-                $this->objectManager->create(QuoteShopperId::class),
-                $this->objectManager->create(QuoteName::class),
-                $this->objectManager->create(QuoteAddress::class),
-                $this->objectManager->create(QuoteEmail::class),
-                $this->objectManager->create(QuoteGender::class),
-                $this->objectManager->create(QuoteDateOfBirth::class),
-                $this->objectManager->create(QuotePhoneNumber::class)
-            ]
-        ]);
-
         $this->shopperService = $this->objectManager->create(
             ShopperService::class,
             [
                 'shopperClient' => $shopperClient,
-                'shopperRequestBuilder' => $shopperRequestBuilder,
             ]
         );
     }
