@@ -8,8 +8,8 @@
     <policies>
         <policy id="script-src">
             <values>
-                <value id="cm-payment-live" type="host">secure.docdatapayments.com</value>
-                <value id="cm-payment-test" type="host">testsecure.docdatapayments.com</value>
+                <value id="cm-docdatapayments" type="host">*.docdatapayments.com</value>
+                <value id="cm-payments" type="host">*.payments.cm.com</value>
             </values>
         </policy>
         <policy id="style-src">
@@ -19,27 +19,33 @@
         </policy>
         <policy id="img-src">
             <values>
-                <value id="cm-payment-live" type="host">secure.docdatapayments.com</value>
-                <value id="cm-payment-test" type="host">testsecure.docdatapayments.com</value>
+                <value id="cm-docdatapayments" type="host">*.docdatapayments.com</value>
+                <value id="cm-payments" type="host">*.payments.cm.com</value>
                 <value id="data_image" type="host">data:</value>
             </values>
         </policy>
         <policy id="frame-src">
             <values>
-                <value id="cm-payment-live" type="host">secure.docdatapayments.com</value>
-                <value id="cm-payment-test" type="host">testsecure.docdatapayments.com</value>
+                <value id="cm-docdatapayments" type="host">*.docdatapayments.com</value>
+                <value id="cm-payments" type="host">*.payments.cm.com</value>
             </values>
         </policy>
         <policy id="connect-src">
             <values>
-                <value id="cm-payment-live" type="host">secure.docdatapayments.com</value>
-                <value id="cm-payment-test" type="host">testsecure.docdatapayments.com</value>
+                <value id="cm-docdatapayments" type="host">*.docdatapayments.com</value>
+                <value id="cm-payments" type="host">*.payments.cm.com</value>
             </values>
         </policy>
         <policy id="child-src">
             <values>
-                <value id="cm-payment-live" type="host">secure.docdatapayments.com</value>
-                <value id="cm-payment-test" type="host">testsecure.docdatapayments.com</value>
+                <value id="cm-docdatapayments" type="host">*.docdatapayments.com</value>
+                <value id="cm-payments" type="host">*.payments.cm.com</value>
+            </values>
+        </policy>
+        <policy id="form-action">
+            <values>
+                <value id="cm-docdatapayments" type="host">*.docdatapayments.com</value>
+                <value id="cm-payments" type="host">*.payments.cm.com</value>
             </values>
         </policy>
     </policies>
