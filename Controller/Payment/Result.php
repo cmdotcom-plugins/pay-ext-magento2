@@ -116,7 +116,12 @@ class Result extends Action implements HttpGetActionInterface
 
             if (in_array($status, [OrderCreate::STATUS_ERROR, OrderCreate::STATUS_CANCELLED])) {
                 $this->orderManagement->cancel($this->checkoutSession->getLastRealOrder()->getId());
-                $this->messageManager->addErrorMessage(__("The order was cancelled because of payment errors!"));
+
+                if ($status == OrderCreate::STATUS_ERROR) {
+                    $this->messageManager->addErrorMessage(__("Your payment was cancelled because of errors!"));
+                } else {
+                    $this->messageManager->addWarningMessage(__("Your payment was cancelled!"));
+                }
 
                 return $this->redirectToCheckout();
             };
