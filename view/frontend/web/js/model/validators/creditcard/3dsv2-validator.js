@@ -7,12 +7,14 @@ define([
     'jquery',
     'mage/translate',
     'Magento_Ui/js/modal/alert',
+    'Magento_Ui/js/modal/modal',
     'Magento_Checkout/js/model/error-processor',
     'Magento_Checkout/js/model/full-screen-loader'
 ], function (
     $,
     $t,
     alert,
+    modal,
     errorProcessor,
     loader
 ) {
@@ -52,6 +54,50 @@ define([
          */
         set3DsPassedResult: function (threeDsPassedResult) {
             this.threeDsPassedResult = threeDsPassedResult;
+        },
+
+        /**
+         * Setup of 3D Secure challenge form popup
+         */
+        setupChallengePopup: function () {
+            let options = {
+                    title: $t('Additional Challenge Confirmation'),
+                    type: 'popup',
+                    responsive: true,
+                    innerScroll: false,
+                    modalClass: 'cc-challenge-form-modal',
+                    buttons: [
+                        {
+                            text: $.mage.__('Cancel'),
+                            class: '',
+                            click: function () {
+                                this.closeModal();
+                            }
+                        }
+                    ]
+                },
+                modalSelector = $('#cc-challenge-form-popup');
+
+            modalSelector.find('.cc-challenge-form-popup-content').empty()
+            modal(options, modalSelector);
+        },
+
+        /**
+         * Open of 3D Secure challenge form popup
+         */
+        openChallengePopup: function () {
+            let self = this;
+
+            $('#threeDSCReqIframe').attr('width', '490px');
+            $('#threeDSCReqIframe').attr('height', '410px');
+            $('#threeDSCReqIframe').contents().find('form').submit(function() {
+                $('#cc-challenge-form-popup').modal("closeModal");
+                self.set3DsPassedResult(true);
+
+                return self.get3DsPassedResult();
+            });
+
+            $('#cc-challenge-form-popup').modal("openModal");
         },
 
         /**
@@ -154,6 +200,8 @@ define([
             forceAuthentication
         ) {
             let self = this;
+            this.setupChallengePopup();
+
             if (!authenticationUrl || !authenticationData) {
                 this.showError('Not all ACS Authentication parameters provided');
             }
@@ -197,7 +245,6 @@ define([
          * @param {String} authenticationUrl
          * @param {Object} authenticationData
          * @param {Object} messageContainer
-         * @return {*}
          */
         handle3DsAuthentication: function (
             authenticationUrl,
@@ -230,9 +277,12 @@ define([
                                     // a name/identifier.
                                     window.nca3DSWebSDK.createIFrameAndInit3DSChallengeRequest(
                                         challengeUrlData.url,
-                                        challengeUrlData.parameters['creq']
+                                        challengeUrlData.parameters['creq'],
+                                        '02',
+                                        'threeDSCReqIFrame',
+                                        $('#cc-challenge-form-popup').find('.cc-challenge-form-popup-content')[0],
+                                        self.openChallengePopup
                                     );
-
                                     self.set3DsPassedResult(true);
                                 } else {
                                     self.set3DsPassedResult(false);

@@ -8,6 +8,7 @@
 //  _____________________________________________
 // all screens
 & when (@media-common = true) {
+    // Credit Card Form
     .checkout-payment-method {
         .cm-payments-ccard.fieldset {
             > .field {
@@ -104,6 +105,23 @@
                     width: 55px;
                 }
             }
+        }
+    }
+
+    // Credit Card Challenge Pop-Up
+    .cc-challenge-form-modal {
+        .action-close {
+            display: none;
+        }
+
+        .modal-inner-wrap {
+            margin-left: -250px;
+            width: 550px !important;
+        }
+
+        .cc-challenge-form-popup-content {
+            height: 450px;
+            overflow: hidden;
         }
     }
 }
