@@ -13,22 +13,22 @@ class Authorization
     const STATE_AUTHORIZED = 'AUTHORIZED';
 
     /**
-     * @var int
+     * @var int|null
      */
     private $amount;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $currency;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $confidence;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $state;
 
@@ -44,10 +44,10 @@ class Authorization
     public function __construct(
         array $authorization
     ) {
-        $this->amount = $authorization['amount'];
-        $this->currency = $authorization['currency'];
-        $this->confidence = $authorization['confidence'];
-        $this->state = $authorization['state'];
+        $this->amount = $authorization['amount'] ?? null;
+        $this->currency = $authorization['currency'] ?? null;
+        $this->confidence = $authorization['confidence'] ?? null;
+        $this->state = $authorization['state'] ?? null;
         $this->reason = $authorization['reason'] ?? null;
     }
 

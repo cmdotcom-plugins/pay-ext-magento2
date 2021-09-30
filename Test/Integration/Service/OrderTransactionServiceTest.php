@@ -155,6 +155,20 @@ class OrderTransactionServiceTest extends IntegrationTestCase
     }
 
     /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testMultiplePayments()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetailMultiplePayments());
+        $this->orderTransactionService->process('100000001');
+        $magentoOrder = $this->loadOrderById('100000001');
+
+        $this->assertSame('pid4911203603t', $magentoOrder->getPayment()->getLastTransId());
+    }
+
+    /**
      * @param OrderInterface $magentoOrder
      * @return OrderInterface
      */
