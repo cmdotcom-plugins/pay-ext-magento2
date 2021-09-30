@@ -19,7 +19,13 @@ class Amount implements RequestPartByQuoteInterface
      */
     public function process(CartInterface $quote, OrderCreate $orderCreate): OrderCreate
     {
-        $orderCreate->setAmount((int)round($quote->getGrandTotal() * 100));
+        $amountParts = [
+            $quote->getShippingAddress()->getSubtotal(),
+            $quote->getShippingAddress()->getShippingAmount(),
+            $quote->getShippingAddress()->getTaxAmount(),
+            $quote->getShippingAddress()->getDiscountAmount()
+        ];
+        $orderCreate->setAmount((int)round(array_sum($amountParts) * 100));
 
         return $orderCreate;
     }

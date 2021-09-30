@@ -19,7 +19,9 @@ class UnitAmount implements RequestPartByOrderItemInterface
      */
     public function process(OrderItemInterface $orderItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
-        $orderItemCreate->setUnitAmount((int)round($orderItem->getPriceInclTax() * 100));
+        $orderItemCreate->setUnitAmount(
+            (int)round(array_sum([$orderItem->getPrice(), $orderItem->getTaxAmount()]) * 100)
+        );
 
         return $orderItemCreate;
     }
