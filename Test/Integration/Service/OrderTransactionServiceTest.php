@@ -155,6 +155,37 @@ class OrderTransactionServiceTest extends IntegrationTestCase
     }
 
     /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testShouldNotProcessWhenOrderIsClosed()
+    {
+        $this->clientMock
+            ->expects($this->never())->method('execute');
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder->setState(\Magento\Sales\Model\Order::STATE_CLOSED);
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        $this->orderTransactionService->process('100000001');
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testShouldNotProcessWhenOrderAlreadyProcessed()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetail());
+
+        // first time
+        $this->orderTransactionService->process('100000001');
+        // second time
+        $this->orderTransactionService->process('100000001');
+    }
+
+    /**
      * @param OrderInterface $magentoOrder
      * @return OrderInterface
      */
