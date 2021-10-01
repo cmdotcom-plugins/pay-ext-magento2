@@ -20,7 +20,10 @@ class UnitAmount implements RequestPartByQuoteItemInterface
     public function process(CartItemInterface $quoteItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
         $orderItemCreate->setUnitAmount(
-            (int)round(array_sum([$quoteItem->getPrice(), $quoteItem->getTaxAmount()]) * 100)
+            (int)round(array_sum([
+                    $quoteItem->getPrice(),
+                    $quoteItem->getTaxAmount() / $quoteItem->getQty(),
+                ]) * 100)
         );
 
         return $orderItemCreate;

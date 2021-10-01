@@ -20,9 +20,11 @@ class Amount implements RequestPartByOrderItemInterface
     public function process(OrderItemInterface $orderItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
         $orderItemCreate->setAmount(
-            (int)round(array_sum([$orderItem->getRowTotal(), $orderItem->getTaxAmount()]) * 100)
+            (int)round(array_sum([
+                    $orderItem->getRowTotal(),
+                    $orderItem->getTaxAmount()
+                ]) * 100)
         );
-
 
         return $orderItemCreate;
     }

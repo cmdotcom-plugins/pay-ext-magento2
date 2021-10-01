@@ -19,13 +19,7 @@ class Amount implements RequestPartByOrderInterface
      */
     public function process(OrderInterface $order, OrderCreate $orderCreate): OrderCreate
     {
-        $amountParts = [
-            $order->getSubtotal(),
-            $order->getShippingAmount(),
-            $order->getTaxAmount(),
-            $order->getDiscountAmount()
-        ];
-        $orderCreate->setAmount((int)round(array_sum($amountParts) * 100));
+        $orderCreate->setAmount((int)round($order->getGrandTotal() * 100));
 
         return $orderCreate;
     }
