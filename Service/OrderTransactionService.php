@@ -8,9 +8,13 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
+use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
+use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
+use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
 use CM\Payments\Client\Api\OrderInterface as CMOrderClientInterface;
+use CM\Payments\Client\Model\Response\OrderDetail;
 use CM\Payments\Logger\CMPaymentsLogger;
 use GuzzleHttp\Exception\RequestException;
 use Magento\Framework\Event\ManagerInterface;
@@ -19,6 +23,7 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
+use CM\Payments\Api\Model\Data\OrderInterface as CMDataOrderInterface;
 
 class OrderTransactionService implements OrderTransactionServiceInterface
 {
@@ -31,6 +36,11 @@ class OrderTransactionService implements OrderTransactionServiceInterface
      * @var CMOrderRepositoryInterface
      */
     private $cmOrderRepository;
+
+    /**
+     * @var CMPaymentRepositoryInterface
+     */
+    private $cmPaymentRepository;
 
     /**
      * @var CMPaymentsLogger
@@ -46,12 +56,17 @@ class OrderTransactionService implements OrderTransactionServiceInterface
      * @var ManagerInterface
      */
     private $eventManager;
+    /**
+     * @var CMPaymentDataFactory
+     */
+    private $cmPaymentDataFactory;
 
     /**
      * OrderTransactionService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
      * @param CMOrderRepositoryInterface $cmOrderRepository
+     * @param CMPaymentRepositoryInterface $cmPaymentRepository
      * @param CMPaymentsLogger $cmPaymentsLogger
      * @param CMOrderClientInterface $orderClient
      * @param ManagerInterface $eventManager
@@ -59,15 +74,19 @@ class OrderTransactionService implements OrderTransactionServiceInterface
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         CMOrderRepositoryInterface $cmOrderRepository,
+        CMPaymentRepositoryInterface $cmPaymentRepository,
+        CMPaymentDataFactory $cmPaymentDataFactory,
         CMPaymentsLogger $cmPaymentsLogger,
         CMOrderClientInterface $orderClient,
         ManagerInterface $eventManager
     ) {
         $this->orderRepository = $orderRepository;
         $this->cmOrderRepository = $cmOrderRepository;
+        $this->cmPaymentRepository = $cmPaymentRepository;
         $this->logger = $cmPaymentsLogger;
         $this->eventManager = $eventManager;
         $this->orderClient = $orderClient;
+        $this->cmPaymentDataFactory = $cmPaymentDataFactory;
     }
 
     /**
@@ -113,9 +132,27 @@ class OrderTransactionService implements OrderTransactionServiceInterface
             'cmOrderDetails' => $cmOrderDetails
         ]);
 
+        // Todo: move to separate method or class
+        $this->createCMPaymentIfNotExists($cmOrder, $order, $cmOrderDetails);
+
         $this->logger->info('Create invoice and transaction for order '. $orderReference);
         $this->logger->info('CM payment id'. $cmOrderDetails->getAuthorizedPayment()->getId());
 
+        $this->capture($payment, $cmOrderDetails, $order);
+
+        $this->eventManager->dispatch('cmpayments_after_process_transaction', [
+            'order' => $order,
+            'cmOrderDetails' => $cmOrderDetails
+        ]);
+    }
+
+    /**
+     * @param Payment $payment
+     * @param OrderDetail $cmOrderDetails
+     * @param OrderInterface $order
+     */
+    private function capture(Payment $payment, OrderDetail $cmOrderDetails, OrderInterface $order): void
+    {
         $payment->setTransactionId($cmOrderDetails->getAuthorizedPayment()->getId());
         $payment->setCurrencyCode($order->getBaseCurrencyCode());
         $payment->setNotificationResult(true);
@@ -128,10 +165,29 @@ class OrderTransactionService implements OrderTransactionServiceInterface
         }
 
         $this->orderRepository->save($order);
+    }
 
-        $this->eventManager->dispatch('cmpayments_after_process_transaction', [
-            'order' => $order,
-            'cmOrderDetails' => $cmOrderDetails
-        ]);
+    /**
+     * @param CMDataOrderInterface $cmOrder
+     * @param OrderInterface $order
+     * @param OrderDetail $cmOrderDetails
+     */
+    private function createCMPaymentIfNotExists(
+        CMDataOrderInterface $cmOrder,
+        OrderInterface $order,
+        OrderDetail $cmOrderDetails
+    ): void {
+        try {
+            $this->cmPaymentRepository->getByOrderKey($cmOrder->getOrderKey());
+        } catch (NoSuchEntityException $exception) {
+            /** @var CMPaymentDataInterface $cmPayment */
+            $cmPayment = $this->cmPaymentDataFactory->create();
+            $cmPayment->setOrderId((int)$order->getEntityId());
+            $cmPayment->setOrderKey($cmOrder->getOrderKey());
+            $cmPayment->setIncrementId($order->getIncrementId());
+            $cmPayment->setPaymentId($cmOrderDetails->getAuthorizedPayment()->getId());
+
+            $this->cmPaymentRepository->save($cmPayment);
+        }
     }
 }

@@ -19,7 +19,8 @@ class Description implements RequestPartByOrderItemInterface
      */
     public function process(OrderItemInterface $orderItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
-        $orderItemCreate->setDescription($orderItem->getDescription());
+        // Description of item is mandatory for AfterPay method
+        $orderItemCreate->setDescription($orderItem->getDescription() ?? $orderItem->getName());
 
         return $orderItemCreate;
     }

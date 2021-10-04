@@ -19,7 +19,8 @@ class Description implements RequestPartByQuoteItemInterface
      */
     public function process(CartItemInterface $quoteItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
-        $orderItemCreate->setDescription($quoteItem->getDescription());
+        // Description of item is mandatory for AfterPay method
+        $orderItemCreate->setDescription($quoteItem->getDescription() ?? $quoteItem->getName());
 
         return $orderItemCreate;
     }

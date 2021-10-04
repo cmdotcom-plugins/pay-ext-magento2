@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace CM\Payments\Api\Model;
 
 use CM\Payments\Api\Model\Data\PaymentInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 interface PaymentRepositoryInterface
 {
@@ -21,6 +22,7 @@ interface PaymentRepositoryInterface
     /**
      * @param string $orderKey
      * @return PaymentInterface
+     * @throws NoSuchEntityException
      */
     public function getByOrderKey(string $orderKey): PaymentInterface;
 
