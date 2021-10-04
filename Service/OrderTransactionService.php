@@ -99,8 +99,18 @@ class OrderTransactionService implements OrderTransactionServiceInterface
         /** @var OrderInterface $order */
         $order = $this->orderRepository->get($cmOrder->getOrderId());
 
+        if ($order->getState() === Order::STATE_CLOSED) {
+            $this->logger->info('Don\'t need to update order because state is already closed '. $orderReference);
+            return;
+        }
+
         /** @var Payment $payment */
         $payment = $order->getPayment();
+
+        if ($payment->getTransactionId() && $order->getState() === Order::STATE_PROCESSING) {
+            $this->logger->info('Don\'t need to update order because state is already in progress '. $orderReference);
+            return;
+        }
 
         try {
             $cmOrderDetails = $this->orderClient->getDetail($cmOrder->getOrderKey());
