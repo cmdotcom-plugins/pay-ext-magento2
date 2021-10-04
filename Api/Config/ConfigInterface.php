@@ -70,11 +70,11 @@ interface ConfigInterface
     public function getMerchantPassword(): ?string;
 
     /**
-     * @param string $paymentMethod
-     * @return string|null
+     * @param string|null $paymentMethod
+     * @return string
      * @throws NoSuchEntityException
      */
-    public function getPaymentProfile(string $paymentMethod): string;
+    public function getPaymentProfile(string $paymentMethod = null): string;
 
     /**
      * Get mode
