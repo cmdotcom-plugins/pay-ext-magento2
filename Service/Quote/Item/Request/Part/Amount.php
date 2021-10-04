@@ -19,7 +19,12 @@ class Amount implements RequestPartByQuoteItemInterface
      */
     public function process(CartItemInterface $quoteItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
-        $orderItemCreate->setAmount((int)round($quoteItem->getRowTotalInclTax() * 100));
+        $orderItemCreate->setAmount(
+            (int)round(array_sum([
+                    $quoteItem->getRowTotal(),
+                    $quoteItem->getTaxAmount()
+                ]) * 100)
+        );
 
         return $orderItemCreate;
     }
