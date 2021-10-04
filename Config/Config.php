@@ -140,21 +140,31 @@ class Config implements ConfigInterface
      */
     public function getPaymentProfile(string $paymentMethod): ?string
     {
-        $defaultPaymentMethod = $this->getConfig(
+        $defaultPaymentMethodProfile = $this->getConfig(
             self::XML_PATH_PAYMENT_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
 
-        if ($paymentMethod == ConfigProvider::CODE_CREDIT_CARD) {
-            return $this->getCreditCardPaymentProfile() ?? $defaultPaymentMethod;
-        } elseif ($paymentMethod == ConfigProvider::CODE_BANCONTACT) {
-            return $this->getBanContactPaymentProfile() ?? $defaultPaymentMethod;
-        } elseif ($paymentMethod == ConfigProvider::CODE_CM_PAYMENTS_MENU) {
-            return $this->getCmPaymentsMenuPaymentProfile() ?? $defaultPaymentMethod;
+        switch ($paymentMethod) {
+            case ConfigProvider::CODE_CREDIT_CARD:
+                $paymentMethodProfile = $this->getCreditCardPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
+            case ConfigProvider::CODE_BANCONTACT:
+                $paymentMethodProfile = $this->getBanContactPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
+            case ConfigProvider::CODE_AFTERPAY:
+                $paymentMethodProfile = $this->getAfterPayPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
+            case ConfigProvider::CODE_CM_PAYMENTS_MENU:
+                $paymentMethodProfile = $this->getCmPaymentsMenuPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
+            default:
+                $paymentMethodProfile = $defaultPaymentMethodProfile;
+                break;
         }
 
-        return $defaultPaymentMethod;
+        return $paymentMethodProfile;
     }
 
     /**
@@ -189,6 +199,18 @@ class Config implements ConfigInterface
     {
         return $this->getConfig(
             self::XML_PATH_PAYMENT_BANCONTACT_PROFILE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAfterPayPaymentProfile(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_AFTERPAY_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );

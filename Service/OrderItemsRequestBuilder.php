@@ -128,7 +128,7 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $shippingItem->setItemId($lastItem[0]->getItemId() + 1);
                 $shippingItem->setSku(self::ITEM_SHIPPING_FEE_SKU);
                 $shippingItem->setName(self::ITEM_SHIPPING_FEE_NAME);
-                $shippingItem->setDescription('');
+                $shippingItem->setDescription(self::ITEM_SHIPPING_FEE_NAME);
                 $shippingItem->setQtyOrdered(1);
                 $shippingItem->setTaxAmount(0);
                 $shippingItem->setPrice($order->getShippingAmount());
@@ -148,7 +148,7 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 );
                 $discountItem->setSku(self::ITEM_DISCOUNT_SKU);
                 $discountItem->setName(self::ITEM_DISCOUNT_NAME);
-                $discountItem->setDescription('');
+                $discountItem->setDescription(self::ITEM_DISCOUNT_NAME);
                 $discountItem->setQtyOrdered(1);
                 $discountItem->setTaxAmount(0);
                 $discountItem->setPrice($order->getDiscountAmount());
@@ -181,7 +181,7 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $shippingItem->setItemId($lastItem[0]->getItemId() + 1);
                 $shippingItem->setSku(self::ITEM_SHIPPING_FEE_SKU);
                 $shippingItem->setName(self::ITEM_SHIPPING_FEE_NAME);
-                $shippingItem->setDescription('');
+                $shippingItem->setDescription(self::ITEM_SHIPPING_FEE_NAME);
                 $shippingItem->setQty(1);
                 $shippingItem->setTaxAmount(0);
                 $shippingItem->setPrice($quote->getShippingAddress()->getShippingAmount());
@@ -201,7 +201,7 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 );
                 $discountItem->setSku(self::ITEM_DISCOUNT_SKU);
                 $discountItem->setName(self::ITEM_DISCOUNT_NAME);
-                $discountItem->setDescription('');
+                $discountItem->setDescription(self::ITEM_DISCOUNT_NAME);
                 $discountItem->setQty(1);
                 $discountItem->setTaxAmount(0);
                 $discountItem->setPrice($quote->getShippingAddress()->getDiscountAmount());
