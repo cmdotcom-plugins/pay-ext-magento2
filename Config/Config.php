@@ -138,13 +138,13 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function getPaymentProfile(string $paymentMethod): ?string
+    public function getPaymentProfile(string $paymentMethod = null): string
     {
         $defaultPaymentMethodProfile = $this->getConfig(
             self::XML_PATH_PAYMENT_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
-        );
+        ) ?? '';
 
         switch ($paymentMethod) {
             case ConfigProvider::CODE_CREDIT_CARD:
