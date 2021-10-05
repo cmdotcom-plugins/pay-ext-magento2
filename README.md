@@ -2,12 +2,12 @@
 
 1. [Get started](#get-started)
 2. [Installation & Update the CM.com Payments Magento 2 plugin](#installation--update-the-cmcom-payments-magento-2-plugin)
-2. [About CM.com Payments](#about-cmcom-payments)
-3. [Supported CM.com Payments Methods](#supported-cmcom-payments-methods)
-4. [Requirements](#requirements)
-5. [Setup local development environment](#setup-local-development-environment)
-5. [Payment methods](#payment-methods)
-
+3. [About CM.com Payments](#about-cmcom-payments)
+4. [Supported CM.com Payments Methods](#supported-cmcom-payments-methods)
+5. [Requirements](#requirements)
+6. [Setup local development environment](#setup-local-development-environment)
+7. [Payment methods](#payment-methods)
+8. [Issues and support](#issues-and-support)
 ## Get started
 
 Before you begin to integrate Magento with the CM.com payments platform, make sure that you have performed the following steps: 
@@ -172,3 +172,8 @@ The BanContact payment redirects to the CM.com payment menu. It's recommended to
 ### Afterpay
 
 The BanContact payment redirects to the CM.com payment menu. It's recommended to create a separate 'Afterpay' payment profile in the CM.com portal to show only the Afterpay method in the CM.com payment menu.
+
+## Issues and support
+
+You can create issues on our Github repository.
+If you have other questions, or need specific payment methods in your test account, contact us at support.payments@cm.com
