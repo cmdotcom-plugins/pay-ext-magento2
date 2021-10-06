@@ -36,7 +36,7 @@ class PaymentProfile implements RequestPartByOrderInterface
     public function process(OrderInterface $order, OrderCreate $orderCreate): OrderCreate
     {
         $paymentProfile = $this->config->getPaymentProfile($order->getPayment()->getMethod());
-        $orderCreate->setPaymentProfile($paymentProfile ?: '');
+        $orderCreate->setPaymentProfile($paymentProfile);
 
         return $orderCreate;
     }

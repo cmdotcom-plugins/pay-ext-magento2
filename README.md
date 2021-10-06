@@ -2,12 +2,12 @@
 
 1. [Get started](#get-started)
 2. [Installation & Update the CM.com Payments Magento 2 plugin](#installation--update-the-cmcom-payments-magento-2-plugin)
-2. [About CM.com Payments](#about-cmcom-payments)
-3. [Supported CM.com Payments Methods](#supported-cmcom-payments-methods)
-4. [Requirements](#requirements)
-5. [Setup local development environment](#setup-local-development-environment)
-5. [Payment methods](#payment-methods)
-
+3. [About CM.com Payments](#about-cmcom-payments)
+4. [Supported CM.com Payments Methods](#supported-cmcom-payments-methods)
+5. [Requirements](#requirements)
+6. [Setup local development environment](#setup-local-development-environment)
+7. [Payment methods](#payment-methods)
+8. [Issues and support](#issues-and-support)
 ## Get started
 
 Before you begin to integrate Magento with the CM.com payments platform, make sure that you have performed the following steps: 
@@ -20,54 +20,53 @@ Before you begin to integrate Magento with the CM.com payments platform, make su
 
 1. Installation by Composer
 
-```
-composer require cmdotcom/payments
-```
+   ```
+   composer require cmdotcom/payments
+   ```
 
-```
-php bin/magento module:enable CM_Payments
-php bin/magento setup:upgrade
-php bin/magento cache:clean
-```
+   ```
+   php bin/magento module:enable CM_Payments
+   php bin/magento setup:upgrade
+   php bin/magento cache:clean
+   ```
 
-If Magento® is running in production mode, deploy the static content:
+   If Magento® is running in production mode, deploy the static content:
 
-```
-php bin/magento setup:static-content:deploy
-```
+   ```
+   php bin/magento setup:static-content:deploy
+   ```
 
 2. Update by Composer
 
-```
-composer update cmdotcom/payments
-```
+   ```
+   composer update cmdotcom/payments
+   ```
 
-```
-php bin/magento setup:upgrade
-php bin/magento cache:clean
-```
+   ```
+   php bin/magento setup:upgrade
+   php bin/magento cache:clean
+   ```
 
-If Magento® is running in production mode, deploy the static content:
+   If Magento® is running in production mode, deploy the static content:
 
-```
-php bin/magento setup:static-content:deploy
-```
+   ```
+   php bin/magento setup:static-content:deploy
+   ```
 
 3. Configuration
+   
    To configure the CM.com Payments extension you can go to your Magento® 2 admin portal, to **Stores** > **Configuration** > **CM.com Payments**
    1. **General settings:** Set ‘Enabled’ to ‘Yes’
-   2. **General settings:**  Enter the Test and/or API key of your webshop. You received the API credentials by email from CM.com Payments (register link).
-   3. **General settings:** set payment method profile that is configured in the CM Portal 
+   2. **General settings:**  Enter the Test and/or API key of your webshop. You received the API credentials by email from CM.com Payments ([register link](https://www.cm.com/register/?app=81e52ab7-4cfc-4b89-8ae8-f5be73bab15d&product=PAYMENTMETHODS))
+   3. **General settings:** Set payment method profile that is configured in the CM Portal 
    4. **Payment methods:** Configure each payment method you would like to offer in your webshop
-   5. **Magento:** refresh the caches after saving the configuration
+   5. **Magento:** Refresh the caches after saving the configuration
 
 ## About CM.com Payments
 
 https://www.cm.com/payments
 
 ## Supported CM.com Payments Methods
-
-Payments via Menu
 
 - iDEAL, iDEAL QR
 - Banktransfer
@@ -90,6 +89,8 @@ Payments via Menu
 - Klarna
 - Przelewy24, BLIK
 
+For more details on the configuring see the payment methonds section below.
+
 ## Requirements
 
 - Magento Open Source version 2.3.x & 2.4.x
@@ -109,14 +110,17 @@ bin/magento setup:upgrade
 ```
 
 **Docker setup**
+
 https://github.com/markshust/docker-magento
 
 ## Payment methods
 ### Fetch payment methods by order
-CM.com api requires an order to retrieve all the payment methods, to accomplish this in the Magento checkout this module creates a temporary order based on the Magento quote. These temporary orders will always have a 'Q_' prefix. 
+
+The CM.com API requires an order to retrieve all the payment methods, to accomplish this in the Magento checkout this module creates a temporary order based on the Magento quote. These temporary orders will always have a 'Q_' prefix. 
 
 ## Payment method configuration
 ### General
+
 Each payment method is configurable in Magento. There are a few default settings: 
 - Enabled
 - Title
@@ -126,26 +130,50 @@ Each payment method is configurable in Magento. There are a few default settings
 - Maximum order total
 - Sort order
 
-**Note** The payment methods will only visible if they enabled in both Magento as CM.com portal. 
+**Note** The payment methods will only visible if they enabled in both Magento and the CM.com Portal. 
 
 ### CM.com redirect to Menu
-This payment method redirects to the CM.com payment menu.
 
-### Ideal
+This payment method redirects to the CM.com payment menu. In the payment menu you will see all available payment methods as configured in the CM.com Portal.
+
+### iDEAL
+
 This method shows the bank issuers in the Magento checkout and redirects directly to the selected issuer. 
 
 ### Paypal
+
 This method directly redirects to the Paypal payment page.
 
+### ELV
+
+ELV (Elektronisches Lastschriftverfahren) is a payment method used mainly in Germany.
+This method directly redirects to the ELV payment page.
+
+### Klarna
+
+This method directly redirects to the Klarna payment page. Klarna requires a birthdate of the shopper which is requested in the Magento checkout.
+
 ### Creditcard
+
 All the 'Creditcard' payment methods are mapped under one Magento payment method called `cm_payments_creditcard`
 This includes the following CM.com payment methods:
 `VISA`
 `MASTERCARD`
 `MAESTRO`
 
-**Configuration**\
+**Configuration**
+
 The creditcard payment redirects to the CM.com payment menu. It's recommended to create a separate 'Creditcard' payment profile in the CM.com portal to show only the credit card methods in the CM.com payment menu.
 
 ### BanContact
+
 The BanContact payment redirects to the CM.com payment menu. It's recommended to create a separate 'BanContact' payment profile in the CM.com portal to show only the BanContact method in the CM.com payment menu.
+
+### Afterpay
+
+The BanContact payment redirects to the CM.com payment menu. It's recommended to create a separate 'Afterpay' payment profile in the CM.com portal to show only the Afterpay method in the CM.com payment menu.
+
+## Issues and support
+
+You can create issues on our Github repository.
+If you have other questions, or need specific payment methods in your test account, contact us at support.payments@cm.com
