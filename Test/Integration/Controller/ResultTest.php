@@ -94,8 +94,8 @@ class ResultTest extends AbstractController
 
         $this->assertRedirect($this->stringContains('checkout/cart'));
         $this->assertSessionMessages(
-            $this->equalTo(['The order was cancelled because of payment errors!']),
-            MessageInterface::TYPE_ERROR
+            $this->equalTo(['Your payment was cancelled!']),
+            MessageInterface::TYPE_WARNING
         );
     }
 
@@ -118,7 +118,7 @@ class ResultTest extends AbstractController
 
         $this->assertRedirect($this->stringContains('checkout/cart'));
         $this->assertSessionMessages(
-            $this->equalTo(['The order was cancelled because of payment errors!']),
+            $this->equalTo(['Your payment was cancelled because of errors!']),
             MessageInterface::TYPE_ERROR
         );
     }

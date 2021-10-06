@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace CM\Payments\Test\Integration\Service;
 
 use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
-use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
@@ -19,12 +18,10 @@ use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Client\Model\Response\ShopperCreate;
 use CM\Payments\Client\Order;
 use CM\Payments\Client\Payment;
-use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Data\BrowserDetails;
 use CM\Payments\Model\Data\CardDetails;
 use CM\Payments\Service\OrderRequestBuilder;
 use CM\Payments\Service\OrderService;
-use CM\Payments\Service\PaymentRequestBuilder;
 use CM\Payments\Service\PaymentService;
 use CM\Payments\Service\Quote\Request\Part\Amount;
 use CM\Payments\Service\Quote\Request\Part\BillingAddressKey;
@@ -35,7 +32,6 @@ use CM\Payments\Service\Quote\Request\Part\Language;
 use CM\Payments\Service\Quote\Request\Part\OrderId;
 use CM\Payments\Service\ShopperService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
-use Magento\Sales\Model\OrderRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 
 class PaymentServiceTest extends IntegrationTestCase
@@ -315,15 +311,7 @@ class PaymentServiceTest extends IntegrationTestCase
         $this->paymentService = $this->objectManager->create(
             PaymentService::class,
             [
-                'orderRepository' => $this->objectManager->create(OrderRepository::class),
-                'paymentClient' => $paymentClient,
-                'orderService' => $orderService,
-                'paymentRequestBuilder' => $this->objectManager->create(PaymentRequestBuilder::class),
-                'cmPaymentDataFactory' => $this->objectManager->create(CMPaymentDataFactory::class),
-                'cmPaymentFactory' => $this->objectManager->create(CMPaymentFactory::class),
-                'cmPaymentRepository' => $this->objectManager->create(CMPaymentRepositoryInterface::class),
-                'cmOrderRepository' => $this->objectManager->create(CMOrderRepositoryInterface::class),
-                'cmPaymentsLogger' => $this->objectManager->create(CMPaymentsLogger::class, ['name' => 'CMPayments']),
+                'paymentClient' => $paymentClient
             ]
         );
     }

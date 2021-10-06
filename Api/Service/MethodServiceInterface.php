@@ -26,7 +26,8 @@ interface MethodServiceInterface
         ConfigProvider::CODE_PAYPAL,
         ConfigProvider::CODE_BANCONTACT,
         ConfigProvider::CODE_ELV,
-        ConfigProvider::CODE_KLARNA
+        ConfigProvider::CODE_KLARNA,
+        ConfigProvider::CODE_AFTERPAY
     ];
 
     /**
@@ -41,7 +42,8 @@ interface MethodServiceInterface
         'PAYPAL_EXPRESS_CHECKOUT' => ConfigProvider::CODE_PAYPAL,
         'BANCONTACT' => ConfigProvider::CODE_BANCONTACT,
         'ELV' => ConfigProvider::CODE_ELV,
-        'KLARNA' => ConfigProvider::CODE_KLARNA
+        'KLARNA' => ConfigProvider::CODE_KLARNA,
+        'AFTERPAY_OPEN_INVOICE' => ConfigProvider::CODE_AFTERPAY
     ];
 
     /**

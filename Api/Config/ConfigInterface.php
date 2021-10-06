@@ -29,6 +29,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_CREDIT_CARD_MODE = 'payment/cm_payments_creditcard/mode';
     public const XML_PATH_PAYMENT_CREDIT_CARD_ALLOWED_TYPES = 'payment/cm_payments_creditcard/allowed_cctypes';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
+    public const XML_PATH_PAYMENT_AFTERPAY_PROFILE = 'payment/cm_payments_afterpay/profile';
     public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
     /**
@@ -72,11 +73,11 @@ interface ConfigInterface
     public function getMerchantPassword(): ?string;
 
     /**
-     * @param string $paymentMethod
-     * @return string|null
+     * @param string|null $paymentMethod
+     * @return string
      * @throws NoSuchEntityException
      */
-    public function getPaymentProfile(string $paymentMethod): ?string;
+    public function getPaymentProfile(string $paymentMethod = null): string;
 
     /**
      * Get mode
@@ -110,6 +111,14 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getBanContactPaymentProfile(): ?string;
+
+    /**
+     * Get Payment Profile for AfterPay Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getAfterPayPaymentProfile(): ?string;
 
     /**
      * Get Payment Profile for CM Payments Menu Method

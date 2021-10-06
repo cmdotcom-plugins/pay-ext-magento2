@@ -8,12 +8,14 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
+use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
 use CM\Payments\Client\Api\OrderInterface as CMOrderClientInterface;
 use CM\Payments\Client\Model\Response\OrderDetail;
 use CM\Payments\Client\Model\Response\Payment\Authorization;
+use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Logger\CMPaymentsLogger;
 use Exception;
 use GuzzleHttp\Exception\RequestException;
@@ -23,6 +25,7 @@ use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
+use CM\Payments\Api\Model\Data\OrderInterface as CMDataOrderInterface;
 
 class OrderTransactionService implements OrderTransactionServiceInterface
 {
@@ -35,6 +38,11 @@ class OrderTransactionService implements OrderTransactionServiceInterface
      * @var CMOrderRepositoryInterface
      */
     private $cmOrderRepository;
+
+    /**
+     * @var CMPaymentRepositoryInterface
+     */
+    private $cmPaymentRepository;
 
     /**
      * @var CMPaymentsLogger
@@ -50,11 +58,10 @@ class OrderTransactionService implements OrderTransactionServiceInterface
      * @var ManagerInterface
      */
     private $eventManager;
-
     /**
-     * @var CMPaymentRepositoryInterface
+     * @var CMPaymentDataFactory
      */
-    private $cmPaymentRepository;
+    private $cmPaymentDataFactory;
 
     /**
      * OrderTransactionService constructor
@@ -70,6 +77,7 @@ class OrderTransactionService implements OrderTransactionServiceInterface
         OrderRepositoryInterface $orderRepository,
         CMOrderRepositoryInterface $cmOrderRepository,
         CMPaymentRepositoryInterface $cmPaymentRepository,
+        CMPaymentDataFactory $cmPaymentDataFactory,
         CMPaymentsLogger $cmPaymentsLogger,
         CMOrderClientInterface $orderClient,
         ManagerInterface $eventManager
@@ -80,6 +88,7 @@ class OrderTransactionService implements OrderTransactionServiceInterface
         $this->logger = $cmPaymentsLogger;
         $this->eventManager = $eventManager;
         $this->orderClient = $orderClient;
+        $this->cmPaymentDataFactory = $cmPaymentDataFactory;
     }
 
     /**
@@ -92,8 +101,18 @@ class OrderTransactionService implements OrderTransactionServiceInterface
         /** @var OrderInterface $order */
         $order = $this->orderRepository->get($cmOrder->getOrderId());
 
+        if ($order->getState() === Order::STATE_CLOSED) {
+            $this->logger->info('Don\'t need to update order because state is already closed '. $orderReference);
+            return;
+        }
+
         /** @var Payment $payment */
         $payment = $order->getPayment();
+
+        if ($payment->getTransactionId() && $order->getState() === Order::STATE_PROCESSING) {
+            $this->logger->info('Don\'t need to update order because state is already in progress '. $orderReference);
+            return;
+        }
 
         try {
             $cmOrderDetails = $this->orderClient->getDetail($cmOrder->getOrderKey());
@@ -117,9 +136,27 @@ class OrderTransactionService implements OrderTransactionServiceInterface
             'cmOrderDetails' => $cmOrderDetails
         ]);
 
+        // Todo: move to separate method or class
+        $this->createCMPaymentIfNotExists($cmOrder, $order, $cmOrderDetails);
+
         $this->logger->info('Create invoice and transaction for order '. $orderReference);
         $this->logger->info('CM payment id'. $cmOrderDetails->getAuthorizedPayment()->getId());
 
+        $this->capture($payment, $cmOrderDetails, $order);
+
+        $this->eventManager->dispatch('cmpayments_after_process_transaction', [
+            'order' => $order,
+            'cmOrderDetails' => $cmOrderDetails
+        ]);
+    }
+
+    /**
+     * @param Payment $payment
+     * @param OrderDetail $cmOrderDetails
+     * @param OrderInterface $order
+     */
+    private function capture(Payment $payment, OrderDetail $cmOrderDetails, OrderInterface $order): void
+    {
         $payment->setTransactionId($cmOrderDetails->getAuthorizedPayment()->getId());
         $payment->setCurrencyCode($order->getBaseCurrencyCode());
         $payment->setNotificationResult(true);
@@ -132,23 +169,42 @@ class OrderTransactionService implements OrderTransactionServiceInterface
         }
 
         $this->orderRepository->save($order);
+    }
 
-        $this->eventManager->dispatch('cmpayments_after_process_transaction', [
-            'order' => $order,
-            'cmOrderDetails' => $cmOrderDetails
-        ]);
+    /**
+     * @param CMDataOrderInterface $cmOrder
+     * @param OrderInterface $order
+     * @param OrderDetail $cmOrderDetails
+     */
+    private function createCMPaymentIfNotExists(
+        CMDataOrderInterface $cmOrder,
+        OrderInterface $order,
+        OrderDetail $cmOrderDetails
+    ): void {
+        try {
+            $this->cmPaymentRepository->getByOrderKey($cmOrder->getOrderKey());
+        } catch (NoSuchEntityException $exception) {
+            /** @var CMPaymentDataInterface $cmPayment */
+            $cmPayment = $this->cmPaymentDataFactory->create();
+            $cmPayment->setOrderId((int)$order->getEntityId());
+            $cmPayment->setOrderKey($cmOrder->getOrderKey());
+            $cmPayment->setIncrementId($order->getIncrementId());
+            $cmPayment->setPaymentId($cmOrderDetails->getAuthorizedPayment()->getId());
+
+            $this->cmPaymentRepository->save($cmPayment);
+        }
     }
 
     /**
      * Cancel order by payment status for specific payment methods
      * If payment method is credit card and cm payment model exists we need to cancel the order when payment failed
      * the order status will be checked on the client side, if cancelled we need to redirect the user.
-     * @param \CM\Payments\Api\Model\Data\OrderInterface $cmOrder
+     * @param CMDataOrderInterface $cmOrder
      * @param OrderInterface $order
      * @param OrderDetail $cmOrderDetails
      */
     private function cancelOrderByPaymentStatus(
-        \CM\Payments\Api\Model\Data\OrderInterface $cmOrder,
+        CMDataOrderInterface $cmOrder,
         OrderInterface $order,
         OrderDetail $cmOrderDetails
     ): void {

@@ -113,6 +113,8 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
                 'getDescription' => 'Virtual Item Description',
                 'getIsVirtual' => '1',
                 'getQtyOrdered' => '1',
+                'getRowTotal' => '57.0000',
+                'getPrice' => '57.0000',
                 'getRowTotalInclTax' => '68.9700',
                 'getPriceInclTax' => '68.9700',
                 'getTaxAmount' => '11.9700',
@@ -131,6 +133,8 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
                 'getDescription' => 'Physical Item Description',
                 'getIsVirtual' => '0',
                 'getQtyOrdered' => '2',
+                'getRowTotal' => '114.0000',
+                'getPrice' => '57.0000',
                 'getRowTotalInclTax' => '137.9400',
                 'getPriceInclTax' => '68.9700',
                 'getTaxAmount' => '23.9400',
@@ -227,12 +231,14 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
                 'getSku',
                 'getName',
                 'getQty',
-                'getQuote'
+                'getQuote',
+                'getPrice'
             ]
         )->addMethods(
             [
                 'getDescription',
                 'getIsVirtual',
+                'getRowTotal',
                 'getRowTotalInclTax',
                 'getPriceInclTax',
                 'getTaxAmount',
@@ -247,6 +253,8 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
             ->willReturn('Virtual Item Description');
         $quoteItemVirtualMock->expects($this->any())->method('getIsVirtual')->willReturn(1);
         $quoteItemVirtualMock->expects($this->any())->method('getQty')->willReturn(1);
+        $quoteItemVirtualMock->expects($this->any())->method('getRowTotal')->willReturn('57.0000');
+        $quoteItemVirtualMock->expects($this->any())->method('getPrice')->willReturn('57.0000');
         $quoteItemVirtualMock->expects($this->any())->method('getRowTotalInclTax')->willReturn('68.9700');
         $quoteItemVirtualMock->expects($this->any())->method('getPriceInclTax')->willReturn('68.9700');
         $quoteItemVirtualMock->expects($this->any())->method('getTaxAmount')->willReturn('11.9700');
@@ -262,12 +270,14 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
                 'getSku',
                 'getName',
                 'getQty',
-                'getQuote'
+                'getQuote',
+                'getPrice'
             ]
         )->addMethods(
             [
                 'getDescription',
                 'getIsVirtual',
+                'getRowTotal',
                 'getRowTotalInclTax',
                 'getPriceInclTax',
                 'getTaxAmount',
@@ -282,6 +292,8 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
             ->willReturn('Physical Item Description');
         $quoteItemPhysicalMock->expects($this->any())->method('getIsVirtual')->willReturn(0);
         $quoteItemPhysicalMock->expects($this->any())->method('getQty')->willReturn(2);
+        $quoteItemPhysicalMock->expects($this->any())->method('getRowTotal')->willReturn('114.0000');
+        $quoteItemPhysicalMock->expects($this->any())->method('getPrice')->willReturn('57.0000');
         $quoteItemPhysicalMock->expects($this->any())->method('getRowTotalInclTax')->willReturn('137.9400');
         $quoteItemPhysicalMock->expects($this->any())->method('getPriceInclTax')->willReturn('68.9700');
         $quoteItemPhysicalMock->expects($this->any())->method('getTaxAmount')->willReturn('23.9400');

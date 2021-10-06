@@ -38,6 +38,7 @@ class ConfigProvider implements ConfigProviderInterface
     public const CODE_BANCONTACT = 'cm_payments_bancontact';
     public const CODE_ELV = 'cm_payments_elv';
     public const CODE_KLARNA = 'cm_payments_klarna';
+    public const CODE_AFTERPAY = 'cm_payments_afterpay';
     public const CODE_CM_PAYMENTS_MENU = 'cm_payments';
 
     /**

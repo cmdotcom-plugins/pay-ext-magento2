@@ -128,11 +128,11 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $shippingItem->setItemId($lastItem[0]->getItemId() + 1);
                 $shippingItem->setSku(self::ITEM_SHIPPING_FEE_SKU);
                 $shippingItem->setName(self::ITEM_SHIPPING_FEE_NAME);
-                $shippingItem->setDescription('');
+                $shippingItem->setDescription(self::ITEM_SHIPPING_FEE_NAME);
                 $shippingItem->setQtyOrdered(1);
                 $shippingItem->setTaxAmount(0);
-                $shippingItem->setPriceInclTax($order->getShippingAmount());
-                $shippingItem->setRowTotalInclTax($order->getShippingAmount());
+                $shippingItem->setPrice($order->getShippingAmount());
+                $shippingItem->setRowTotal($order->getShippingAmount());
 
                 $orderItems[] = $shippingItem;
             }
@@ -148,11 +148,11 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 );
                 $discountItem->setSku(self::ITEM_DISCOUNT_SKU);
                 $discountItem->setName(self::ITEM_DISCOUNT_NAME);
-                $discountItem->setDescription('');
+                $discountItem->setDescription(self::ITEM_DISCOUNT_NAME);
                 $discountItem->setQtyOrdered(1);
                 $discountItem->setTaxAmount(0);
-                $discountItem->setPriceInclTax(-$order->getDiscountAmount());
-                $discountItem->setRowTotalInclTax(-$order->getDiscountAmount());
+                $discountItem->setPrice($order->getDiscountAmount());
+                $discountItem->setRowTotal($order->getDiscountAmount());
 
                 $orderItems[] = $discountItem;
             }
@@ -181,11 +181,11 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $shippingItem->setItemId($lastItem[0]->getItemId() + 1);
                 $shippingItem->setSku(self::ITEM_SHIPPING_FEE_SKU);
                 $shippingItem->setName(self::ITEM_SHIPPING_FEE_NAME);
-                $shippingItem->setDescription('');
+                $shippingItem->setDescription(self::ITEM_SHIPPING_FEE_NAME);
                 $shippingItem->setQty(1);
                 $shippingItem->setTaxAmount(0);
-                $shippingItem->setPriceInclTax($quote->getShippingAddress()->getShippingAmount());
-                $shippingItem->setRowTotalInclTax($quote->getShippingAddress()->getShippingAmount());
+                $shippingItem->setPrice($quote->getShippingAddress()->getShippingAmount());
+                $shippingItem->setRowTotal($quote->getShippingAddress()->getShippingAmount());
 
                 $quoteItems[] = $shippingItem;
             }
@@ -201,11 +201,11 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 );
                 $discountItem->setSku(self::ITEM_DISCOUNT_SKU);
                 $discountItem->setName(self::ITEM_DISCOUNT_NAME);
-                $discountItem->setDescription('');
+                $discountItem->setDescription(self::ITEM_DISCOUNT_NAME);
                 $discountItem->setQty(1);
                 $discountItem->setTaxAmount(0);
-                $discountItem->setPriceInclTax(-$quote->getShippingAddress()->getDiscountAmount());
-                $discountItem->setRowTotalInclTax(-$quote->getShippingAddress()->getDiscountAmount());
+                $discountItem->setPrice($quote->getShippingAddress()->getDiscountAmount());
+                $discountItem->setRowTotal($quote->getShippingAddress()->getDiscountAmount());
 
                 $quoteItems[] = $discountItem;
             }

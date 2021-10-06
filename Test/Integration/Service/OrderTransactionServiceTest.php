@@ -6,6 +6,7 @@
 
 namespace CM\Payments\Test\Integration\Service;
 
+use CM\Payments\Api\Model\PaymentRepositoryInterface;
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
 use CM\Payments\Model\Data\Order;
@@ -152,6 +153,68 @@ class OrderTransactionServiceTest extends IntegrationTestCase
         $magentoOrder = $this->loadOrderById('100000001');
 
         $this->assertSame('pid4911203603t', $magentoOrder->getPayment()->getLastTransId());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testShouldNotProcessWhenOrderIsClosed()
+    {
+        $this->clientMock
+            ->expects($this->never())->method('execute');
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder->setState(\Magento\Sales\Model\Order::STATE_CLOSED);
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        $this->orderTransactionService->process('100000001');
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testShouldNotProcessWhenOrderAlreadyProcessed()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetail());
+      
+        // first time
+        $this->orderTransactionService->process('100000001');
+        // second time
+        $this->orderTransactionService->process('100000001');           
+    }
+  
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testMultiplePayments()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetailMultiplePayments());
+        $this->orderTransactionService->process('100000001');
+        $magentoOrder = $this->loadOrderById('100000001');
+
+        $this->assertSame('pid4911203603t', $magentoOrder->getPayment()->getLastTransId());
+    }
+    
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testIfCMPaymentIsCreatedInDatabase()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetail());
+
+        $this->orderTransactionService->process('100000001');
+        
+        $cmPaymentRepository = $this->objectManager->create(PaymentRepositoryInterface::class);
+
+        $cmPayment = $cmPaymentRepository->getByOrderKey('test123');
+        $this->assertSame('pid4911203603t', $cmPayment->getPaymentId());
     }
 
     /**

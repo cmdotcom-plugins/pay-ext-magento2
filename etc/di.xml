@@ -737,6 +737,67 @@
     </virtualType>
     <!-- END CM Payments (Klarna) Method -->
 
+    <!-- BEGIN CM Payments (AfterPay) Method -->
+    <virtualType name="CMPaymentsAfterPayFacade" type="CMPaymentsFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_AFTERPAY</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMAfterPayValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">CMAfterPayValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMAfterPayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMAfterPayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMAfterPayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMAfterPayConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMAfterPayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMAfterPayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMAfterPayGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_AFTERPAY</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMAfterPayValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMAfterPayCountryValidator</item>
+                <item name="currency" xsi:type="string">CMAfterPayCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMAfterPayCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMAfterPayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMAfterPayCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMAfterPayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (AfterPay) Method -->
+
     <!-- BEGIN CM Payments (Logger) -->
     <type name="CM\Payments\Logger\Handler">
         <arguments>
