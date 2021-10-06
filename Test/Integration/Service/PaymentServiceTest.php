@@ -161,14 +161,12 @@ class PaymentServiceTest extends IntegrationTestCase
     }
 
     /**
-     * @magentoDataFixture Magento/Sales/_files/quote.php
+     * @magentoDataFixture Magento/Sales/_files/order.php
      */
     public function testCardPayment()
     {
-        $magentoQuote = $this->loadQuoteById('test01');
-        $magentoQuote->setIsActive(true);
-        $magentoQuote->save();
-        $magentoQuote->reserveOrderId();
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
         $this->shopperServiceMock->expects($this->once())->method('createByQuoteAddress')->willReturn(
             new ShopperCreate(['shopper_key' => '123', 'address_key' => '123'])
@@ -215,8 +213,8 @@ class PaymentServiceTest extends IntegrationTestCase
             //phpcs:ignore
             ->setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.18363');
 
-        $payment = $this->paymentService->createByCardDetails(
-            (int) $magentoQuote->getId(),
+        $payment = $this->paymentService->create(
+            (int) $magentoOrder->getId(),
             $cardDetails,
             $browserDetails
         );

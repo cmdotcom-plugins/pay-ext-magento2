@@ -25,7 +25,6 @@ use CM\Payments\Model\ConfigProvider;
 use GuzzleHttp\Exception\RequestException;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
@@ -114,7 +113,7 @@ class OrderService implements OrderServiceInterface
     /**
      * @inheritDoc
      */
-    public function create(string $orderId): CMOrderInterface
+    public function create(int $orderId): CMOrderInterface
     {
         $order = $this->orderRepository->get($orderId);
         $orderCreateRequest = $this->orderRequestBuilder->create($order);
@@ -165,46 +164,6 @@ class OrderService implements OrderServiceInterface
 
         $this->eventManager->dispatch('cmpayments_after_order_create', [
             'order' => $order,
-            'cmOrder' => $cmOrder,
-        ]);
-
-        return $cmOrder;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function createByQuote(string $incrementId, Quote $quote): CMOrderInterface
-    {
-        $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote);
-
-        $this->logger->info(
-            'CM Create order request',
-            [
-                'orderId' => $incrementId,
-                'requestPayload' => $orderCreateRequest->getPayload()
-            ]
-        );
-
-        $this->eventManager->dispatch('cmpayments_before_order_create_by_quote', [
-            'quote' => $quote,
-            'orderCreateRequest' => $orderCreateRequest,
-        ]);
-
-        $orderCreateResponse = $this->orderClient->create(
-            $orderCreateRequest
-        );
-
-        if (empty($orderCreateResponse->getOrderKey())) {
-            throw new EmptyOrderKeyException(__('Empty order key'));
-        }
-        // Todo: Set order_id column to allow null so we don't have to pass 0 here
-        $this->saveCmOrder($incrementId, $orderCreateResponse, 0);
-
-        $cmOrder = $this->createCmOrder($orderCreateResponse, $orderCreateRequest);
-
-        $this->eventManager->dispatch('cmpayments_after_order_create_by_quote', [
-            'quote' => $quote,
             'cmOrder' => $cmOrder,
         ]);
 

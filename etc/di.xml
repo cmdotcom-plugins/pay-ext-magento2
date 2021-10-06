@@ -36,6 +36,7 @@
                 type="CM\Payments\Model\PaymentMethodAdditionalData"/>
     <preference for="CM\Payments\Api\Data\IssuerInterface" type="CM\Payments\Model\Issuer" />
     <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder" />
+    <preference for="CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface" type="CM\Payments\Model\Domain\PaymentOrderStatus" />
     <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config" />
 
     <preference for="CM\Payments\Api\GuestPaymentMethodManagementInterface"

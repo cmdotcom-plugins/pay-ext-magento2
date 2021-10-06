@@ -9,9 +9,13 @@ declare(strict_types=1);
 namespace CM\Payments\Service;
 
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
+use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
 use CM\Payments\Client\Api\OrderInterface as CMOrderClientInterface;
+use CM\Payments\Client\Model\Response\OrderDetail;
+use CM\Payments\Client\Model\Response\Payment\Authorization;
 use CM\Payments\Logger\CMPaymentsLogger;
+use Exception;
 use GuzzleHttp\Exception\RequestException;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -48,10 +52,16 @@ class OrderTransactionService implements OrderTransactionServiceInterface
     private $eventManager;
 
     /**
+     * @var CMPaymentRepositoryInterface
+     */
+    private $cmPaymentRepository;
+
+    /**
      * OrderTransactionService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
      * @param CMOrderRepositoryInterface $cmOrderRepository
+     * @param CMPaymentRepositoryInterface $cmPaymentRepository
      * @param CMPaymentsLogger $cmPaymentsLogger
      * @param CMOrderClientInterface $orderClient
      * @param ManagerInterface $eventManager
@@ -59,12 +69,14 @@ class OrderTransactionService implements OrderTransactionServiceInterface
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         CMOrderRepositoryInterface $cmOrderRepository,
+        CMPaymentRepositoryInterface $cmPaymentRepository,
         CMPaymentsLogger $cmPaymentsLogger,
         CMOrderClientInterface $orderClient,
         ManagerInterface $eventManager
     ) {
         $this->orderRepository = $orderRepository;
         $this->cmOrderRepository = $cmOrderRepository;
+        $this->cmPaymentRepository = $cmPaymentRepository;
         $this->logger = $cmPaymentsLogger;
         $this->eventManager = $eventManager;
         $this->orderClient = $orderClient;
@@ -94,6 +106,8 @@ class OrderTransactionService implements OrderTransactionServiceInterface
         }
 
         if (empty($cmOrderDetails->getConsideredSafe()) || ! $cmOrderDetails->isSafe()) {
+            $this->cancelOrderByPaymentStatus($cmOrder, $order, $cmOrderDetails);
+
             // If order is not considered 'Safe' we don't have to process.
             return;
         }
@@ -123,5 +137,37 @@ class OrderTransactionService implements OrderTransactionServiceInterface
             'order' => $order,
             'cmOrderDetails' => $cmOrderDetails
         ]);
+    }
+
+    /**
+     * Cancel order by payment status for specific payment methods
+     * If payment method is credit card and cm payment model exists we need to cancel the order when payment failed
+     * the order status will be checked on the client side, if cancelled we need to redirect the user.
+     * @param \CM\Payments\Api\Model\Data\OrderInterface $cmOrder
+     * @param OrderInterface $order
+     * @param OrderDetail $cmOrderDetails
+     */
+    private function cancelOrderByPaymentStatus(
+        \CM\Payments\Api\Model\Data\OrderInterface $cmOrder,
+        OrderInterface $order,
+        OrderDetail $cmOrderDetails
+    ): void {
+        try {
+            $cmPayment = $this->cmPaymentRepository->getByOrderKey($cmOrder->getOrderKey());
+            if ($order->getPayment()->getMethod() === 'cm_payments_creditcard' && $cmPayment) {
+                foreach ($cmOrderDetails->getPayments() as $payment) {
+                    if ($payment->getAuthorization()->getState() !== Authorization::STATE_AUTHORIZED) {
+                        $order->setState(Order::STATE_CANCELED);
+                        $order->addCommentToStatusHistory(
+                            __('Order cancelled by CM, payment id %1', $payment->getId()),
+                            Order::STATE_CANCELED
+                        );
+                        $this->orderRepository->save($order);
+                    }
+                }
+            }
+        } catch (Exception $exception) {
+            $this->logger->error($exception->getMessage(), $exception->getTrace());
+        }
     }
 }

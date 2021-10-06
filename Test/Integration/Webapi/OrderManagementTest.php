@@ -78,7 +78,7 @@ class OrderManagementTest extends IntegrationTestCase
     public function testProcessOrderPaymentWithoutRedirect()
     {
         $this->clientMock->expects($this->exactly(3))->method('execute')->willReturn(
-        // CM Shopper create
+            // CM Shopper create
             [
                 'shopper_key' => 'ec11cd24-e667-4f9e-a677-5ffe0d4aee5e',
                 'address_key' => 'ec11cd24-e667-4f9e-a677-5ffe0d4aee5e'

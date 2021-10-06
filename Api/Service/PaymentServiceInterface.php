@@ -10,6 +10,7 @@ namespace CM\Payments\Api\Service;
 
 use CM\Payments\Api\Data\BrowserDetailsInterface;
 use CM\Payments\Api\Data\CardDetailsInterface;
+use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface;
 use CM\Payments\Client\Api\CMPaymentInterface;
 use CM\Payments\Exception\EmptyPaymentIdException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -17,40 +18,22 @@ use Magento\Framework\Exception\NoSuchEntityException;
 interface PaymentServiceInterface
 {
     /**
-     * @param string $orderId
-     * @return CMPaymentInterface
-     * @throws NoSuchEntityException
-     * @throws EmptyPaymentIdException
-     */
-    public function create(string $orderId): CMPaymentInterface;
-
-    /**
-     * @param string $quoteId
+     * @param int $orderId
      * @param CardDetailsInterface $cardDetails
      * @param BrowserDetailsInterface $browserDetails
      * @return CMPaymentInterface
      * @throws NoSuchEntityException
      * @throws EmptyPaymentIdException
-     * @throws \Exception
      */
-    public function createByGuestCardDetails(
-        string $quoteId,
+    public function create(
+        int $orderId,
         CardDetailsInterface $cardDetails,
         BrowserDetailsInterface $browserDetails
     ): CMPaymentInterface;
 
     /**
-     * @param string $quoteId
-     * @param CardDetailsInterface $cardDetails
-     * @param BrowserDetailsInterface $browserDetails
-     * @return CMPaymentInterface
-     * @throws NoSuchEntityException
-     * @throws EmptyPaymentIdException
-     * @throws \Exception
+     * @param string $paymentId
+     * @return PaymentOrderStatusInterface
      */
-    public function createByCardDetails(
-        int $quoteId,
-        CardDetailsInterface $cardDetails,
-        BrowserDetailsInterface $browserDetails
-    ): CMPaymentInterface;
+    public function getPaymentStatus(string $paymentId): PaymentOrderStatusInterface;
 }

@@ -7,14 +7,12 @@
  * @api
  */
 define([
-    'Magento_Checkout/js/model/quote',
     'Magento_Checkout/js/model/url-builder',
     'mage/storage',
     'Magento_Checkout/js/model/error-processor',
     'Magento_Customer/js/model/customer',
     'Magento_Checkout/js/model/full-screen-loader'
 ], function (
-    quote,
     urlBuilder,
     storage,
     errorProcessor,
@@ -23,29 +21,23 @@ define([
 ) {
     'use strict';
 
-    return function (messageContainer, paymentData) {
-        let serviceUrl,
-            payload = {
-                quoteId: quote.getQuoteId(),
-                cardDetails: {
-                    'method': paymentData.additional_data.cc_type,
-                    'encrypted_card_data': paymentData.additional_data.data
-                },
-                browserDetails: {
-                    'user_agent': navigator.userAgent
-                }
-            };
+    return function (messageContainer, paymentData, orderId) {
+        const payload = {
+            cardDetails: {
+                'method': paymentData.additional_data.cc_type,
+                'encrypted_card_data': paymentData.additional_data.data
+            },
+            browserDetails: {
+                'user_agent': navigator.userAgent
+            }
+        };
 
         /**
          * Checkout for guest and registered customer.
          */
-        if (!customer.isLoggedIn()) {
-            serviceUrl = urlBuilder.createUrl('/cmpayments/guest-payment/credit-card/:quoteId', {
-                quoteId: quote.getQuoteId()
-            });
-        } else {
-            serviceUrl = urlBuilder.createUrl('/cmpayments/mine-payment/credit-card', {});
-        }
+        const serviceUrl = urlBuilder.createUrl('/cmpayments/payment/credit-card/:orderId', {
+            orderId: parseInt(orderId)
+        });
 
         loader.startLoader();
         return storage.post(

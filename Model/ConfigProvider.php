@@ -13,8 +13,10 @@ use CM\Payments\Config\Config as ConfigService;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Adminhtml\Source\Cctype as CcTypeSource;
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Asset\Repository as AssetRepository;
 use Magento\Framework\View\Asset\Source as AssetSource;
 
@@ -62,6 +64,14 @@ class ConfigProvider implements ConfigProviderInterface
      * @var CMPaymentsLogger
      */
     private $logger;
+    /**
+     * @var RequestInterface
+     */
+    private $request;
+    /**
+     * @var UrlInterface
+     */
+    private $urlBuilder;
 
     /**
      * ConfigProvider constructor
@@ -77,12 +87,16 @@ class ConfigProvider implements ConfigProviderInterface
         AssetSource $assetSource,
         ConfigService $configService,
         CcTypeSource $ccTypeSource,
+        RequestInterface $request,
+        UrlInterface $urlBuilder,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->assetRepository = $assetRepository;
         $this->assetSource = $assetSource;
         $this->configService = $configService;
         $this->ccTypeSource = $ccTypeSource;
+        $this->request = $request;
+        $this->urlBuilder = $urlBuilder;
         $this->logger = $cmPaymentsLogger;
     }
 
@@ -119,6 +133,11 @@ class ConfigProvider implements ConfigProviderInterface
                 if ($code == self::CODE_CREDIT_CARD) {
                     $config['payment'][$code]['is_direct'] = $this->configService->isCreditCardDirect();
                     $config['payment'][$code]['allowedTypesIcons'] = $this->getCreditCardAllowedTypesIcons($code);
+                    $config['payment'][$code]['successPage'] = $this->urlBuilder->getUrl(
+                        'checkout/onepage/success',
+                        ['_secure' => $this->request->isSecure()]
+                    );
+
                 }
             }
         } catch (LocalizedException $e) {

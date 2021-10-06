@@ -13,6 +13,8 @@ define([
     'CM_Payments/js/model/validators/creditcard/3dsv2-validator',
     'jquery',
     'underscore',
+    'mage/url',
+    'CM_Payments/js/action/creditcard/get-payment-status',
     'Magento_Payment/js/model/credit-card-validation/validator',
     'CM_Payments/js/model/validators/creditcard/allowed-card-type-validator',
     'mage/translate'
@@ -25,7 +27,9 @@ define([
     initCCPaymentAction,
     cc3DSv2Validator,
     $,
-    _
+    _,
+    url,
+    paymentStatus
 ) {
     'use strict';
     return Component.extend({
@@ -59,15 +63,8 @@ define([
 
             this.paymentConfig = window.checkoutConfig.payment[this.item.method];
 
-            this.loadEncryptionLibrary(function () {
-                console.log(window.cseEncrypt);
-                console.log('loaded');
-            })
-
-            this.loadNsa3DsLibrary(function () {
-                console.log(window.nca3DSWebSDK);
-                console.log('loaded');
-            })
+            this.loadEncryptionLibrary();
+            this.loadNsa3DsLibrary();
 
             return this;
         },
@@ -387,37 +384,117 @@ define([
          */
         placeOrder: function () {
             let self = this;
-            if (this.validate() &&
-                this.isPlaceOrderActionAllowed() === true
+            if (!this.validate() ||
+                this.isPlaceOrderActionAllowed() !== true
             ) {
-                loader.startLoader();
-                this.isPlaceOrderActionAllowed(false);
-                $.when(
-                    initCCPaymentAction(this.messageContainer, self.getData())
-                ).done(
-                    function (response) {
-                        if (response) {
-                            if (cc3DSv2Validator.perform3DsSteps(response, self.messageContainer)) {
-                                self.isPlaceOrderActionAllowed(true);
-                            }
-                        }
-                    }
-                ).always(
-                    function () {
-                        self.isPlaceOrderActionAllowed(true);
-                        loader.stopLoader();
-                    }
-                );
+                return false;
             }
 
+            self.getPlaceOrderDeferredObject().fail(
+                function () {
+                    loader.stopLoader();
+                    self.isPlaceOrderActionAllowed(true);
+                }
+            ).done(
+                function (orderId) {
+                    $.when(
+                        initCCPaymentAction(self.messageContainer, self.getData(), orderId)
+                    ).done(
+                        function (payment) {
+                            if (!payment) {
+                                console.error('No response');
+                                return;
+                            }
+
+                            const threeDSecureValidation = cc3DSv2Validator.perform3DsSteps(payment, self.messageContainer);
+
+                            threeDSecureValidation.subscribe(function(validation) {
+                                console.log(validation);
+                                if (validation.status === 'CHALLENGE') {
+                                    if (validation.action === 'REDIRECT') {
+                                        return;
+                                    }
+                                    if (validation.action === 'AUTHENTICATE') {
+                                        return self.pollingStatus(payment.id);
+                                    }
+
+                                    if (validation.action === 'CLOSE_MODAL') {
+                                        loader.startLoader();
+                                        return paymentStatus.get(payment.id).then(function(response) {
+                                            self.handleOrderStatusResponse(response);
+                                        });
+                                    }
+                                }
+
+                                if (validation.status === 'AUTHORIZED') {
+                                    return self.afterPlaceOrder();
+                                }
+
+                                if (validation.status === 'ERROR' || validation.status === 'CANCELED') {
+                                    return paymentStatus.get(payment.id).then(function(response) {
+                                        self.handleOrderStatusResponse(response);
+                                    });
+                                }
+                            })
+                        }
+                    )
+                }
+            );
+
             return false;
+        },
+
+        /**
+         * Handle order status response
+         * @param response
+         * @returns {*}
+         */
+        handleOrderStatusResponse: function(response) {
+            if (response.status === 'processing') {
+                return this.afterPlaceOrder();
+            }
+
+            return this.redirectToCart(response.order_id, response.status);
+        },
+
+        /**
+         * Redirect to cart
+         * @param {string} orderId
+         * @param {string} status
+         */
+        redirectToCart: function(orderId, status) {
+            window.location.replace(
+                url.build('/cmpayments/payment/result?order_reference='+ orderId + ' &status='+ status)
+            );
+        },
+
+        /**
+         * Polling order status
+         * @param paymentId
+         */
+        pollingStatus: function(paymentId) {
+            if (this.startPolling === true) {
+                return;
+            }
+            this.startPolling = true;
+            const self = this;
+            paymentStatus.pollingStatus(paymentId).then(function(response) {
+                self.handleOrderStatusResponse(response);
+            }).catch(function(error) {
+                // Todo: get order reference by orderId
+                console.log('TIMEOUT', error);
+                return window.location.replace(
+                    url.build('/cmpayments/payment/result?order_reference=&status=error')
+                );
+            })
         },
 
         /**
          * Redirect to controller for payment confirmation after place order
          */
         afterPlaceOrder: function () {
-            this.redirectAfterPlaceOrder = false;
+            this.redirectAfterPlaceOrder = true;
+            window.location.replace(this.paymentConfig.successPage);
         }
     });
 });

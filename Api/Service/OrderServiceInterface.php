@@ -12,24 +12,16 @@ use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Exception\EmptyOrderKeyException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Quote\Model\Quote;
 
 interface OrderServiceInterface
 {
     /**
-     * @param string $orderId
+     * @param int $orderId
      * @return CMOrderInterface
      * @throws EmptyOrderKeyException
      * @throws LocalizedException
      */
-    public function create(string $orderId): CMOrderInterface;
-
-    /**
-     * @param string $incrementId
-     * @param Quote $quote
-     * @return CMOrderInterface
-     */
-    public function createByQuote(string $incrementId, Quote $quote): CMOrderInterface;
+    public function create(int $orderId): CMOrderInterface;
 
     /**
      * @param string $orderKey

@@ -5,6 +5,7 @@
 
 define([
     'jquery',
+    'ko',
     'mage/translate',
     'Magento_Ui/js/modal/alert',
     'Magento_Ui/js/modal/modal',
@@ -12,6 +13,7 @@ define([
     'Magento_Checkout/js/model/full-screen-loader'
 ], function (
     $,
+    ko,
     $t,
     alert,
     modal,
@@ -41,7 +43,7 @@ define([
 
     return {
         threeDsPassedResult: false,
-
+        validation: null,
         /**
          * @return {Boolean} threeDsPassedResult
          */
@@ -60,6 +62,7 @@ define([
          * Setup of 3D Secure challenge form popup
          */
         setupChallengePopup: function () {
+            const self = this;
             let options = {
                     title: $t('Additional Challenge Confirmation'),
                     type: 'popup',
@@ -90,21 +93,20 @@ define([
 
             $('#threeDSCReqIframe').attr('width', '490px');
             $('#threeDSCReqIframe').attr('height', '410px');
-            $('#threeDSCReqIframe').contents().find('form').submit(function() {
-                $('#cc-challenge-form-popup').modal("closeModal");
-                self.set3DsPassedResult(true);
 
-                return self.get3DsPassedResult();
-            });
-
+            self.validation({status: RESULT_CHALLENGE, action: 'AUTHENTICATE'});
             $('#cc-challenge-form-popup').modal("openModal");
+
+            $('#cc-challenge-form-popup').on('modalclosed', function() {
+                self.validation({status: RESULT_CHALLENGE, action: 'CLOSE_MODAL'});
+            });
         },
 
         /**
          * Performing of 3D Secure Steps
          *
          * @param {Object} responseData
-         * @return {Boolean}
+         * @return {Promise<{status: boolean, type: string}>}
          */
         perform3DsSteps: function (
             responseData,
@@ -114,6 +116,8 @@ define([
                 console.error('CM.com NSA 3D Secure library is not loaded');
                 return false;
             }
+
+            this.validation = ko.observable();
 
             let acsMethodData = this.findUrlWithPurpose(responseData.urls, PURPOSE_HIDDEN_IFRAME),
                 authenticationData = this.findUrlWithPurpose(responseData.urls, PURPOSE_IFRAME),
@@ -135,7 +139,7 @@ define([
                 };
             }
 
-            return this.perform3DsAuthentication(
+            this.perform3DsAuthentication(
                 acsMethodUrl,
                 acsThreeDSMethodData,
                 authenticationUrl,
@@ -143,6 +147,8 @@ define([
                 messageContainer,
                 false
             );
+
+            return this.validation;
         },
 
         /**
@@ -265,6 +271,7 @@ define([
                             let redirectUrlData = self.findUrlWithPurpose(response.urls, 'REDIRECT');
                             if (redirectUrlData) {
                                 self.redirectForAuthentication(redirectUrlData.url, redirectUrlData.parameters);
+                                self.validation({status: RESULT_CHALLENGE, action: 'REDIRECT'});
                                 self.set3DsPassedResult(true);
                             } else {
                                 /* We have some knowledge of the returned data here. All the URLs require POST and the parameter
@@ -281,7 +288,7 @@ define([
                                         '02',
                                         'threeDSCReqIFrame',
                                         $('#cc-challenge-form-popup').find('.cc-challenge-form-popup-content')[0],
-                                        self.openChallengePopup
+                                        self.openChallengePopup.bind(self)
                                     );
                                     self.set3DsPassedResult(true);
                                 } else {
@@ -331,6 +338,7 @@ define([
 
                             break;
                         case RESULT_AUTHORIZED:
+                            self.validation({status: RESULT_AUTHORIZED});
                             self.set3DsPassedResult(true);
                             break;
                         case RESULT_ERROR:
@@ -340,7 +348,7 @@ define([
                             } else {
                                 self.showError($t('Unable to finish 3D Secure Authentication. Please, try later.'));
                             }
-
+                            self.validation({status: response.result});
                             self.set3DsPassedResult(false);
                             break;
                     }
