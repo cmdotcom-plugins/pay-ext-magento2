@@ -188,6 +188,7 @@ class PaymentService implements PaymentServiceInterface
         }
 
         if (!$paymentCreateResponse || !$paymentCreateResponse->getId()) {
+            $this->logger->error('Empty payment id', ['response' => $paymentCreateResponse]);
             throw new EmptyPaymentIdException(__('Empty payment id'));
         }
 

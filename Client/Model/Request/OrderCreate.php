@@ -15,7 +15,7 @@ class OrderCreate
      */
     public const STATUS_SUCCESS = 'success';
     public const STATUS_PENDING = 'pending';
-    public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_CANCELLED = 'canceled';
     public const STATUS_ERROR = 'error';
 
     /**

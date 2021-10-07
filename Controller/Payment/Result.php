@@ -101,16 +101,12 @@ class Result extends Action implements HttpGetActionInterface
         $status = $this->request->getParam('status');
 
         try {
-            if (!$referenceOrderId || !$status) {
-                $this->messageManager->addErrorMessage(__("The order reference is not valid!"));
-
+            if (!$status) {
                 return $this->redirectToCheckout();
             }
 
             $orderIncrementId = $this->checkoutSession->getLastRealOrder()->getIncrementId();
-            if (!$orderIncrementId || $referenceOrderId !== $orderIncrementId) {
-                $this->messageManager->addErrorMessage(__("The order reference is not valid!"));
-
+            if ($orderIncrementId && $referenceOrderId !== $orderIncrementId) {
                 return $this->redirectToCheckout();
             }
 

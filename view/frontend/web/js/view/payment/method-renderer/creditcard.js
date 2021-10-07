@@ -456,7 +456,10 @@ define([
                                 }
                             })
                         }
-                    )
+                    ).fail(function(response) {
+                        self.redirectToCart('error');
+                    })
+
                 }
             );
 
@@ -473,7 +476,7 @@ define([
                 return this.afterPlaceOrder();
             }
 
-            return this.redirectToCart(response.status, response.order_id);
+            return this.redirectToCart('canceled', response.order_id);
         },
 
         /**
