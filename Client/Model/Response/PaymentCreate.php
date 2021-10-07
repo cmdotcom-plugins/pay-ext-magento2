@@ -43,7 +43,8 @@ class PaymentCreate
                     (string)$url['purpose'],
                     (string)$url['method'],
                     (string)$url['url'],
-                    (string)$url['order']
+                    (string)$url['order'],
+                    $url['parameters'] ?: ''
                 );
             }
         } else {

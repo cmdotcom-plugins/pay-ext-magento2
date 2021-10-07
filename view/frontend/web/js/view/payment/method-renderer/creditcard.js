@@ -15,7 +15,10 @@ define([
     'jquery',
     'underscore',
     'mage/url',
-    'CM_Payments/js/action/creditcard/get-payment-status'
+    'CM_Payments/js/action/creditcard/get-payment-status',
+    'Magento_Payment/js/model/credit-card-validation/validator',
+    'CM_Payments/js/model/validators/creditcard/allowed-card-type-validator',
+    'mage/translate'
 ], function (
     Component,
     redirectOnSuccessAction,
@@ -415,9 +418,10 @@ define([
 
                             if (payment.status === 'REDIRECTED_FOR_AUTHENTICATION') {
                                 // Check if we got an 3dsv1 or 3dsv2 response based on 'REDIRECT' type in url model.
-                                const url = cc3DSv2Validator.findUrlWithPurpose(payment.url, 'REDIRECT');
+                                const url = cc3DSv2Validator.findUrlWithPurpose(payment.urls, 'REDIRECT');
                                 if (payment.redirect_url && url) {
-                                    return cc3DSv1Validator.redirectForAuthentication(payment.redirect_url, url)
+                                    const parameters = JSON.parse(url.parameters);
+                                    return cc3DSv1Validator.redirectForAuthentication(url.url, parameters)
                                 }
                             }
 

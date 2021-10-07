@@ -32,4 +32,9 @@ interface CMPaymentUrlInterface
      * @return string
      */
     public function getPurpose(): string;
+
+    /**
+     * @return string
+     */
+    public function getParameters(): string;
 }
