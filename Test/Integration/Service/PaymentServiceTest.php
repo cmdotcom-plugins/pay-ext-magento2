@@ -23,13 +23,13 @@ use CM\Payments\Model\Data\CardDetails;
 use CM\Payments\Service\OrderRequestBuilder;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Service\PaymentService;
-use CM\Payments\Service\Quote\Request\Part\Amount;
-use CM\Payments\Service\Quote\Request\Part\BillingAddressKey;
-use CM\Payments\Service\Quote\Request\Part\Country;
-use CM\Payments\Service\Quote\Request\Part\Currency;
-use CM\Payments\Service\Quote\Request\Part\Email;
-use CM\Payments\Service\Quote\Request\Part\Language;
-use CM\Payments\Service\Quote\Request\Part\OrderId;
+use CM\Payments\Service\Order\Request\Part\Amount;
+use CM\Payments\Service\Order\Request\Part\BillingAddressKey;
+use CM\Payments\Service\Order\Request\Part\Country;
+use CM\Payments\Service\Order\Request\Part\Currency;
+use CM\Payments\Service\Order\Request\Part\Email;
+use CM\Payments\Service\Order\Request\Part\Language;
+use CM\Payments\Service\Order\Request\Part\OrderId;
 use CM\Payments\Service\ShopperService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -83,7 +83,7 @@ class PaymentServiceTest extends IntegrationTestCase
             ]
         );
 
-        $payment = $this->paymentService->create($magentoOrder->getId());
+        $payment = $this->paymentService->create((int) $magentoOrder->getId());
         $this->assertNotNull(
             $payment->getId()
         );
@@ -121,7 +121,7 @@ class PaymentServiceTest extends IntegrationTestCase
             ]
         );
 
-        $payment = $this->paymentService->create($magentoOrder->getId());
+        $payment = $this->paymentService->create((int) $magentoOrder->getId());
         $this->assertNotNull(
             $payment->getId()
         );
@@ -150,7 +150,7 @@ class PaymentServiceTest extends IntegrationTestCase
             ]
         );
 
-        $payment = $this->paymentService->create($magentoOrder->getId());
+        $payment = $this->paymentService->create((int) $magentoOrder->getId());
         $this->assertNotNull(
             $payment->getId()
         );
@@ -164,7 +164,7 @@ class PaymentServiceTest extends IntegrationTestCase
         $magentoOrder = $this->loadOrderById('100000001');
         $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
-        $this->shopperServiceMock->expects($this->once())->method('createByQuoteAddress')->willReturn(
+        $this->shopperServiceMock->expects($this->once())->method('createByOrderAddress')->willReturn(
             new ShopperCreate(['shopper_key' => '123', 'address_key' => '123'])
         );
 
@@ -251,7 +251,7 @@ class PaymentServiceTest extends IntegrationTestCase
             ]
         );
 
-        $this->paymentService->create($magentoOrder->getId());
+        $this->paymentService->create((int) $magentoOrder->getId());
 
         /** @var CMPaymentRepositoryInterface $cmOrderRepository */
         $cmPaymentRepository = $this->objectManager->create(CMPaymentRepositoryInterface::class);
@@ -289,7 +289,7 @@ class PaymentServiceTest extends IntegrationTestCase
         $orderRequestBuilder = $this->objectManager->create(
             OrderRequestBuilder::class,
             [
-                'quoteRequestParts' => [
+                'orderRequestParts' => [
                     $billingAddressKey,
                     $this->objectManager->create(OrderId::class),
                     $this->objectManager->create(Amount::class),
@@ -311,7 +311,8 @@ class PaymentServiceTest extends IntegrationTestCase
         $this->paymentService = $this->objectManager->create(
             PaymentService::class,
             [
-                'paymentClient' => $paymentClient
+                'paymentClient' => $paymentClient,
+                'orderService' => $orderService
             ]
         );
     }

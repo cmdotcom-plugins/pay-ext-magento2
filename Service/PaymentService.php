@@ -26,7 +26,6 @@ use CM\Payments\Exception\EmptyPaymentIdException;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
 use GuzzleHttp\Exception\GuzzleException;
-use Magento\Customer\Model\CustomerFactory;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\OrderRepositoryInterface;
@@ -84,11 +83,6 @@ class PaymentService implements PaymentServiceInterface
     private $orderService;
 
     /**
-     * @var CustomerFactory
-     */
-    private $customerFactory;
-
-    /**
      * @var PaymentOrderStatusInterfaceFactory
      */
     private $paymentOrderStatusFactory;
@@ -105,7 +99,6 @@ class PaymentService implements PaymentServiceInterface
      * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $logger
-     * @param CustomerFactory $customerFactory
      * @param PaymentOrderStatusInterfaceFactory $paymentOrderStatusFactory
      */
     public function __construct(
@@ -119,7 +112,6 @@ class PaymentService implements PaymentServiceInterface
         CMOrderRepositoryInterface $cmOrderRepository,
         ManagerInterface $eventManager,
         CMPaymentsLogger $logger,
-        CustomerFactory $customerFactory,
         PaymentOrderStatusInterfaceFactory $paymentOrderStatusFactory
     ) {
         $this->orderRepository = $orderRepository;
@@ -132,7 +124,6 @@ class PaymentService implements PaymentServiceInterface
         $this->eventManager = $eventManager;
         $this->logger = $logger;
         $this->orderService = $orderService;
-        $this->customerFactory = $customerFactory;
         $this->paymentOrderStatusFactory = $paymentOrderStatusFactory;
     }
 
@@ -141,8 +132,8 @@ class PaymentService implements PaymentServiceInterface
      */
     public function create(
         int $orderId,
-        CardDetailsInterface $cardDetails,
-        BrowserDetailsInterface $browserDetails
+        CardDetailsInterface $cardDetails = null,
+        BrowserDetailsInterface $browserDetails = null
     ): CMPaymentInterface {
         $order = $this->orderRepository->get($orderId);
 
@@ -195,7 +186,7 @@ class PaymentService implements PaymentServiceInterface
             $order->getPayment()->setAdditionalInformation($additionalInformation);
             $this->orderRepository->save($order);
         }
-        
+
         if (!$paymentCreateResponse || !$paymentCreateResponse->getId()) {
             throw new EmptyPaymentIdException(__('Empty payment id'));
         }

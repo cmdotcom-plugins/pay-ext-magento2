@@ -19,16 +19,16 @@ interface PaymentServiceInterface
 {
     /**
      * @param int $orderId
-     * @param CardDetailsInterface $cardDetails
-     * @param BrowserDetailsInterface $browserDetails
+     * @param CardDetailsInterface|null $cardDetails
+     * @param BrowserDetailsInterface|null $browserDetails
      * @return CMPaymentInterface
      * @throws NoSuchEntityException
      * @throws EmptyPaymentIdException
      */
     public function create(
         int $orderId,
-        CardDetailsInterface $cardDetails,
-        BrowserDetailsInterface $browserDetails
+        CardDetailsInterface $cardDetails = null,
+        BrowserDetailsInterface $browserDetails = null
     ): CMPaymentInterface;
 
     /**

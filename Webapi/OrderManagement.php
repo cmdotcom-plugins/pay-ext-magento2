@@ -64,9 +64,9 @@ class OrderManagement implements OrderManagementInterface
             throw new NoSuchEntityException(__('Order not found.'));
         }
 
-        $this->orderService->create($order->getId());
+        $this->orderService->create((int) $order->getId());
 
-        $cmPayment = $this->paymentService->create($order->getId());
+        $cmPayment = $this->paymentService->create((int) $order->getId());
         if (!$cmPayment->getRedirectUrl()) {
             throw new LocalizedException(__('No redirect url found in payment response.'));
         }

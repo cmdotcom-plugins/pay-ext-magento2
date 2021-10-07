@@ -100,7 +100,7 @@ class OrderServiceTest extends UnitTestCase
         $this->assertSame(
         //phpcs:ignore
             'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
-            $this->orderService->create('1')->getUrl()
+            $this->orderService->create(1)->getUrl()
         );
     }
 
@@ -119,7 +119,7 @@ class OrderServiceTest extends UnitTestCase
 
         $this->expectException(Exception::class);
 
-        $this->orderService->create('1');
+        $this->orderService->create(1);
     }
 
     public function testEventDispatch()
@@ -171,7 +171,7 @@ class OrderServiceTest extends UnitTestCase
             ]
         );
 
-        $this->orderService->create('1');
+        $this->orderService->create(1);
     }
 
     protected function setUp(): void
