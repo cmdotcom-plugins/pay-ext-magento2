@@ -11,13 +11,11 @@ define([
     'CM_Payments/js/model/validators/creditcard/card-number-validator',
     'CM_Payments/js/action/creditcard/init-payment-information',
     'CM_Payments/js/model/validators/creditcard/3dsv2-validator',
+    'CM_Payments/js/model/validators/creditcard/3dsv1-validator',
     'jquery',
     'underscore',
     'mage/url',
-    'CM_Payments/js/action/creditcard/get-payment-status',
-    'Magento_Payment/js/model/credit-card-validation/validator',
-    'CM_Payments/js/model/validators/creditcard/allowed-card-type-validator',
-    'mage/translate'
+    'CM_Payments/js/action/creditcard/get-payment-status'
 ], function (
     Component,
     redirectOnSuccessAction,
@@ -26,6 +24,7 @@ define([
     cardNumberValidator,
     initCCPaymentAction,
     cc3DSv2Validator,
+    cc3DSv1Validator,
     $,
     _,
     url,
@@ -403,10 +402,26 @@ define([
                         function (payment) {
                             if (!payment) {
                                 console.error('No response');
-                                return;
+                                return self.redirectToCart('error');
                             }
 
-                            const threeDSecureValidation = cc3DSv2Validator.perform3DsSteps(payment, self.messageContainer);
+                            if (payment.status === 'AUTHORIZED') {
+                                return this.afterPlaceOrder();
+                            }
+
+                            if (payment.status === 'CANCELED') {
+                                return self.redirectToCart('canceled');
+                            }
+
+                            if (payment.status === 'REDIRECTED_FOR_AUTHENTICATION') {
+                                // Check if we got an 3dsv1 or 3dsv2 response based on 'REDIRECT' type in url model.
+                                const url = cc3DSv2Validator.findUrlWithPurpose(payment.url, 'REDIRECT');
+                                if (payment.redirect_url && url) {
+                                    return cc3DSv1Validator.redirectForAuthentication(payment.redirect_url, url)
+                                }
+                            }
+
+                            const threeDSecureValidation = cc3DSv2Validator.perform3DsSteps(payment);
 
                             threeDSecureValidation.subscribe(function(validation) {
                                 console.log(validation);
@@ -454,17 +469,21 @@ define([
                 return this.afterPlaceOrder();
             }
 
-            return this.redirectToCart(response.order_id, response.status);
+            return this.redirectToCart(response.status, response.order_id);
         },
 
         /**
          * Redirect to cart
-         * @param {string} orderId
          * @param {string} status
+         * @param {string|null} orderId
          */
-        redirectToCart: function(orderId, status) {
+        redirectToCart: function(status, orderId= null) {
+            let redirectUrl = '/cmpayments/payment/result?status='+ status;
+            if (orderId) {
+                redirectUrl += '&order_reference='+ orderId;
+            }
             window.location.replace(
-                url.build('/cmpayments/payment/result?order_reference='+ orderId + ' &status='+ status)
+                url.build(redirectUrl)
             );
         },
 
@@ -481,11 +500,7 @@ define([
             paymentStatus.pollingStatus(paymentId).then(function(response) {
                 self.handleOrderStatusResponse(response);
             }).catch(function(error) {
-                // Todo: get order reference by orderId
-                console.log('TIMEOUT', error);
-                return window.location.replace(
-                    url.build('/cmpayments/payment/result?order_reference=&status=error')
-                );
+                return self.redirectToCart('error');
             })
         },
 

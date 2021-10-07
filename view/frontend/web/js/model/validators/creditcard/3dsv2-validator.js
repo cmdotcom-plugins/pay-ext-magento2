@@ -109,15 +109,14 @@ define([
          * @return {Promise<{status: boolean, type: string}>}
          */
         perform3DsSteps: function (
-            responseData,
-            messageContainer
+            responseData
         ) {
+            this.validation = ko.observable();
+
             if (typeof window.nca3DSWebSDK === 'undefined') {
                 console.error('CM.com NSA 3D Secure library is not loaded');
-                return false;
+                return this.validation({status: 'ERROR'});
             }
-
-            this.validation = ko.observable();
 
             let acsMethodData = this.findUrlWithPurpose(responseData.urls, PURPOSE_HIDDEN_IFRAME),
                 authenticationData = this.findUrlWithPurpose(responseData.urls, PURPOSE_IFRAME),
@@ -144,7 +143,6 @@ define([
                 acsThreeDSMethodData,
                 authenticationUrl,
                 authenticationData,
-                messageContainer,
                 false
             );
 
@@ -156,27 +154,18 @@ define([
          *
          * @param {String} authenticationUrl
          * @param {Object} authenticationData
-         * @param {Object} messageContainer
          * @return {Boolean}
          */
         get3DsAuthenticationDeferredObject: function (
             authenticationUrl,
-            authenticationData,
-            messageContainer
+            authenticationData
         ) {
-            let self = this;
-
             loader.startLoader();
             $.when(
                 this.handle3DsAuthentication(
                     authenticationUrl,
-                    authenticationData,
-                    messageContainer
+                    authenticationData
                 )
-            ).done(
-                function () {
-                    return self.get3DsPassedResult();
-                }
             ).always(
                 function () {
                     loader.stopLoader();
@@ -193,7 +182,6 @@ define([
          * @param {Object} acsThreeDSMethodData
          * @param {String} authenticationUrl
          * @param {Object} authenticationData
-         * @param {Object} messageContainer
          * @param {Boolean} forceAuthentication
          * @return {Boolean}
          */
@@ -202,14 +190,14 @@ define([
             acsThreeDSMethodData,
             authenticationUrl,
             authenticationData,
-            messageContainer,
             forceAuthentication
         ) {
             let self = this;
             this.setupChallengePopup();
 
             if (!authenticationUrl || !authenticationData) {
-                this.showError('Not all ACS Authentication parameters provided');
+                console.error('Not all ACS Authentication parameters provided');
+                return this.validation({status: 'ERROR'});
             }
 
             if (authenticationData) {
@@ -220,12 +208,12 @@ define([
                 // No ACS method URL, so can skip that part. Directly authenticate the shopper.
                 return this.get3DsAuthenticationDeferredObject(
                     authenticationUrl,
-                    authenticationData,
-                    messageContainer
+                    authenticationData
                 );
             } else {
                 if (!acsThreeDSMethodData) {
-                    this.showError('Not all ACS 3DS method parameters provided');
+                    console.error('Not all ACS 3DS method parameters provided');
+                    return this.validation({status: 'ERROR'});
                 }
 
                 // Create Issuer/ACS Method hidden iframe and init 3D Secure
@@ -237,8 +225,7 @@ define([
                     function () {
                         return self.get3DsAuthenticationDeferredObject(
                             authenticationUrl,
-                            authenticationData,
-                            messageContainer
+                            authenticationData
                         )
                     }
                 );
@@ -250,12 +237,10 @@ define([
          *
          * @param {String} authenticationUrl
          * @param {Object} authenticationData
-         * @param {Object} messageContainer
          */
         handle3DsAuthentication: function (
             authenticationUrl,
-            authenticationData,
-            messageContainer
+            authenticationData
         ) {
             let self = this;
             return $.ajax({
@@ -290,11 +275,9 @@ define([
                                         $('#cc-challenge-form-popup').find('.cc-challenge-form-popup-content')[0],
                                         self.openChallengePopup.bind(self)
                                     );
-                                    self.set3DsPassedResult(true);
                                 } else {
-                                    self.set3DsPassedResult(false);
-                                    self.showError($t('Unable to finish 3D Secure Challenge Request. Please, try' +
-                                        ' later.'));
+                                    console.error($t('Unable to finish 3D Secure Challenge Request. Please, try later.'));
+                                    self.validation({status: 'ERROR'});
                                 }
                             }
                             break;
@@ -332,34 +315,24 @@ define([
                                 acsThreeDSMethodData,
                                 authenticationUrl,
                                 authenticationData,
-                                messageContainer,
                                 true
                             );
 
                             break;
                         case RESULT_AUTHORIZED:
                             self.validation({status: RESULT_AUTHORIZED});
-                            self.set3DsPassedResult(true);
                             break;
                         case RESULT_ERROR:
                         case RESULT_CANCELED:
-                            if (response.error.message) {
-                                self.showError(response.error.message);
-                            } else {
-                                self.showError($t('Unable to finish 3D Secure Authentication. Please, try later.'));
-                            }
                             self.validation({status: response.result});
-                            self.set3DsPassedResult(false);
                             break;
                     }
                 } else {
-                    self.showError($t('Unable to finish 3D Secure Authentication. Please, try later.'));
-                    self.set3DsPassedResult(false);
+                    self.validation({status: 'canceled'});
                 };
             }).fail(
                 function (response) {
-                    errorProcessor.process(response, messageContainer);
-                    self.set3DsPassedResult(false);
+                    self.validation({status: 'ERROR'});
                 }
             );
         },
@@ -382,21 +355,6 @@ define([
             }
 
             return null;
-        },
-
-        /**
-         * Showing of error
-         *
-         * @param {String} errorMessage
-         */
-        showError: function (
-            errorMessage
-        ) {
-            alert({
-                title: $t('Warning'),
-                content: errorMessage,
-                actions: {}
-            });
         },
 
         /**
