@@ -35,16 +35,19 @@ class PaymentCreate
     public function __construct(
         array $paymentCreate
     ) {
+
         $this->id = $paymentCreate['id'] ?? null;
         $this->status = $paymentCreate['status'] ?? null;
         if (!empty($paymentCreate['urls'])) {
             foreach ($paymentCreate['urls'] as $url) {
+                $parameters = (!empty($url['parameters'])) ? $url['parameters'] : [];
+
                 $this->urls[] = new CMPaymentUrl(
                     (string)$url['purpose'],
                     (string)$url['method'],
                     (string)$url['url'],
                     (string)$url['order'],
-                    $url['parameters'] ?: ''
+                    $parameters
                 );
             }
         } else {
