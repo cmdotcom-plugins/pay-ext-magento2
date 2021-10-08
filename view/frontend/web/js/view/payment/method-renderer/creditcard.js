@@ -39,7 +39,7 @@ define([
      */
     const PAYMENT_AUTHORIZED = 'AUTHORIZED';
     const PAYMENT_CANCELED = 'CANCELED';
-    const PAYMENT_REDIRECT_FOR_AUTHENTICATION = 'REDIRECT_FOR_AUTHENTICATION';
+    const PAYMENT_REDIRECT_FOR_AUTHENTICATION = 'REDIRECTED_FOR_AUTHENTICATION';
 
     /**
      * Validation status constants
@@ -444,7 +444,7 @@ define([
                             }
 
                             if (payment.status === PAYMENT_REDIRECT_FOR_AUTHENTICATION) {
-                                return self.redirectToCart('error');
+                                return self.threeDSecureValidation(orderId, payment);
                             }
                         }
                     ).fail(function(response) {
