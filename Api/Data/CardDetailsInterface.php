@@ -26,7 +26,7 @@ interface CardDetailsInterface
      *
      * @return string
      */
-    public function getMethod();
+    public function getMethod(): string;
 
     /**
      * Set option method
@@ -34,14 +34,14 @@ interface CardDetailsInterface
      * @param string $method
      * @return $this
      */
-    public function setMethod($method);
+    public function setMethod($method): CardDetailsInterface;
 
     /**
      * Get option encryptedCardData
      *
      * @return string
      */
-    public function getEncryptedCardData();
+    public function getEncryptedCardData(): string;
 
     /**
      * Set option encryptedCardData
@@ -49,5 +49,5 @@ interface CardDetailsInterface
      * @param string $cardData
      * @return $this
      */
-    public function setEncryptedCardData(string $cardData);
+    public function setEncryptedCardData(string $cardData): CardDetailsInterface;
 }

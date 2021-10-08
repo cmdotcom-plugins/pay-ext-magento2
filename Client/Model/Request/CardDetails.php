@@ -36,7 +36,7 @@ class CardDetails
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'browser_information' => $this->browserInformation->toArray(),

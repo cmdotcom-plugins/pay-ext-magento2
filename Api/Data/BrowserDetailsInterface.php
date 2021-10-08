@@ -27,7 +27,7 @@ interface BrowserDetailsInterface
      *
      * @return string
      */
-    public function getShopperIp();
+    public function getShopperIp(): string;
 
     /**
      * Set option shopperIp
@@ -35,14 +35,14 @@ interface BrowserDetailsInterface
      * @param string $shopperIp
      * @return $this
      */
-    public function setShopperIp($shopperIp);
+    public function setShopperIp(string $shopperIp): BrowserDetailsInterface;
 
     /**
      * Get option accept
      *
      * @return string
      */
-    public function getAccept();
+    public function getAccept(): string;
 
     /**
      * Set option accept
@@ -50,14 +50,14 @@ interface BrowserDetailsInterface
      * @param string $accept
      * @return $this
      */
-    public function setAccept(string $accept);
+    public function setAccept(string $accept): BrowserDetailsInterface;
 
     /**
      * Get option userAgent
      *
      * @return string
      */
-    public function getUserAgent();
+    public function getUserAgent(): string;
 
     /**
      * Set option userAgent
@@ -65,5 +65,5 @@ interface BrowserDetailsInterface
      * @param string $userAgent
      * @return $this
      */
-    public function setUserAgent(string $userAgent);
+    public function setUserAgent(string $userAgent): BrowserDetailsInterface;
 }

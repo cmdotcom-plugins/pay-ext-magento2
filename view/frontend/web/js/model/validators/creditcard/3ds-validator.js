@@ -21,6 +21,21 @@ define([
     loader
 ) {
     'use strict';
+    /**
+     * For all credit and debit cards authentication of the shopper is supported,
+     * which is handled by either 3D Secure version 1 (3DSv1) or 3D Secure version 2 (3DSv2).
+     * Both protocols are designed by the card schemes (Mastercard, Visa, Amex) and supported by the payment system.
+     *
+     * 3Dsv1
+     * For 3Dsv1 authentication only a redirect has to be performed in the browser towards the issuing bank of the card.
+     *
+     * 3Dsv2
+     * For 3DS authentication one or two URLs are returned as part of the start payment response. The two possible URLs are:
+     * - The Issuer/ACS Method URL, which must be loaded in a hidden i-frame. The purpose of this URL will be set to HIDDEN_IFRAME.
+     * - The authentication URL, which must be used to start the authentication with. The purpose of the URL is set to 'IFRAME',
+     *   but should not be loaded into an i-frame. The response (of the POST request) must be loaded into an i-frame.
+     */
+
 
     /**
      * Purpose constants
@@ -376,6 +391,7 @@ define([
         },
 
         /**
+         * 3DSv1
          * Redirect to Authentication
          *
          * @param {String} authenticationUrl

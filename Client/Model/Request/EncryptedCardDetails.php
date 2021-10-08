@@ -25,7 +25,7 @@ class EncryptedCardDetails
         $this->data = $data;
     }
 
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'data' => $this->data

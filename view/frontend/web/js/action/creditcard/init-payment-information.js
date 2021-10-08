@@ -21,6 +21,13 @@ define([
 ) {
     'use strict';
 
+    /**
+     * This method creates a CM.com payment based on the encrypted card details and orderId
+     * @param {object} messageContainer
+     * @param {object} paymentData
+     * @param {string} orderId
+     * @return {Deferred}
+     */
     return function (messageContainer, paymentData, orderId) {
         const payload = {
             cardDetails: {
@@ -32,9 +39,6 @@ define([
             }
         };
 
-        /**
-         * Checkout for guest and registered customer.
-         */
         const serviceUrl = urlBuilder.createUrl('/cmpayments/payment/credit-card/:orderId', {
             orderId: parseInt(orderId)
         });

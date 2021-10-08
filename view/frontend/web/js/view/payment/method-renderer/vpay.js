@@ -12,13 +12,6 @@ define([
     return Component.extend({
         defaults: {
             template: 'CM_Payments/payment/vpay'
-        },
-
-        /**
-         * Init component
-         */
-        initialize: function () {
-            this._super();
-        },
+        }
     });
 });
