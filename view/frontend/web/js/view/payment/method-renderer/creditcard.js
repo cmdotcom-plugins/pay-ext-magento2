@@ -10,8 +10,7 @@ define([
     'Magento_Payment/js/model/credit-card-validation/credit-card-data',
     'CM_Payments/js/model/validators/creditcard/card-number-validator',
     'CM_Payments/js/action/creditcard/init-payment-information',
-    'CM_Payments/js/model/validators/creditcard/3dsv2-validator',
-    'CM_Payments/js/model/validators/creditcard/3dsv1-validator',
+    'CM_Payments/js/model/validators/creditcard/3ds-validator',
     'jquery',
     'underscore',
     'mage/url',
@@ -26,13 +25,41 @@ define([
     creditCardData,
     cardNumberValidator,
     initCCPaymentAction,
-    cc3DSv2Validator,
-    cc3DSv1Validator,
+    cc3DSValidator,
     $,
     _,
     url,
     paymentStatus
 ) {
+
+    /**
+     * Payment status constants
+     *
+     * @type {String}
+     */
+    const PAYMENT_AUTHORIZED = 'AUTHORIZED';
+    const PAYMENT_CANCELED = 'CANCELED';
+    const PAYMENT_REDIRECT_FOR_AUTHENTICATION = 'REDIRECT_FOR_AUTHENTICATION';
+
+    /**
+     * Validation status constants
+     *
+     * @type {String}
+     */
+    const VALIDATION_CHALLENGE = 'CHALLENGE';
+    const VALIDATION_AUTHORIZED = 'AUTHORIZED';
+    const VALIDATION_CANCELED = 'CANCELED';
+    const VALIDATION_ERROR = 'ERROR';
+
+    /**
+     * Validation action constants
+     *
+     * @type {String}
+     */
+    const VALIDATION_ACTION_CLOSE_MODAL = 'CLOSE_MODAL';
+    const VALIDATION_ACTION_AUTHENTICATE = 'AUTHENTICATE';
+    const VALIDATION_ACTION_REDIRECT = 'REDIRECT';
+
     'use strict';
     return Component.extend({
         defaults: {
@@ -408,53 +435,17 @@ define([
                                 return self.redirectToCart('error');
                             }
 
-                            if (payment.status === 'AUTHORIZED') {
+                            if (payment.status === PAYMENT_AUTHORIZED) {
                                 return this.afterPlaceOrder();
                             }
 
-                            if (payment.status === 'CANCELED') {
+                            if (payment.status === PAYMENT_CANCELED) {
                                 return self.redirectToCart('canceled');
                             }
 
-                            if (payment.status === 'REDIRECTED_FOR_AUTHENTICATION') {
-                                // Check if we got an 3dsv1 or 3dsv2 response based on 'REDIRECT' type in url model.
-                                const url = cc3DSv2Validator.findUrlWithPurpose(payment.urls, 'REDIRECT');
-                                if (payment.redirect_url && url) {
-                                    const parameters = JSON.parse(url.parameters);
-                                    return cc3DSv1Validator.redirectForAuthentication(url.url, parameters)
-                                }
+                            if (payment.status === PAYMENT_REDIRECT_FOR_AUTHENTICATION) {
+                                return self.redirectToCart('error');
                             }
-
-                            const threeDSecureValidation = cc3DSv2Validator.perform3DsSteps(payment);
-
-                            threeDSecureValidation.subscribe(function(validation) {
-                                console.log(validation);
-                                if (validation.status === 'CHALLENGE') {
-                                    if (validation.action === 'REDIRECT') {
-                                        return;
-                                    }
-                                    if (validation.action === 'AUTHENTICATE') {
-                                        return self.pollingStatus(payment.id);
-                                    }
-
-                                    if (validation.action === 'CLOSE_MODAL') {
-                                        loader.startLoader();
-                                        return paymentStatus.get(payment.id).then(function(response) {
-                                            self.handleOrderStatusResponse(response);
-                                        });
-                                    }
-                                }
-
-                                if (validation.status === 'AUTHORIZED') {
-                                    return self.afterPlaceOrder();
-                                }
-
-                                if (validation.status === 'ERROR' || validation.status === 'CANCELED') {
-                                    return paymentStatus.get(payment.id).then(function(response) {
-                                        self.handleOrderStatusResponse(response);
-                                    });
-                                }
-                            })
                         }
                     ).fail(function(response) {
                         self.redirectToCart('error');
@@ -464,6 +455,51 @@ define([
             );
 
             return false;
+        },
+
+        /**
+         * 3DS validation
+         * @param orderId
+         * @param payment
+         */
+        threeDSecureValidation: function(orderId, payment) {
+            // Check if we got an 3dsv1 or 3dsv2 response based on 'REDIRECT' type in url model.
+            const url = cc3DSValidator.findUrlWithPurpose(payment.urls, 'REDIRECT');
+            if (payment.redirect_url && url) {
+                // do 3dsv1
+                const parameters = JSON.parse(url.parameters);
+                return cc3DSValidator.redirectForAuthentication(url.url, parameters)
+            }
+
+            // do 3dsv2
+            const threeDSecureValidation = cc3DSValidator.perform3DsSteps(payment);
+            threeDSecureValidation.subscribe(function (validation) {
+                if (validation.status === VALIDATION_CHALLENGE) {
+                    if (validation.action === VALIDATION_ACTION_REDIRECT) {
+                        return;
+                    }
+                    if (validation.action === VALIDATION_ACTION_AUTHENTICATE) {
+                        return self.pollingStatus(payment.id);
+                    }
+
+                    if (validation.action === VALIDATION_ACTION_CLOSE_MODAL) {
+                        loader.startLoader();
+                        return paymentStatus.get(payment.id).then(function (response) {
+                            self.handleOrderStatusResponse(response);
+                        });
+                    }
+                }
+
+                if (validation.status === VALIDATION_AUTHORIZED) {
+                    return self.afterPlaceOrder();
+                }
+
+                if (validation.status === VALIDATION_ERROR || validation.status === VALIDATION_CANCELED) {
+                    return paymentStatus.get(payment.id).then(function (response) {
+                        self.handleOrderStatusResponse(response);
+                    });
+                }
+            })
         },
 
         /**

@@ -96,6 +96,7 @@ class CMPaymentUrl implements CMPaymentUrlInterface
      */
     public function getParameters(): string
     {
+        // Because Magento WebApi doesn't support dynamic associative arrays we returning a json string
         return json_encode($this->parameters);
     }
 }

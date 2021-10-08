@@ -179,13 +179,13 @@ class OrderTransactionServiceTest extends IntegrationTestCase
         $this->clientMock
             ->expects($this->once())->method('execute')
             ->willReturn($this->mockApiResponse->getOrderDetail());
-      
+
         // first time
         $this->orderTransactionService->process('100000001');
         // second time
-        $this->orderTransactionService->process('100000001');           
+        $this->orderTransactionService->process('100000001');
     }
-  
+
     /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
@@ -199,7 +199,7 @@ class OrderTransactionServiceTest extends IntegrationTestCase
 
         $this->assertSame('pid4911203603t', $magentoOrder->getPayment()->getLastTransId());
     }
-    
+
     /**
      * @magentoDataFixture Magento/Sales/_files/order.php
      */
@@ -210,7 +210,7 @@ class OrderTransactionServiceTest extends IntegrationTestCase
             ->willReturn($this->mockApiResponse->getOrderDetail());
 
         $this->orderTransactionService->process('100000001');
-        
+
         $cmPaymentRepository = $this->objectManager->create(PaymentRepositoryInterface::class);
 
         $cmPayment = $cmPaymentRepository->getByOrderKey('test123');

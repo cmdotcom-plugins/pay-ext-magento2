@@ -151,6 +151,7 @@ class OrderTransactionService implements OrderTransactionServiceInterface
     }
 
     /**
+     * Capture payment and change order state to processing
      * @param Payment $payment
      * @param OrderDetail $cmOrderDetails
      * @param OrderInterface $order
@@ -172,6 +173,7 @@ class OrderTransactionService implements OrderTransactionServiceInterface
     }
 
     /**
+     * Save CM Payment model in database if not exists
      * @param CMDataOrderInterface $cmOrder
      * @param OrderInterface $order
      * @param OrderDetail $cmOrderDetails

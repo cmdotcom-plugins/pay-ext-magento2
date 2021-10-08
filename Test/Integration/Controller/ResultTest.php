@@ -27,11 +27,6 @@ class ResultTest extends AbstractController
         $this->dispatch('cmpayments/payment/result');
 
         $this->assertRedirect($this->stringContains('checkout/cart'));
-
-        $this->assertSessionMessages(
-            $this->equalTo(['The order reference is not valid!']),
-            MessageInterface::TYPE_ERROR
-        );
     }
 
     public function testRedirectToCheckoutWhenStatusNotProvided()
@@ -44,11 +39,6 @@ class ResultTest extends AbstractController
         $this->dispatch('cmpayments/payment/result');
 
         $this->assertRedirect($this->stringContains('checkout/cart'));
-
-        $this->assertSessionMessages(
-            $this->equalTo(['The order reference is not valid!']),
-            MessageInterface::TYPE_ERROR
-        );
     }
 
     /**
