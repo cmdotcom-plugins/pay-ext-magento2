@@ -30,6 +30,14 @@ use CM\Payments\Api\Model\Data\OrderInterface as CMDataOrderInterface;
 class OrderTransactionService implements OrderTransactionServiceInterface
 {
     /**
+     * Array of payment methods which should cancel the order when CM.com Payment is canceled.
+     * @const array
+     */
+    protected const SHOULD_CANCEL_PAYMENT_METHODS = [
+        'cm_payments_creditcard'
+    ];
+
+    /**
      * @var OrderRepositoryInterface
      */
     private $orderRepository;
@@ -124,7 +132,7 @@ class OrderTransactionService implements OrderTransactionServiceInterface
             );
         }
 
-        if (empty($cmOrderDetails->getConsideredSafe()) || ! $cmOrderDetails->isSafe()) {
+        if (empty($cmOrderDetails->getConsideredSafe()) || !$cmOrderDetails->isSafe()) {
             $this->cancelOrderByPaymentStatus($cmOrder, $order, $cmOrderDetails);
 
             // If order is not considered 'Safe' we don't have to process.
@@ -136,7 +144,6 @@ class OrderTransactionService implements OrderTransactionServiceInterface
             'cmOrderDetails' => $cmOrderDetails
         ]);
 
-        // Todo: move to separate method or class
         $this->createCMPaymentIfNotExists($cmOrder, $order, $cmOrderDetails);
 
         $this->logger->info('Create invoice and transaction for order '. $orderReference);
@@ -212,9 +219,14 @@ class OrderTransactionService implements OrderTransactionServiceInterface
     ): void {
         try {
             $cmPayment = $this->cmPaymentRepository->getByOrderKey($cmOrder->getOrderKey());
-            if ($order->getPayment()->getMethod() === 'cm_payments_creditcard' && $cmPayment) {
+            if (in_array($order->getPayment()->getMethod(), self::SHOULD_CANCEL_PAYMENT_METHODS) && $cmPayment) {
+                foreach($cmOrderDetails->getPayments() as $payment) {
+                    if ($payment->getAuthorization()->getState() === Authorization::STATE_AUTHORIZED) {
+                        return;
+                    }
+                }
                 foreach ($cmOrderDetails->getPayments() as $payment) {
-                    if ($payment->getAuthorization()->getState() !== Authorization::STATE_AUTHORIZED) {
+                    if ($payment->getAuthorization()->getState() === Authorization::STATE_CANCELED) {
                         $order->setState(Order::STATE_CANCELED);
                         $order->addCommentToStatusHistory(
                             __('Order cancelled by CM, payment id %1', $payment->getId()),

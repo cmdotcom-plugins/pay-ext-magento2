@@ -6,10 +6,12 @@
 
 namespace CM\Payments\Test\Integration\Service;
 
+use CM\Payments\Api\Model\Data\PaymentInterfaceFactory;
 use CM\Payments\Api\Model\PaymentRepositoryInterface;
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
 use CM\Payments\Model\Data\Order;
+use CM\Payments\Model\OrderRepository;
 use CM\Payments\Service\OrderTransactionService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use CM\Payments\Test\Mock\MockApiResponse;
@@ -55,13 +57,7 @@ class OrderTransactionServiceTest extends IntegrationTestCase
 
         $magentoOrder = $this->loadOrderById('100000001');
 
-        $cmOrder = $this->objectManager->create(Order::class);
-        $cmOrder->setIncrementId('100000001')
-            ->setOrderId($magentoOrder->getEntityId())
-            ->setOrderKey('test123');
-
-        $cmOrderRepository = $this->objectManager->create(\CM\Payments\Model\OrderRepository::class);
-        $cmOrderRepository->save($cmOrder);
+        $this->createCmOrder($magentoOrder);
 
         $magentoOrder = $this->loadOrderById('100000001');
         $this->adjustMagentoOrder($magentoOrder);
@@ -212,9 +208,100 @@ class OrderTransactionServiceTest extends IntegrationTestCase
         $this->orderTransactionService->process('100000001');
 
         $cmPaymentRepository = $this->objectManager->create(PaymentRepositoryInterface::class);
-
         $cmPayment = $cmPaymentRepository->getByOrderKey('test123');
         $this->assertSame('pid4911203603t', $cmPayment->getPaymentId());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testShouldCancelOrderWhenCreditCardDirectPaymentIsCanceled()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetailCanceledPayment());
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder->getPayment()->setMethod('cm_payments_creditcard');
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        $this->createCmOrder($magentoOrder);
+
+        $this->createCMPayment($magentoOrder);
+
+        $this->orderTransactionService->process('100000001');
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $this->assertSame('canceled', $magentoOrder->getStatus());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testShouldNotCancelOrderWhenCreditCardDirectPaymentIsRedirectedForAuthentication()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetailRedirectedForAuthenticationPayment());
+
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder->getPayment()->setMethod('cm_payments_creditcard');
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        $this->createCmOrder($magentoOrder);
+
+        $this->createCMPayment($magentoOrder);
+
+        $this->orderTransactionService->process('100000001');
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $this->assertSame('pending_payment', $magentoOrder->getStatus());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testShouldNotCancelOrderWhenIdealPaymentIsCanceled()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetailCanceledPayment());
+
+        $magentoOrder = $this->loadOrderById('100000001');
+
+        $magentoOrder->getPayment()->setMethod('cm_payments_ideal');
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        $this->createCmOrder($magentoOrder);
+        $this->orderTransactionService->process('100000001');
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $this->assertSame('pending_payment', $magentoOrder->getStatus());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testShouldNotCancelOrderWhenCMPaymentNotExists()
+    {
+        $this->clientMock
+            ->expects($this->once())->method('execute')
+            ->willReturn($this->mockApiResponse->getOrderDetailCanceledPayment());
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder->getPayment()->setMethod('cm_payments_ideal');
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        $this->createCmOrder($magentoOrder);
+        $this->orderTransactionService->process('100000001');
+
+        $magentoOrder = $this->loadOrderById('100000001');
+        $this->assertSame('pending_payment', $magentoOrder->getStatus());
     }
 
     /**
@@ -233,5 +320,34 @@ class OrderTransactionServiceTest extends IntegrationTestCase
         $repository->save($magentoOrder);
 
         return $magentoOrder;
+    }
+
+    /**
+     * @param OrderInterface $magentoOrder
+     */
+    private function createCmOrder(OrderInterface $magentoOrder): void
+    {
+        $cmOrder = $this->objectManager->create(Order::class);
+        $cmOrder->setIncrementId('100000001')
+            ->setOrderId($magentoOrder->getEntityId())
+            ->setOrderKey('test123');
+
+        $cmOrderRepository = $this->objectManager->create(OrderRepository::class);
+        $cmOrderRepository->save($cmOrder);
+    }
+
+    /**
+     * @param OrderInterface $magentoOrder
+     */
+    private function createCMPayment(OrderInterface $magentoOrder): void
+    {
+        $cmPaymentRepository = $this->objectManager->create(PaymentRepositoryInterface::class);
+        $cmPaymentDataFactory = $this->objectManager->create(PaymentInterfaceFactory::class);
+        $cmPayment = $cmPaymentDataFactory->create();
+        $cmPayment->setOrderId((int)$magentoOrder->getEntityId());
+        $cmPayment->setOrderKey('test123');
+        $cmPayment->setIncrementId($magentoOrder->getIncrementId());
+        $cmPayment->setPaymentId('pid4911203603t');
+        $cmPaymentRepository->save($cmPayment);
     }
 }
