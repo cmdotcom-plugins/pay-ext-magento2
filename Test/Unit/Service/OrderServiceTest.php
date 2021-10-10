@@ -100,7 +100,7 @@ class OrderServiceTest extends UnitTestCase
         $this->assertSame(
         //phpcs:ignore
             'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
-            $this->orderService->create('1')->getUrl()
+            $this->orderService->create(1)->getUrl()
         );
     }
 
@@ -119,7 +119,7 @@ class OrderServiceTest extends UnitTestCase
 
         $this->expectException(Exception::class);
 
-        $this->orderService->create('1');
+        $this->orderService->create(1);
     }
 
     public function testEventDispatch()
@@ -171,41 +171,7 @@ class OrderServiceTest extends UnitTestCase
             ]
         );
 
-        $this->orderService->create('1');
-    }
-
-    /**
-     * @return OrderInterface|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getOrderMock()
-    {
-        $shippingAddressMock = $this->createConfiguredMock(
-            OrderAddressInterface::class,
-            [
-                'getEmail' => static::ADDRESS_DATA['email_address'],
-                'getCountryId' => static::ADDRESS_DATA['country_code']
-            ]
-        );
-
-        $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
-            ->onlyMethods(['getAdditionalInformation', 'setAdditionalInformation'])
-            ->getMockForAbstractClass();
-        $paymentMock->method('getAdditionalInformation')->willReturn([]);
-        $paymentMock->method('setAdditionalInformation')->willReturnSelf();
-
-        $orderMock = $this->getMockBuilder(SalesOrder::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $orderMock->method('getEntityId')->willReturn('1');
-        $orderMock->method('getIncrementId')->willReturn('000000001');
-        $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
-        $orderMock->method('getStoreId')->willReturn(1);
-        $orderMock->method('getBillingAddress')->willReturn($shippingAddressMock);
-        $orderMock->method('getGrandTotal')->willReturn(50.99);
-        $orderMock->method('getPayment')->willReturn($paymentMock);
-
-        return $orderMock;
+        $this->orderService->create(1);
     }
 
     protected function setUp(): void
@@ -286,5 +252,39 @@ class OrderServiceTest extends UnitTestCase
             $this->eventManagerMock,
             $this->cmPaymentsLoggerMock
         );
+    }
+
+    /**
+     * @return OrderInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getOrderMock()
+    {
+        $shippingAddressMock = $this->createConfiguredMock(
+            OrderAddressInterface::class,
+            [
+                'getEmail' => static::ADDRESS_DATA['email_address'],
+                'getCountryId' => static::ADDRESS_DATA['country_code']
+            ]
+        );
+
+        $paymentMock = $this->getMockBuilder(OrderPaymentInterface::class)
+            ->onlyMethods(['getAdditionalInformation', 'setAdditionalInformation'])
+            ->getMockForAbstractClass();
+        $paymentMock->method('getAdditionalInformation')->willReturn([]);
+        $paymentMock->method('setAdditionalInformation')->willReturnSelf();
+
+        $orderMock = $this->getMockBuilder(SalesOrder::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $orderMock->method('getEntityId')->willReturn('1');
+        $orderMock->method('getIncrementId')->willReturn('000000001');
+        $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
+        $orderMock->method('getStoreId')->willReturn(1);
+        $orderMock->method('getBillingAddress')->willReturn($shippingAddressMock);
+        $orderMock->method('getGrandTotal')->willReturn(50.99);
+        $orderMock->method('getPayment')->willReturn($paymentMock);
+
+        return $orderMock;
     }
 }

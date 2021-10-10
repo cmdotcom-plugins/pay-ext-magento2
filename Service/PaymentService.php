@@ -8,21 +8,27 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
+use CM\Payments\Api\Data\BrowserDetailsInterface;
+use CM\Payments\Api\Data\CardDetailsInterface;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
+use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterfaceFactory;
+use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
+use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface;
 use CM\Payments\Client\Api\CMPaymentInterface;
 use CM\Payments\Client\Api\PaymentInterface as CMPaymentClientInterface;
 use CM\Payments\Client\Model\CMPaymentFactory;
 use CM\Payments\Exception\EmptyPaymentIdException;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
-use Magento\Framework\Event\ManagerInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 class PaymentService implements PaymentServiceInterface
 {
@@ -72,28 +78,41 @@ class PaymentService implements PaymentServiceInterface
     private $eventManager;
 
     /**
-     * PaymentService constructor
-     *
+     * @var OrderServiceInterface
+     */
+    private $orderService;
+
+    /**
+     * @var PaymentOrderStatusInterfaceFactory
+     */
+    private $paymentOrderStatusFactory;
+
+    /**
+     * PaymentService constructor.
      * @param OrderRepositoryInterface $orderRepository
      * @param CMPaymentClientInterface $paymentClient
      * @param PaymentRequestBuilderInterface $paymentRequestBuilder
      * @param CMPaymentDataFactory $cmPaymentDataFactory
+     * @param OrderServiceInterface $orderService
      * @param CMPaymentFactory $cmPaymentFactory
      * @param CMPaymentRepositoryInterface $cmPaymentRepository
      * @param CMOrderRepositoryInterface $cmOrderRepository
      * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $logger
+     * @param PaymentOrderStatusInterfaceFactory $paymentOrderStatusFactory
      */
     public function __construct(
         OrderRepositoryInterface $orderRepository,
         CMPaymentClientInterface $paymentClient,
         PaymentRequestBuilderInterface $paymentRequestBuilder,
         CMPaymentDataFactory $cmPaymentDataFactory,
+        OrderServiceInterface $orderService,
         CMPaymentFactory $cmPaymentFactory,
         CMPaymentRepositoryInterface $cmPaymentRepository,
         CMOrderRepositoryInterface $cmOrderRepository,
         ManagerInterface $eventManager,
-        CMPaymentsLogger $logger
+        CMPaymentsLogger $logger,
+        PaymentOrderStatusInterfaceFactory $paymentOrderStatusFactory
     ) {
         $this->orderRepository = $orderRepository;
         $this->paymentClient = $paymentClient;
@@ -104,16 +123,33 @@ class PaymentService implements PaymentServiceInterface
         $this->cmPaymentRepository = $cmPaymentRepository;
         $this->eventManager = $eventManager;
         $this->logger = $logger;
+        $this->orderService = $orderService;
+        $this->paymentOrderStatusFactory = $paymentOrderStatusFactory;
     }
 
     /**
      * @inheritDoc
      */
-    public function create(string $orderId): CMPaymentInterface
-    {
+    public function create(
+        int $orderId,
+        CardDetailsInterface $cardDetails = null,
+        BrowserDetailsInterface $browserDetails = null
+    ): CMPaymentInterface {
         $order = $this->orderRepository->get($orderId);
-        $cmOrder = $this->cmOrderRepository->getByOrderId((int)$order->getEntityId());
-        $paymentCreateRequest = $this->paymentRequestBuilder->create($order, $cmOrder->getOrderKey());
+
+        // if cmOrder not yet exists we need to create one.
+        try {
+            $cmOrder = $this->cmOrderRepository->getByOrderId($orderId);
+        } catch (NoSuchEntityException $exception) {
+            $cmOrder = $this->orderService->create($orderId);
+        }
+        $paymentCreateRequest = $this->paymentRequestBuilder->create(
+            $order->getIncrementId(),
+            $cmOrder->getOrderKey(),
+            $order,
+            $cardDetails,
+            $browserDetails
+        );
 
         $this->logger->info(
             'CM Create payment request',
@@ -150,8 +186,9 @@ class PaymentService implements PaymentServiceInterface
             $order->getPayment()->setAdditionalInformation($additionalInformation);
             $this->orderRepository->save($order);
         }
-        
+
         if (!$paymentCreateResponse || !$paymentCreateResponse->getId()) {
+            $this->logger->error('Empty payment id', ['response' => $paymentCreateResponse]);
             throw new EmptyPaymentIdException(__('Empty payment id'));
         }
 
@@ -183,5 +220,20 @@ class PaymentService implements PaymentServiceInterface
         ]);
 
         return $cmPayment;
+    }
+
+    /**
+     * @param string $paymentId
+     * @return PaymentOrderStatusInterface
+     */
+    public function getPaymentStatus(string $paymentId): PaymentOrderStatusInterface
+    {
+        $cmPayment = $this->cmPaymentRepository->getByPaymentId($paymentId);
+        $order = $this->orderRepository->get($cmPayment->getOrderId());
+
+        return $this->paymentOrderStatusFactory->create([
+            'orderId' => $order->getIncrementId(),
+            'status' => $order->getStatus()
+        ]);
     }
 }

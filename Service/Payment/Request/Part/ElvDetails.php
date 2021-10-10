@@ -6,6 +6,8 @@
 
 namespace CM\Payments\Service\Payment\Request\Part;
 
+use CM\Payments\Api\Data\BrowserDetailsInterface;
+use CM\Payments\Api\Data\CardDetailsInterface;
 use CM\Payments\Api\Service\Payment\Request\RequestPartInterface;
 use CM\Payments\Client\Model\Request\PaymentCreate;
 use CM\Payments\Model\ConfigProvider;
@@ -16,8 +18,12 @@ class ElvDetails implements RequestPartInterface
     /**
      * @inheritDoc
      */
-    public function process(OrderInterface $order, PaymentCreate $paymentCreate): PaymentCreate
-    {
+    public function process(
+        PaymentCreate $paymentCreate,
+        OrderInterface $order = null,
+        CardDetailsInterface $cardDetails = null,
+        BrowserDetailsInterface $browserDetails = null
+    ): PaymentCreate {
         if ($order->getPayment()->getMethod() !== ConfigProvider::CODE_ELV) {
             return $paymentCreate;
         }
@@ -30,6 +36,14 @@ class ElvDetails implements RequestPartInterface
         );
 
         return $paymentCreate;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function needsOrder(): bool
+    {
+        return true;
     }
 
     /**

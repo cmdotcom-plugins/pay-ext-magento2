@@ -16,12 +16,12 @@ use Magento\Sales\Api\Data\OrderInterface;
 interface OrderServiceInterface
 {
     /**
-     * @param string $orderId
+     * @param int $orderId
      * @return CMOrderInterface
      * @throws EmptyOrderKeyException
      * @throws LocalizedException
      */
-    public function create(string $orderId): CMOrderInterface;
+    public function create(int $orderId): CMOrderInterface;
 
     /**
      * @param string $orderKey

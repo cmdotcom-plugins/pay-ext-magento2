@@ -101,16 +101,13 @@ class Result extends Action implements HttpGetActionInterface
         $status = $this->request->getParam('status');
 
         try {
-            if (!$referenceOrderId || !$status) {
-                $this->messageManager->addErrorMessage(__("The order reference is not valid!"));
-
+            if (!$status) {
                 return $this->redirectToCheckout();
             }
 
             $orderIncrementId = $this->checkoutSession->getLastRealOrder()->getIncrementId();
-            if (!$orderIncrementId || $referenceOrderId !== $orderIncrementId) {
-                $this->messageManager->addErrorMessage(__("The order reference is not valid!"));
-
+            if (!empty($referenceOrderId) && $referenceOrderId !== $orderIncrementId) {
+                $this->messageManager->addErrorMessage(__('The order reference is not valid!'));
                 return $this->redirectToCheckout();
             }
 
@@ -118,13 +115,18 @@ class Result extends Action implements HttpGetActionInterface
                 $this->orderManagement->cancel($this->checkoutSession->getLastRealOrder()->getId());
 
                 if ($status == OrderCreate::STATUS_ERROR) {
-                    $this->messageManager->addErrorMessage(__("Your payment was cancelled because of errors!"));
+                    $this->messageManager->addErrorMessage(__('Your payment was cancelled because of errors!'));
                 } else {
-                    $this->messageManager->addWarningMessage(__("Your payment was cancelled!"));
+                    $this->messageManager->addWarningMessage(__('Your payment was cancelled!'));
                 }
 
                 return $this->redirectToCheckout();
             };
+
+            if (!$referenceOrderId || !$orderIncrementId) {
+                $this->messageManager->addErrorMessage(__('The order reference is not valid!'));
+                return $this->redirectToCheckout();
+            }
 
             // In this state we always redirect the user to the success page and try to update the order status already.
             // The order status will also be updated via the webhook if CM.com change the status of an order.

@@ -90,7 +90,7 @@ class Redirect extends Action implements HttpGetActionInterface
                 return $this->redirectToCheckoutCart(__('No order id found.'));
             }
 
-            $cmOrder = $this->orderService->create($order->getEntityId());
+            $cmOrder = $this->orderService->create((int) $order->getEntityId());
 
             return $this->redirectFactory->create()
                 ->setUrl($cmOrder->getUrl());

@@ -17,6 +17,8 @@ use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderRequestBuilderInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Api\OrderInterface as CMOrderClientInterface;
+use CM\Payments\Client\Model\Response\OrderCreate;
+use CM\Payments\Client\Request\OrderCreateRequest;
 use CM\Payments\Exception\EmptyOrderKeyException;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
@@ -64,17 +66,17 @@ class OrderService implements OrderServiceInterface
     private $cmOrderInterfaceFactory;
 
     /**
-     * @var CMPaymentsLogger
-     */
-    private $logger;
-
-    /**
      * @var ManagerInterface
      */
     private $eventManager;
 
     /**
-     * OrderService constructor.
+     * @var CMPaymentsLogger
+     */
+    private $logger;
+
+    /**
+     * OrderService constructor
      *
      * @param OrderRepositoryInterface $orderRepository
      * @param CMOrderClientInterface $orderClient
@@ -111,7 +113,7 @@ class OrderService implements OrderServiceInterface
     /**
      * @inheritDoc
      */
-    public function create(string $orderId): CMOrderInterface
+    public function create(int $orderId): CMOrderInterface
     {
         $order = $this->orderRepository->get($orderId);
         $orderCreateRequest = $this->orderRequestBuilder->create($order);
@@ -144,13 +146,7 @@ class OrderService implements OrderServiceInterface
             );
         }
 
-        /** @var CMOrder $cmOrder */
-        $model = $this->cmOrderFactory->create();
-        $model->setOrderId((int)$order->getEntityId());
-        $model->setOrderKey($orderCreateResponse->getOrderKey());
-        $model->setIncrementId($order->getIncrementId());
-
-        $this->cmOrderRepository->save($model);
+        $this->saveCmOrder($order->getIncrementId(), $orderCreateResponse, (int)$order->getEntityId());
 
         $additionalInformation = $order->getPayment()->getAdditionalInformation();
         if ($orderCreateResponse->getExpiresOn()) {
@@ -164,14 +160,7 @@ class OrderService implements OrderServiceInterface
         $order->getPayment()->setAdditionalInformation($additionalInformation);
         $this->orderRepository->save($order);
 
-        $cmOrder = $this->cmOrderInterfaceFactory->create(
-            [
-                'url' => $orderCreateResponse->getUrl(),
-                'orderReference' => $orderCreateRequest->getPayload()['order_reference'],
-                'orderKey' => $orderCreateResponse->getOrderKey(),
-                'expiresOn' => $orderCreateResponse->getExpiresOn()
-            ]
-        );
+        $cmOrder = $this->createCmOrder($orderCreateResponse, $orderCreateRequest);
 
         $this->eventManager->dispatch('cmpayments_after_order_create', [
             'order' => $order,
@@ -232,5 +221,42 @@ class OrderService implements OrderServiceInterface
         }
 
         return true;
+    }
+
+    /**
+     * @param string $incrementId
+     * @param OrderCreate $orderCreateResponse
+     * @param int|null $orderId
+     */
+    private function saveCmOrder(string $incrementId, OrderCreate $orderCreateResponse, int $orderId = null): void
+    {
+        /** @var CMOrder $cmOrder */
+        $model = $this->cmOrderFactory->create();
+        if ($orderId !== null) {
+            $model->setOrderId($orderId);
+        }
+        $model->setOrderKey($orderCreateResponse->getOrderKey());
+        $model->setIncrementId($incrementId);
+
+        $this->cmOrderRepository->save($model);
+    }
+
+    /**
+     * @param OrderCreate $orderCreateResponse
+     * @param OrderCreateRequest $orderCreateRequest
+     * @return CMOrderInterface
+     */
+    private function createCmOrder(
+        OrderCreate $orderCreateResponse,
+        OrderCreateRequest $orderCreateRequest
+    ): CMOrderInterface {
+        return $this->cmOrderInterfaceFactory->create(
+            [
+                'url' => $orderCreateResponse->getUrl(),
+                'orderReference' => $orderCreateRequest->getPayload()['order_reference'],
+                'orderKey' => $orderCreateResponse->getOrderKey(),
+                'expiresOn' => $orderCreateResponse->getExpiresOn()
+            ]
+        );
     }
 }

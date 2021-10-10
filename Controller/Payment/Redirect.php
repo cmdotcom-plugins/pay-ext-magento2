@@ -98,12 +98,12 @@ class Redirect extends Action implements HttpGetActionInterface
                 return $this->redirectToCheckoutCart(__('No order id found.'));
             }
 
-            $cmOrder = $this->orderService->create($order->getEntityId());
+            $cmOrder = $this->orderService->create((int) $order->getEntityId());
             if (!$cmOrder->getOrderReference()) {
                 throw new LocalizedException(__('The order was not placed properly.'));
             }
 
-            $cmPayment = $this->paymentService->create($order->getEntityId());
+            $cmPayment = $this->paymentService->create((int) $order->getEntityId());
             $redirectUrl = $cmPayment->getRedirectUrl();
             if (!$redirectUrl) {
                 throw new LocalizedException(__('No redirect url found in payment response'));

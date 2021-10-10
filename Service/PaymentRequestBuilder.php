@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
+use CM\Payments\Api\Data\BrowserDetailsInterface;
+use CM\Payments\Api\Data\CardDetailsInterface;
 use CM\Payments\Api\Service\Payment\Request\RequestPartInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Client\Model\Request\PaymentCreate;
@@ -53,13 +55,22 @@ class PaymentRequestBuilder implements PaymentRequestBuilderInterface
     /**
      * @inheritDoc
      */
-    public function create(OrderInterface $order, string $orderKey): PaymentCreateRequest
-    {
+    public function create(
+        string $orderId,
+        string $orderKey,
+        OrderInterface $order = null,
+        CardDetailsInterface $cardDetails = null,
+        BrowserDetailsInterface $browserDetails = null
+    ): PaymentCreateRequest {
         /** @var PaymentCreate $paymentCreate */
         $paymentCreate = $this->clientPaymentCreateFactory->create();
 
         foreach ($this->parts as $part) {
-            $paymentCreate = $part->process($order, $paymentCreate);
+            if ($part->needsOrder() && $order === null) {
+                continue;
+            }
+
+            $paymentCreate = $part->process($paymentCreate, $order, $cardDetails, $browserDetails);
         }
 
         return $this->paymentCreateRequestFactory->create(

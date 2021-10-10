@@ -20,6 +20,8 @@ interface MethodServiceInterface
      */
     public const METHODS = [
         ConfigProvider::CODE_CREDIT_CARD,
+        ConfigProvider::CODE_MAESTRO,
+        ConfigProvider::CODE_VPAY,
         ConfigProvider::CODE_IDEAL,
         ConfigProvider::CODE_PAYPAL,
         ConfigProvider::CODE_BANCONTACT,
@@ -34,13 +36,26 @@ interface MethodServiceInterface
     public const METHODS_MAPPING = [
         'VISA' => ConfigProvider::CODE_CREDIT_CARD,
         'MASTERCARD' => ConfigProvider::CODE_CREDIT_CARD,
-        'MAESTRO' => ConfigProvider::CODE_CREDIT_CARD,
+        'MAESTRO' => ConfigProvider::CODE_MAESTRO,
+        'V_PAY' => ConfigProvider::CODE_VPAY,
         'IDEAL' => ConfigProvider::CODE_IDEAL,
         'PAYPAL_EXPRESS_CHECKOUT' => ConfigProvider::CODE_PAYPAL,
         'BANCONTACT' => ConfigProvider::CODE_BANCONTACT,
         'ELV' => ConfigProvider::CODE_ELV,
         'KLARNA' => ConfigProvider::CODE_KLARNA,
         'AFTERPAY_OPEN_INVOICE' => ConfigProvider::CODE_AFTERPAY
+    ];
+
+    /**
+     * Mapping of CM Credit Cards methods to Magento (by credit card type)
+     */
+    public const METHODS_CC_MAPPING = [
+        'VI' => 'VISA',
+        'MC' => 'MASTERCARD',
+        'MD' => 'MAESTRO',
+        'MI' => 'MAESTRO',
+        'AE' => 'AMEX',
+        'VP' => 'V_PAY'
     ];
 
     /**

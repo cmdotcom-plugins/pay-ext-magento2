@@ -57,7 +57,7 @@ class OrderServiceTest extends IntegrationTestCase
         $magentoOrder = $this->loadOrderById('100000001');
         $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
-        $order = $this->orderService->create($magentoOrder->getId());
+        $order = $this->orderService->create((int) $magentoOrder->getId());
         $this->assertSame(
         //phpcs:ignore
             'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
@@ -107,7 +107,7 @@ class OrderServiceTest extends IntegrationTestCase
         $magentoOrder = $this->loadOrderById('100000001');
         $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
-        $this->orderService->create($magentoOrder->getId());
+        $this->orderService->create((int) $magentoOrder->getId());
     }
 
     /**
@@ -128,7 +128,7 @@ class OrderServiceTest extends IntegrationTestCase
         $magentoOrder = $this->loadOrderById('100000001');
         $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
-        $this->orderService->create($magentoOrder->getId());
+        $this->orderService->create((int) $magentoOrder->getId());
     }
 
     /**
@@ -152,7 +152,7 @@ class OrderServiceTest extends IntegrationTestCase
         $magentoOrder = $this->loadOrderById('100000001');
         $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
 
-        $this->orderService->create($magentoOrder->getId());
+        $this->orderService->create((int) $magentoOrder->getId());
 
         /** @var OrderRepositoryInterface $cmOrderRepository */
         $cmOrderRepository = $this->objectManager->create(CMOrderRepositoryInterface::class);

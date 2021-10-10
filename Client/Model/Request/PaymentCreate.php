@@ -27,20 +27,28 @@ class PaymentCreate
     private $elvDetails;
 
     /**
+     * @var CardDetails
+     */
+    private $cardDetails;
+
+    /**
      * Order constructor
      *
      * @param string $method
      * @param array $idealDetails
      * @param array $elvDetails
+     * @param CardDetails|null $cardDetails
      */
     public function __construct(
         string $method = '',
         array $idealDetails = [],
-        array $elvDetails = []
+        array $elvDetails = [],
+        CardDetails $cardDetails = null
     ) {
         $this->method = $method;
         $this->idealDetails = $idealDetails;
         $this->elvDetails = $elvDetails;
+        $this->cardDetails = $cardDetails;
     }
 
     /**
@@ -55,11 +63,15 @@ class PaymentCreate
         ];
 
         if ($this->idealDetails) {
-            $data['ideal_details'] =  $this->idealDetails;
+            $data['ideal_details'] = $this->idealDetails;
         }
 
         if ($this->elvDetails) {
-            $data['elv_payment_input'] =  $this->elvDetails;
+            $data['elv_payment_input'] = $this->elvDetails;
+        }
+
+        if ($this->cardDetails) {
+            $data['card_details'] = $this->cardDetails->toArray();
         }
 
         return $data;
@@ -111,5 +123,21 @@ class PaymentCreate
     public function setElvDetails(array $elvDetails): void
     {
         $this->elvDetails = $elvDetails;
+    }
+
+    /**
+     * @return CardDetails
+     */
+    public function getCardDetails(): CardDetails
+    {
+        return $this->cardDetails;
+    }
+
+    /**
+     * @param CardDetails $cardDetails
+     */
+    public function setCardDetails(CardDetails $cardDetails): void
+    {
+        $this->cardDetails = $cardDetails;
     }
 }

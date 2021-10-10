@@ -11,9 +11,12 @@ namespace CM\Payments\Test\Unit\Service;
 use CM\Payments\Api\Model\Data\OrderInterface;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
+use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface;
+use CM\Payments\Model\Domain\PaymentOrderStatus;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
+use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
 use CM\Payments\Client\Model\CMPayment;
@@ -27,11 +30,15 @@ use CM\Payments\Model\Data\Payment as CMPaymentData;
 use CM\Payments\Service\PaymentService;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Model\MaskedQuoteIdToQuoteIdInterface;
+use Magento\Quote\Model\QuoteManagement;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order as SalesOrder;
 use Magento\Sales\Model\OrderRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 
 class PaymentServiceTest extends UnitTestCase
 {
@@ -41,49 +48,54 @@ class PaymentServiceTest extends UnitTestCase
     private $paymentService;
 
     /**
-     * @var OrderRepository|\PHPUnit\Framework\MockObject\MockObject
+     * @var OrderRepository|MockObject
      */
     private $orderRepositoryMock;
 
     /**
-     * @var ClientApiPayment|\PHPUnit\Framework\MockObject\MockObject
+     * @var ClientApiPayment|MockObject
      */
     private $paymentClientMock;
 
     /**
-     * @var PaymentRequestBuilderInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var PaymentRequestBuilderInterface|MockObject
      */
     private $paymentRequestBuilderMock;
 
     /**
-     * @var CMPaymentDataFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var CMPaymentDataFactory|MockObject
      */
     private $cmPaymentDataFactoryMock;
 
     /**
-     * @var CMPaymentFactory|\PHPUnit\Framework\MockObject\MockObject
+     * @var CMPaymentFactory|MockObject
      */
     private $cmPaymentFactoryMock;
 
     /**
-     * @var  CMPaymentRepositoryInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var  CMPaymentRepositoryInterface|MockObject
      */
     private $cmPaymentRepositoryMock;
 
     /**
-     * @var  CMOrderRepositoryInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var  CMOrderRepositoryInterface|MockObject
      */
     private $cmOrderRepositoryMock;
 
     /**
-     * @var CMPaymentsLogger|\PHPUnit\Framework\MockObject\MockObject
+     * @var CMPaymentsLogger|MockObject
      */
     private $cmPaymentsLoggerMock;
 
     /**
-     * @var ManagerInterface|\PHPUnit\Framework\MockObject\MockObject
+     * @var ManagerInterface|MockObject
      */
     private $eventManagerMock;
+
+    /**
+     * @var PaymentOrderStatusInterfaceFactory|MockObject
+     */
+    private $paymentOrderStatusInterfaceFactory;
 
     public function testCreateIdealPayment()
     {
@@ -106,7 +118,7 @@ class PaymentServiceTest extends UnitTestCase
         );
 
         $order = $this->getOrderMock();
-        $payment = $this->paymentService->create((string)$order->getEntityId());
+        $payment = $this->paymentService->create($order->getEntityId());
 
         $this->assertNotNull(
             $payment->getId()
@@ -134,7 +146,7 @@ class PaymentServiceTest extends UnitTestCase
         );
 
         $order = $this->getOrderMock();
-        $payment = $this->paymentService->create((string)$order->getEntityId());
+        $payment = $this->paymentService->create($order->getEntityId(), null, null);
 
         $this->assertNotNull(
             $payment->getId()
@@ -153,7 +165,7 @@ class PaymentServiceTest extends UnitTestCase
         );
 
         $order = $this->getOrderMock();
-        $payment = $this->paymentService->create((string)$order->getEntityId());
+        $payment = $this->paymentService->create($order->getEntityId());
 
         $this->assertNotNull(
             $payment->getId()
@@ -202,7 +214,7 @@ class PaymentServiceTest extends UnitTestCase
             ['cmpayments_after_payment_create', ['order' => $order, 'cmPayment' => $cmPayment]]
         );
 
-        $this->paymentService->create((string)$order->getEntityId());
+        $this->paymentService->create($order->getEntityId());
     }
 
     /**
@@ -227,7 +239,7 @@ class PaymentServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $orderMock->method('getEntityId')->willReturn('1');
+        $orderMock->method('getEntityId')->willReturn(1);
         $orderMock->method('getIncrementId')->willReturn('000000001');
         $orderMock->method('getOrderCurrencyCode')->willReturn('EUR');
         $orderMock->method('getStoreId')->willReturn(1);
@@ -263,6 +275,11 @@ class PaymentServiceTest extends UnitTestCase
             CMPayment::class
         );
 
+        $this->paymentOrderStatusInterfaceFactory = $this->getMockupFactory(
+            PaymentOrderStatus::class,
+            PaymentOrderStatusInterface::class
+        );
+
         $this->cmPaymentRepositoryMock = $this->getMockBuilder(CMPaymentRepositoryInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -280,6 +297,22 @@ class PaymentServiceTest extends UnitTestCase
             ->getMock();
 
         $this->eventManagerMock = $this->getMockBuilder(ManagerInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->cartRepositoryMock = $this->getMockBuilder(CartRepositoryInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->orderServiceMock = $this->getMockBuilder(OrderServiceInterface::class)
+        ->disableOriginalConstructor()
+        ->getMock();
+
+        $this->maskedQuoteIdToQuoteIdMock = $this->getMockBuilder(MaskedQuoteIdToQuoteIdInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->quoteManagementMock = $this->getMockBuilder(QuoteManagement::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -304,11 +337,13 @@ class PaymentServiceTest extends UnitTestCase
             $this->paymentClientMock,
             $this->paymentRequestBuilderMock,
             $this->cmPaymentDataFactoryMock,
+            $this->orderServiceMock,
             $this->cmPaymentFactoryMock,
             $this->cmPaymentRepositoryMock,
             $this->cmOrderRepositoryMock,
             $this->eventManagerMock,
-            $this->cmPaymentsLoggerMock
+            $this->cmPaymentsLoggerMock,
+            $this->paymentOrderStatusInterfaceFactory
         );
     }
 }

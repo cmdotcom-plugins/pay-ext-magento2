@@ -1,0 +1,150 @@
+//*
+// * Copyright © CM.com. All rights reserved.
+// * See LICENSE.txt for license details.
+// */
+
+//
+//  Common (style-m.css)
+//  _____________________________________________
+// all screens
+& when (@media-common = true) {
+    // Credit Card Form
+    .checkout-payment-method {
+        .cm-payments-ccard.fieldset {
+            > .field {
+                .fields.group.group-2 {
+                    .field {
+                        width: auto !important;
+                    }
+                }
+            }
+
+            > legend {
+                padding: 0 0 10px 0;
+            }
+        }
+
+        .cm-payments-ccard {
+            .fields {
+                .select {
+                    padding-left: 5px;
+                    padding-right: 5px;
+                }
+            }
+
+            .holder {
+                .input-text {
+                    width: 325px;
+                }
+            }
+
+            .number {
+                input[type="number"] {
+                    width: 325px;
+                    background-color: #fff;
+                    background-repeat: no-repeat;
+                    background-position: 0 2px;
+                    background-size: 28px;
+                    text-indent: 24px;
+                }
+
+                // Unknown Credit Card Type
+                .input-cc {
+                    background-image: url(../CM_Payments/images/creditcard/cc.svg) !important;
+                }
+
+                // American Express Credit Card Type
+                .input-ae {
+                    background-image: url(../CM_Payments/images/creditcard/ae.svg) !important;
+                }
+
+                // MasterCard Credit Card Type
+                .input-mc {
+                    background-image: url(../CM_Payments/images/creditcard/mc.svg) !important;
+                }
+
+                // Visa Credit Card Type
+                .input-vi {
+                    background-image: url(../CM_Payments/images/creditcard/vi.svg) !important;
+                }
+
+                // Maestro Domestic Credit Card Type
+                .input-md {
+                    background-image: url(../CM_Payments/images/creditcard/md.svg) !important;
+                }
+
+                // Maestro International Credit Card Type
+                .input-mi {
+                    background-image: url(../CM_Payments/images/creditcard/mi.svg) !important;
+                }
+
+                // V-Pay Credit Card Type
+                .input-vp {
+                    background-image: url(../CM_Payments/images/creditcard/vp.svg) !important;
+                }
+            }
+
+            .month {
+                .select {
+                    width: 205px;
+                }
+            }
+
+            .year {
+                padding-left: 5px;
+                .select {
+                    width: 115px;
+                }
+            }
+
+            .cvv {
+                .label {
+                    display: block;
+                }
+                .input-text {
+                    width: 55px;
+                }
+            }
+        }
+    }
+
+    // Credit Card Challenge Pop-Up
+    .cc-challenge-form-modal {
+        .action-close {
+            display: none;
+        }
+
+        .modal-inner-wrap {
+            margin-left: -250px;
+            width: 550px !important;
+        }
+
+        .cc-challenge-form-popup-content {
+            height: 450px;
+            overflow: hidden;
+        }
+    }
+}
+
+//
+//  Mobile (style-m.css)
+//  _____________________________________________
+// screens below 480px
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__xs) {
+}
+
+// screens below 768px
+.media-width(@extremum, @break) when (@extremum = 'max') and (@break = @screen__m) {
+}
+
+//
+//  Desktop (style-l.css)
+//  _____________________________________________
+
+// screens above 768px
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m) {
+}
+
+// screens above 1024px
+.media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__l) {
+}

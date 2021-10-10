@@ -36,6 +36,7 @@
                 type="CM\Payments\Model\PaymentMethodAdditionalData"/>
     <preference for="CM\Payments\Api\Data\IssuerInterface" type="CM\Payments\Model\Issuer" />
     <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder" />
+    <preference for="CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface" type="CM\Payments\Model\Domain\PaymentOrderStatus" />
     <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config" />
 
     <preference for="CM\Payments\Api\GuestPaymentMethodManagementInterface"
@@ -45,12 +46,16 @@
     <preference for="CM\Payments\Api\OrderManagementInterface"
                 type="CM\Payments\Webapi\OrderManagement" />
 
+    <preference for="CM\Payments\Api\Data\CardDetailsInterface" type="CM\Payments\Model\Data\CardDetails"/>
+    <preference for="CM\Payments\Api\Data\BrowserDetailsInterface" type="CM\Payments\Model\Data\BrowserDetails"/>
+
     <type name="CM\Payments\Service\PaymentRequestBuilder">
         <arguments>
             <argument name="parts" xsi:type="array">
                 <item name="method" xsi:type="object">CM\Payments\Service\Payment\Request\Part\Method</item>
                 <item name="idealDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\IdealDetails</item>
                 <item name="elvDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\ElvDetails</item>
+                <item name="cardDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\CardDetails</item>
             </argument>
         </arguments>
     </type>
@@ -314,6 +319,128 @@
         </arguments>
     </virtualType>
     <!-- END CM Payments (Credit Card) Method -->
+
+    <!-- BEGIN CM Payments (Maestro) Method -->
+    <virtualType name="CMPaymentsMaestroFacade" type="CMPaymentsFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_MAESTRO</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMMaestroValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">CMMaestroValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMMaestroCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMMaestroValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMMaestroConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMMaestroValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMMaestroCountryValidator</item>
+                <item name="currency" xsi:type="string">CMMaestroCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMMaestroCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMMaestroGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_MAESTRO</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMMaestroConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMMaestroGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMMaestroCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMMaestroGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMMaestroCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMMaestroGenericConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (Maestro) Method -->
+
+    <!-- BEGIN CM Payments (V-Pay) Method -->
+    <virtualType name="CMPaymentsVPayFacade" type="CMPaymentsFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_VPAY</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMVPayValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">CMVPayValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMVPayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMVPayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMVPayConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMVPayValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMVPayCountryValidator</item>
+                <item name="currency" xsi:type="string">CMVPayCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMVPayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMVPayGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_VPAY</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMVPayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMVPayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMVPayCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMVPayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMVPayCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMVPayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (V-Pay) Method -->
 
     <!-- BEGIN CM Payments (iDeal) Method -->
     <virtualType name="CMPaymentsIdealFacade" type="CMPaymentsFacade">

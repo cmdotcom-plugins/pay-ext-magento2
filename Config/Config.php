@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace CM\Payments\Config;
 
 use CM\Payments\Api\Config\ConfigInterface;
+use CM\Payments\Model\Adminhtml\Source\MethodMode;
 use CM\Payments\Model\Adminhtml\Source\Mode;
 use CM\Payments\Model\ConfigProvider;
 use Magento\Framework\App\Config\ScopeConfigInterface;
@@ -249,6 +250,62 @@ class Config implements ConfigInterface
         $configPath = "payment/{$paymentMethodCode}/order_expiry_duration";
         return $this->getConfig(
             $configPath,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getEncryptLibrary(): string
+    {
+        $baseUrl = 'https://secure.docdatapayments.com/cse/';
+        if ($this->getMode() === Mode::TEST) {
+            $baseUrl = 'https://testsecure.docdatapayments.com/cse/';
+        }
+
+        return $baseUrl . $this->getMerchantKey();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNsa3dsLibrary(): string
+    {
+        $baseUrl = 'https://secure.docdatapayments.com/ps/script/';
+        if ($this->getMode() === Mode::TEST) {
+            $baseUrl = 'https://testsecure.docdatapayments.com/ps/script/';
+        }
+
+        return $baseUrl . 'nca-3ds-web-sdk.js';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isCreditCardDirect(): bool
+    {
+        $mode = $this->getConfig(
+            self::XML_PATH_PAYMENT_CREDIT_CARD_MODE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+
+        if (empty($mode)) {
+            return false;
+        }
+
+        return $mode === MethodMode::DIRECT;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCreditCardAllowedTypes(): string
+    {
+        return $this->getConfig(
+            ConfigInterface::XML_PATH_PAYMENT_CREDIT_CARD_ALLOWED_TYPES,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );

@@ -6,6 +6,8 @@
 
 namespace CM\Payments\Service\Payment\Request\Part;
 
+use CM\Payments\Api\Data\BrowserDetailsInterface;
+use CM\Payments\Api\Data\CardDetailsInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\Payment\Request\RequestPartInterface;
 use CM\Payments\Client\Model\Request\PaymentCreate;
@@ -16,11 +18,23 @@ class Method implements RequestPartInterface
     /**
      * @inheritDoc
      */
-    public function process(OrderInterface $order, PaymentCreate $paymentCreate): PaymentCreate
-    {
+    public function process(
+        PaymentCreate $paymentCreate,
+        OrderInterface $order = null,
+        CardDetailsInterface $cardDetails = null,
+        BrowserDetailsInterface $browserDetails = null
+    ): PaymentCreate {
         $paymentCreate->setMethod($this->getMethod($order));
 
         return $paymentCreate;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function needsOrder(): bool
+    {
+        return true;
     }
 
     /**

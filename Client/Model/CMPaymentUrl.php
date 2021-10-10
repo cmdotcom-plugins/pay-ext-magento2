@@ -33,6 +33,11 @@ class CMPaymentUrl implements CMPaymentUrlInterface
     private $order;
 
     /**
+     * @var array
+     */
+    private $parameters;
+
+    /**
      * CMPaymentUrl constructor
      *
      * @param string $purpose
@@ -44,12 +49,14 @@ class CMPaymentUrl implements CMPaymentUrlInterface
         string $purpose,
         string $method,
         string $url,
-        string $order
+        string $order,
+        array $parameters = []
     ) {
         $this->purpose = $purpose;
         $this->method = $method;
         $this->url = $url;
         $this->order = $order;
+        $this->parameters = $parameters;
     }
 
     /**
@@ -82,5 +89,14 @@ class CMPaymentUrl implements CMPaymentUrlInterface
     public function getPurpose(): string
     {
         return $this->purpose;
+    }
+
+    /**
+     * @return string
+     */
+    public function getParameters(): string
+    {
+        // Because Magento WebApi doesn't support dynamic associative arrays we returning a json string
+        return json_encode($this->parameters);
     }
 }
