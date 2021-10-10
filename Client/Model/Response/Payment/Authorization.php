@@ -11,6 +11,7 @@ namespace CM\Payments\Client\Model\Response\Payment;
 class Authorization
 {
     const STATE_AUTHORIZED = 'AUTHORIZED';
+    const STATE_CANCELED = 'CANCELED';
 
     /**
      * @var int|null

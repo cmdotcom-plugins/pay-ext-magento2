@@ -64,6 +64,60 @@ class MockApiResponse
         ];
     }
 
+    public function getOrderDetailCanceledPayment()
+    {
+        return [
+            "order_reference" => "100000001",
+            "description" => "Order 12345",
+            "amount" => 50,
+            "currency" => "USD",
+            "email" => "johan.devries@docdatapayments.com",
+            "language" => "be",
+            "country" => "NL",
+            "profile" => "test",
+            "timestamp" => "2021-07-01T11:59:49Z",
+            "expires_on" => "2021-08-05T11:59:49Z",
+            "payments" => [
+                [
+                    "id" => "pid4911203603t",
+                    "method" => "IDEAL",
+                    "authorization" => [
+                        "amount" => 42,
+                        "currency" => "EUR",
+                        "state" => "CANCELED"
+                    ]
+                ]
+            ]
+        ];
+    }
+
+    public function getOrderDetailRedirectedForAuthenticationPayment()
+    {
+        return [
+            "order_reference" => "100000001",
+            "description" => "Order 12345",
+            "amount" => 50,
+            "currency" => "USD",
+            "email" => "johan.devries@docdatapayments.com",
+            "language" => "be",
+            "country" => "NL",
+            "profile" => "test",
+            "timestamp" => "2021-07-01T11:59:49Z",
+            "expires_on" => "2021-08-05T11:59:49Z",
+            "payments" => [
+                [
+                    "id" => "pid4911203603t",
+                    "method" => "IDEAL",
+                    "authorization" => [
+                        "amount" => 42,
+                        "currency" => "EUR",
+                        "state" => "REDIRECTED_FOR_AUTHENTICATION"
+                    ]
+                ]
+            ]
+        ];
+    }
+
     public function getOrderDetailMultiplePayments()
     {
         return [
