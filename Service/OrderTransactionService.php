@@ -220,7 +220,7 @@ class OrderTransactionService implements OrderTransactionServiceInterface
         try {
             $cmPayment = $this->cmPaymentRepository->getByOrderKey($cmOrder->getOrderKey());
             if (in_array($order->getPayment()->getMethod(), self::SHOULD_CANCEL_PAYMENT_METHODS) && $cmPayment) {
-                foreach($cmOrderDetails->getPayments() as $payment) {
+                foreach ($cmOrderDetails->getPayments() as $payment) {
                     if ($payment->getAuthorization()->getState() === Authorization::STATE_AUTHORIZED) {
                         return;
                     }

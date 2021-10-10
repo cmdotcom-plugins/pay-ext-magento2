@@ -245,14 +245,12 @@ class OrderTransactionServiceTest extends IntegrationTestCase
             ->expects($this->once())->method('execute')
             ->willReturn($this->mockApiResponse->getOrderDetailRedirectedForAuthenticationPayment());
 
-
         $magentoOrder = $this->loadOrderById('100000001');
         $magentoOrder->getPayment()->setMethod('cm_payments_creditcard');
         $repository = $this->objectManager->get(OrderRepositoryInterface::class);
         $repository->save($magentoOrder);
 
         $this->createCmOrder($magentoOrder);
-
         $this->createCMPayment($magentoOrder);
 
         $this->orderTransactionService->process('100000001');
