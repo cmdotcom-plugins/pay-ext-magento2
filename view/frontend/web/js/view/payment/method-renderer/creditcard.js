@@ -15,6 +15,7 @@ define([
     'underscore',
     'mage/url',
     'CM_Payments/js/action/creditcard/get-payment-status',
+    'Magento_Checkout/js/model/payment/additional-validators',
     'Magento_Payment/js/model/credit-card-validation/validator',
     'CM_Payments/js/model/validators/creditcard/allowed-card-type-validator',
     'mage/translate'
@@ -29,7 +30,8 @@ define([
     $,
     _,
     url,
-    paymentStatus
+    paymentStatus,
+    additionalValidators
 ) {
 
     /**
@@ -401,9 +403,12 @@ define([
          */
         validate: function () {
             let $form = this.getForm().validation();
-            this.data = this.encryptCreditCardFields();
+            if (this.isDirect()) {
+                this.data = this.encryptCreditCardFields();
+                return this.data && $form.validation() && $form.validation('isValid');
+            }
 
-            return this.data && $form.validation() && $form.validation('isValid');
+            return $form.validation() && $form.validation('isValid');
         },
 
         /**
@@ -411,7 +416,7 @@ define([
          *
          * @return {boolean}
          */
-        placeOrder: function () {
+        placeOrderDirect: function () {
             let self = this;
             if (!this.validate() ||
                 this.isPlaceOrderActionAllowed() !== true
@@ -463,6 +468,7 @@ define([
          * @param payment
          */
         threeDSecureValidation: function(orderId, payment) {
+            const self = this;
             // Check if we got an 3dsv1 or 3dsv2 response based on 'REDIRECT' type in url model.
             const url = cc3DSValidator.findUrlWithPurpose(payment.urls, 'REDIRECT');
             if (payment.redirect_url && url) {
@@ -552,7 +558,12 @@ define([
          */
         afterPlaceOrder: function () {
             this.redirectAfterPlaceOrder = true;
-            window.location.replace(this.paymentConfig.successPage);
+            if (this.isDirect()) {
+                redirectOnSuccessAction.redirectUrl = url.build(this.paymentConfig.successPage);
+                redirectOnSuccessAction.execute();
+            } else {
+                redirectOnSuccessAction.redirectUrl = url.build('cmpayments/menu/redirect');
+            }
         }
     });
 });

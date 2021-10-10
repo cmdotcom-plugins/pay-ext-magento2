@@ -17,7 +17,7 @@ class CardDetails extends DataObject implements CardDetailsInterface
     /**
      * @inheritDoc
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->_getData(self::METHOD);
     }
@@ -25,7 +25,7 @@ class CardDetails extends DataObject implements CardDetailsInterface
     /**
      * @inheritDoc
      */
-    public function setMethod($method)
+    public function setMethod($method): CardDetailsInterface
     {
         $this->setData(self::METHOD, $method);
 
@@ -35,7 +35,7 @@ class CardDetails extends DataObject implements CardDetailsInterface
     /**
      * @inheritDoc
      */
-    public function getEncryptedCardData()
+    public function getEncryptedCardData(): string
     {
         return $this->_getData(self::ENCRYPTED_CARD_DATA);
     }
@@ -43,7 +43,7 @@ class CardDetails extends DataObject implements CardDetailsInterface
     /**
      * @inheritDoc
      */
-    public function setEncryptedCardData(string $cardData)
+    public function setEncryptedCardData(string $cardData): CardDetailsInterface
     {
         $this->setData(self::ENCRYPTED_CARD_DATA, $cardData);
 

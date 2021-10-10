@@ -9,13 +9,11 @@
 define([
     'Magento_Checkout/js/model/url-builder',
     'mage/storage',
-    'Magento_Checkout/js/model/error-processor',
     'Magento_Customer/js/model/customer',
     'Magento_Checkout/js/model/full-screen-loader'
 ], function (
     urlBuilder,
     storage,
-    errorProcessor,
     customer,
     loader
 ) {
@@ -47,10 +45,6 @@ define([
         return storage.post(
             serviceUrl,
             JSON.stringify(payload)
-        ).fail(
-            function (response) {
-                errorProcessor.process(response, messageContainer);
-            }
         ).always(
             function () {
                 loader.stopLoader();

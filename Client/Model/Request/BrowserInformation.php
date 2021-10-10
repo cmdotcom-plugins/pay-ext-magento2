@@ -53,25 +53,25 @@ class BrowserInformation
         ];
     }
     /**
-     * @return string
+     * @return string|null
      */
-    public function getShopperIp(): string
+    public function getShopperIp(): ?string
     {
         return $this->shopperIp;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getAccept(): string
+    public function getAccept(): ?string
     {
         return $this->accept;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getUserAgent(): string
+    public function getUserAgent(): ?string
     {
         return $this->userAgent;
     }

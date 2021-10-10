@@ -16,7 +16,7 @@ class BrowserDetails extends DataObject implements BrowserDetailsInterface
     /**
      * @inheritDoc
      */
-    public function getShopperIp()
+    public function getShopperIp(): ?string
     {
         return $this->_getData(self::SHOPPER_IP);
     }
@@ -24,7 +24,7 @@ class BrowserDetails extends DataObject implements BrowserDetailsInterface
     /**
      * @inheritDoc
      */
-    public function setShopperIp($shopperIp)
+    public function setShopperIp($shopperIp): BrowserDetailsInterface
     {
         $this->setData(self::SHOPPER_IP, $shopperIp);
 
@@ -34,7 +34,7 @@ class BrowserDetails extends DataObject implements BrowserDetailsInterface
     /**
      * @inheritDoc
      */
-    public function getAccept()
+    public function getAccept(): ?string
     {
         return $this->_getData(self::ACCEPT);
     }
@@ -42,7 +42,7 @@ class BrowserDetails extends DataObject implements BrowserDetailsInterface
     /**
      * @inheritDoc
      */
-    public function setAccept(string $accept)
+    public function setAccept(string $accept): BrowserDetailsInterface
     {
         $this->setData(self::ACCEPT, $accept);
 
@@ -52,7 +52,7 @@ class BrowserDetails extends DataObject implements BrowserDetailsInterface
     /**
      * @inheritDoc
      */
-    public function getUserAgent()
+    public function getUserAgent(): ?string
     {
         return $this->_getData(self::USER_AGENT);
     }
@@ -60,7 +60,7 @@ class BrowserDetails extends DataObject implements BrowserDetailsInterface
     /**
      * @inheritDoc
      */
-    public function setUserAgent(string $userAgent)
+    public function setUserAgent(string $userAgent): BrowserDetailsInterface
     {
         $this->setData(self::USER_AGENT, $userAgent);
 

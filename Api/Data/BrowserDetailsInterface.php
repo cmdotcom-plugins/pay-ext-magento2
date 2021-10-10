@@ -25,9 +25,9 @@ interface BrowserDetailsInterface
     /**
      * Get option shopperIp
      *
-     * @return string
+     * @return string|null
      */
-    public function getShopperIp(): string;
+    public function getShopperIp(): ?string;
 
     /**
      * Set option shopperIp
@@ -40,9 +40,9 @@ interface BrowserDetailsInterface
     /**
      * Get option accept
      *
-     * @return string
+     * @return string|null
      */
-    public function getAccept(): string;
+    public function getAccept(): ?string;
 
     /**
      * Set option accept
@@ -55,9 +55,9 @@ interface BrowserDetailsInterface
     /**
      * Get option userAgent
      *
-     * @return string
+     * @return string|null
      */
-    public function getUserAgent(): string;
+    public function getUserAgent(): ?string;
 
     /**
      * Set option userAgent
