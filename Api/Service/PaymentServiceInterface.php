@@ -21,7 +21,7 @@ interface PaymentServiceInterface
      * @param int $orderId
      * @param CardDetailsInterface|null $cardDetails
      * @param BrowserDetailsInterface|null $browserDetails
-     * @return CMPaymentInterface
+     * @return \CM\Payments\Client\Api\CMPaymentInterface
      * @throws NoSuchEntityException
      * @throws EmptyPaymentIdException
      */
@@ -33,7 +33,7 @@ interface PaymentServiceInterface
 
     /**
      * @param string $paymentId
-     * @return PaymentOrderStatusInterface
+     * @return \CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface
      */
     public function getPaymentStatus(string $paymentId): PaymentOrderStatusInterface;
 }
