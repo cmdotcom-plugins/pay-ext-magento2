@@ -10,7 +10,6 @@ namespace CM\Payments\Api\Service;
 
 use CM\Payments\Model\ConfigProvider;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\CartInterface;
 
 interface MethodServiceInterface
@@ -28,6 +27,34 @@ interface MethodServiceInterface
         ConfigProvider::CODE_ELV,
         ConfigProvider::CODE_KLARNA,
         ConfigProvider::CODE_AFTERPAY
+    ];
+
+    public const CM_METHOD_VISA = 'VISA';
+    public const CM_METHOD_MASTERCARD = 'MASTERCARD';
+    public const CM_METHOD_MAESTRO = 'MAESTRO';
+    public const CM_METHOD_AMEX = 'AMEX';
+    public const CM_METHOD_V_PAY = 'V_PAY';
+    public const CM_METHOD_IDEAL = 'IDEAL';
+    public const CM_METHOD_PAYPAL = 'PAYPAL_EXPRESS_CHECKOUT';
+    public const CM_METHOD_BANCONTACT = 'BANCONTACT';
+    public const CM_METHOD_KLARNA = 'KLARNA';
+    public const CM_METHOD_AFTERPAY = 'AFTERPAY_OPEN_INVOICE';
+    public const CM_METHOD_PRZELEWAY = 'PRZELEWY_24';
+    public const CM_METHOD_BLIK = 'BLIK';
+    public const CM_METHOD_ELV = 'ELV';
+
+    /**
+     * List of refundable payment methods
+     */
+    public const ALLOW_REFUND_METHODS = [
+        MethodServiceInterface::CM_METHOD_VISA,
+        MethodServiceInterface::CM_METHOD_MASTERCARD,
+        MethodServiceInterface::CM_METHOD_MAESTRO,
+        MethodServiceInterface::CM_METHOD_AMEX,
+        MethodServiceInterface::CM_METHOD_V_PAY,
+        MethodServiceInterface::CM_METHOD_PAYPAL,
+        MethodServiceInterface::CM_METHOD_IDEAL,
+        MethodServiceInterface::CM_METHOD_KLARNA,
     ];
 
     /**

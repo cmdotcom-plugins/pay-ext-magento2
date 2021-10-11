@@ -108,4 +108,20 @@ class Payment extends AbstractExtensibleModel implements PaymentInterface
     {
         return $this->setData(self::PAYMENT_ID, $paymentId);
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPaymentMethod(): ?string
+    {
+        return $this->getData(self::PAYMENT_METHOD);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setPaymentMethod(string $method): PaymentInterface
+    {
+        return $this->setData(self::PAYMENT_METHOD, $method);
+    }
 }
