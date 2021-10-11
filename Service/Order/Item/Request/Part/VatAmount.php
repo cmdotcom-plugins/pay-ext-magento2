@@ -19,7 +19,14 @@ class VatAmount implements RequestPartByOrderItemInterface
      */
     public function process(OrderItemInterface $orderItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
-        $orderItemCreate->setVatAmount((int)round($orderItem->getTaxAmount() * 100));
+        $taxPercent = (float)$orderItemCreate->getVatRate();
+        $vatAmount = round(
+            ($orderItemCreate->getAmount() / 100) * ($taxPercent / (100 + $taxPercent)
+            ),
+            2
+        );
+
+        $orderItemCreate->setVatAmount((int)($vatAmount * 100));
 
         return $orderItemCreate;
     }
