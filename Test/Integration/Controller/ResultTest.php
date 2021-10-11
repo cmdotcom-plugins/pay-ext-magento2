@@ -4,7 +4,7 @@
  * See LICENSE.txt for license details.
  */
 
-namespace CM\Payments\Test\Integration\Controller\Checkout;
+namespace CM\Payments\Test\Integration\Controller;
 
 use CM\Payments\Client\Model\Request\OrderCreate;
 use CM\Payments\Service\OrderTransactionService;
