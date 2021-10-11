@@ -21,7 +21,6 @@ use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Sales\Api\OrderManagementInterface;
-use Psr\Log\LoggerInterface;
 
 class Result extends Action implements HttpGetActionInterface
 {
@@ -51,7 +50,7 @@ class Result extends Action implements HttpGetActionInterface
     private $orderManagement;
 
     /**
-     * @var LoggerInterface
+     * @var CMPaymentsLogger
      */
     private $logger;
     /**

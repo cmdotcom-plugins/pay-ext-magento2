@@ -10,7 +10,7 @@ namespace CM\Payments\Controller\Payment;
 
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
-use CM\Payments\Model\ConfigProvider;
+use CM\Payments\Logger\CMPaymentsLogger;
 use Exception;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\Action;
@@ -21,7 +21,6 @@ use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\Phrase;
-use Psr\Log\LoggerInterface;
 
 class Redirect extends Action implements HttpGetActionInterface
 {
@@ -51,7 +50,7 @@ class Redirect extends Action implements HttpGetActionInterface
     private $paymentService;
 
     /**
-     * @var LoggerInterface
+     * @var CMPaymentsLogger
      */
     private $logger;
 
@@ -64,7 +63,7 @@ class Redirect extends Action implements HttpGetActionInterface
      * @param RedirectFactory $redirectFactory
      * @param OrderServiceInterface $orderService
      * @param PaymentServiceInterface $paymentService
-     * @param LoggerInterface $logger
+     * @param CMPaymentsLogger $logger
      */
     public function __construct(
         Context $context,
@@ -73,7 +72,7 @@ class Redirect extends Action implements HttpGetActionInterface
         RedirectFactory $redirectFactory,
         OrderServiceInterface $orderService,
         PaymentServiceInterface $paymentService,
-        LoggerInterface $logger
+        CMPaymentsLogger $logger
     ) {
         $this->messageManager = $messageManager;
         $this->checkoutSession = $checkoutSession;
