@@ -24,7 +24,7 @@ class Amount implements RequestPartByQuoteItemInterface
         if ($quoteItem->getQuote()->getIsVirtual()) {
             $address = $quoteItem->getQuote()->getBillingAddress();
         }
-        if ($orderItemCreate->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
+        if ($quoteItem->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
             $totalAmount = $address->getBaseShippingAmount()
                 + $address->getBaseShippingTaxAmount()
                 + $address->getBaseShippingDiscountTaxCompensationAmnt();

@@ -21,10 +21,9 @@ class UnitAmount implements RequestPartByOrderItemInterface
     public function process(OrderItemInterface $orderItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
         $totalAmount = $orderItemCreate->getAmount() / 100;
-        $discountAmount = abs($orderItem->getDiscountAmount() + $orderItem->getDiscountTaxCompensationAmount());
-        $unitPrice = round(($totalAmount + $discountAmount) / $orderItem->getQtyOrdered(), 2);
+        $unitPrice = round($totalAmount / $orderItem->getQtyOrdered(), 2);
 
-        if ($orderItemCreate->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
+        if ($orderItem->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
             $unitPrice = $totalAmount;
         }
 

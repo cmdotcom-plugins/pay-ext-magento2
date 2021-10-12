@@ -21,7 +21,7 @@ class VatRate implements RequestPartByOrderItemInterface
     public function process(OrderItemInterface $orderItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
         $taxPercent = 0;
-        if ($orderItemCreate->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
+        if ($orderItem->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
             if ($orderItem->getOrder()->getBaseShippingAmount() > 0) {
                 $taxPercent = ($orderItem->getOrder()->getBaseShippingTaxAmount()
                         / $orderItem->getOrder()->getBaseShippingAmount()) * 100;

@@ -26,7 +26,7 @@ class VatRate implements RequestPartByQuoteItemInterface
         }
 
         $taxPercent = 0;
-        if ($orderItemCreate->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
+        if ($quoteItem->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
             if ($address->getBaseShippingAmount() > 0) {
                 $taxPercent = ($address->getBaseShippingTaxAmount()
                         / $address->getBaseShippingAmount()) * 100;

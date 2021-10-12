@@ -20,7 +20,7 @@ class Amount implements RequestPartByOrderItemInterface
      */
     public function process(OrderItemInterface $orderItem, OrderItemCreate $orderItemCreate): OrderItemCreate
     {
-        if ($orderItemCreate->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
+        if ($orderItem->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
             $totalAmount = $orderItem->getOrder()->getBaseShippingAmount()
                 + $orderItem->getOrder()->getBaseShippingTaxAmount()
                 + $orderItem->getOrder()->getBaseShippingDiscountTaxCompensationAmnt();
