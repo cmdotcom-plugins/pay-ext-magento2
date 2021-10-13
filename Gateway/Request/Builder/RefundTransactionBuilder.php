@@ -10,10 +10,8 @@ namespace CM\Payments\Gateway\Request\Builder;
 
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface;
-use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Client\Model\Request\RefundCreate;
 use Magento\Framework\App\State;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Payment\Gateway\Request\BuilderInterface;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -79,12 +77,6 @@ class RefundTransactionBuilder implements BuilderInterface
 
         $cmOrder = $this->cmOrderRepository->getByOrderId((int) $order->getEntityId());
         $cmPayment = $this->cmPaymentRepository->getByOrderKey($cmOrder->getOrderKey());
-
-        if (! in_array($cmPayment->getPaymentMethod(), MethodServiceInterface::ALLOW_REFUND_METHODS)) {
-            throw new CouldNotRefundException(
-                __('Payment method %1 doesn\'t support refund', $cmPayment->getPaymentMethod())
-            );
-        }
 
         $payload = new RefundCreate(
             $cmOrder->getOrderKey(),

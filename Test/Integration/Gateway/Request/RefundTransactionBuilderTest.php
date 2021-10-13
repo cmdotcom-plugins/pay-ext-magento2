@@ -18,7 +18,6 @@ use Magento\Framework\DataObject;
 use Magento\Payment\Gateway\Data\PaymentDataObjectFactoryInterface;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Exception\CouldNotRefundException;
 use Magento\Sales\Model\Order\CreditmemoRepository;
 
@@ -86,38 +85,6 @@ class RefundTransactionBuilderTest extends IntegrationTestCase
             'amount' => 0,
             'currency' => $order->getOrderCurrencyCode()
         ];
-
-        $this->expectException(CouldNotRefundException::class);
-        $refundTransactionBuilder->build($buildSubject);
-    }
-
-    /**
-     * @magentoConfigFixture default_store cm_payments/general/enabled 1
-     * @magentoConfigFixture default_store payment/cm_payments/active 1
-     * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 1
-     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
-     * @magentoConfigFixture default_store payment/cm_payments_paypal/active 1
-     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
-     * @magentoDataFixture Magento/Sales/_files/order.php
-     */
-    public function testThrowExceptionWhenPaymentMethodDoesNotSupportRefund()
-    {
-        /** @var RefundTransactionBuilder $refundTransactionBuilder */
-        $refundTransactionBuilder = $this->objectManager->create(RefundTransactionBuilder::class);
-
-        $stateObject = new DataObject();
-        $order = $this->loadOrderById('100000001');
-        $paymentDataObject = $this->getNewPaymentDataObject($order);
-
-        $buildSubject = [
-            'stateObject' => $stateObject,
-            'payment' => $paymentDataObject,
-            'amount' => 0,
-            'currency' => $order->getOrderCurrencyCode()
-        ];
-
-        $this->createCmOrder($order);
-        $this->createCmPayment($order, 'ELV');
 
         $this->expectException(CouldNotRefundException::class);
         $refundTransactionBuilder->build($buildSubject);
