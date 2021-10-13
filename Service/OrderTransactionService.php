@@ -198,6 +198,7 @@ class OrderTransactionService implements OrderTransactionServiceInterface
             $cmPayment->setOrderId((int)$order->getEntityId());
             $cmPayment->setOrderKey($cmOrder->getOrderKey());
             $cmPayment->setIncrementId($order->getIncrementId());
+            $cmPayment->setPaymentMethod($cmOrderDetails->getAuthorizedPayment()->getMethod());
             $cmPayment->setPaymentId($cmOrderDetails->getAuthorizedPayment()->getId());
 
             $this->cmPaymentRepository->save($cmPayment);

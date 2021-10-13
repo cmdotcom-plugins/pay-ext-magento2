@@ -15,6 +15,7 @@ use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
 use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterfaceFactory;
+use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
@@ -22,12 +23,14 @@ use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface;
 use CM\Payments\Client\Api\CMPaymentInterface;
 use CM\Payments\Client\Api\PaymentInterface as CMPaymentClientInterface;
 use CM\Payments\Client\Model\CMPaymentFactory;
+use CM\Payments\Client\Model\Response\PaymentCreate;
 use CM\Payments\Exception\EmptyPaymentIdException;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
 use GuzzleHttp\Exception\GuzzleException;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
 class PaymentService implements PaymentServiceInterface
@@ -191,15 +194,7 @@ class PaymentService implements PaymentServiceInterface
             $this->logger->error('Empty payment id', ['response' => $paymentCreateResponse]);
             throw new EmptyPaymentIdException(__('Empty payment id'));
         }
-
-        /** @var CMPaymentDataInterface $cmPayment */
-        $cmPayment = $this->cmPaymentDataFactory->create();
-        $cmPayment->setOrderId((int)$order->getEntityId());
-        $cmPayment->setOrderKey($cmOrder->getOrderKey());
-        $cmPayment->setIncrementId($order->getIncrementId());
-        $cmPayment->setPaymentId($paymentCreateResponse->getId());
-
-        $this->cmPaymentRepository->save($cmPayment);
+        $cmPayment = $this->saveCMPayment($order, $cmOrder, $paymentCreateResponse);
 
         $additionalInformation['cm_payment_id'] = $paymentCreateResponse->getId();
         $order->getPayment()->setAdditionalInformation($additionalInformation);
@@ -235,5 +230,32 @@ class PaymentService implements PaymentServiceInterface
             'orderId' => $order->getIncrementId(),
             'status' => $order->getStatus()
         ]);
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @param $cmOrder
+     * @param PaymentCreate $paymentCreateResponse
+     * @return CMPaymentDataInterface
+     */
+    private function saveCMPayment(
+        OrderInterface $order,
+        $cmOrder,
+        PaymentCreate $paymentCreateResponse
+    ): CMPaymentDataInterface {
+        /** @var CMPaymentDataInterface $cmPayment */
+        $cmPayment = $this->cmPaymentDataFactory->create();
+        $cmPayment->setOrderId((int)$order->getEntityId());
+        $cmPayment->setOrderKey($cmOrder->getOrderKey());
+        $cmPayment->setIncrementId($order->getIncrementId());
+        $cmPayment->setPaymentId($paymentCreateResponse->getId());
+        if (!empty(MethodServiceInterface::API_METHODS_MAPPING[$order->getPayment()->getMethod()])) {
+            $cmPayment->setPaymentMethod(
+                MethodServiceInterface::API_METHODS_MAPPING[$order->getPayment()->getMethod()]
+            );
+        }
+
+        $this->cmPaymentRepository->save($cmPayment);
+        return $cmPayment;
     }
 }

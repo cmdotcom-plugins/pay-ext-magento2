@@ -10,7 +10,6 @@ namespace CM\Payments\Api\Service;
 
 use CM\Payments\Model\ConfigProvider;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\CartInterface;
 
 interface MethodServiceInterface

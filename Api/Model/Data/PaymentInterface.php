@@ -25,6 +25,7 @@ interface PaymentInterface extends ExtensibleDataInterface
     public const ORDER_KEY = 'order_key';
     public const ORDER_INCREMENT_ID = 'increment_id';
     public const PAYMENT_ID = 'payment_id';
+    public const PAYMENT_METHOD = 'payment_method';
     public const CREATED_AT = 'created_at';
     public const UPDATED_AT = 'updated_at';
 
@@ -56,6 +57,12 @@ interface PaymentInterface extends ExtensibleDataInterface
     public function getIncrementId(): string;
 
     /**
+     * @param string $incrementId
+     * @return PaymentInterface
+     */
+    public function setIncrementId(string $incrementId): PaymentInterface;
+
+    /**
      * @return string
      */
     public function getPaymentId(): string;
@@ -67,10 +74,15 @@ interface PaymentInterface extends ExtensibleDataInterface
     public function setPaymentId(string $paymentId): PaymentInterface;
 
     /**
-     * @param string $incrementId
+     * @return string|null
+     */
+    public function getPaymentMethod(): ?string;
+
+    /**
+     * @param string $method
      * @return PaymentInterface
      */
-    public function setIncrementId(string $incrementId): PaymentInterface;
+    public function setPaymentMethod(string $method): PaymentInterface;
 
     /**
      * @return string

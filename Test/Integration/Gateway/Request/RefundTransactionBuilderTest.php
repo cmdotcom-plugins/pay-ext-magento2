@@ -18,7 +18,6 @@ use Magento\Framework\DataObject;
 use Magento\Payment\Gateway\Data\PaymentDataObjectFactoryInterface;
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Exception\CouldNotRefundException;
 use Magento\Sales\Model\Order\CreditmemoRepository;
 
@@ -53,7 +52,7 @@ class RefundTransactionBuilderTest extends IntegrationTestCase
             'currency' => $order->getOrderCurrencyCode()
         ];
         $this->createCmOrder($order);
-        $this->createCmPayment($order);
+        $this->createCmPayment($order, 'IDEAL');
 
         $actual = $refundTransactionBuilder->build($buildSubject);
 
@@ -138,9 +137,10 @@ class RefundTransactionBuilderTest extends IntegrationTestCase
 
     /**
      * @param OrderInterface $order
+     * @param string $method
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      */
-    private function createCmPayment(OrderInterface $order): void
+    private function createCmPayment(OrderInterface $order, string $method): void
     {
         /** @var PaymentRepository $cmPaymentRepository */
         $cmPaymentRepository = $this->objectManager->create(PaymentRepository::class);
@@ -150,7 +150,8 @@ class RefundTransactionBuilderTest extends IntegrationTestCase
             'order_id' => (int)$order->getEntityId(),
             'order_key' => '123',
             'increment_id' => $order->getIncrementId(),
-            'payment_id' => 'p123'
+            'payment_id' => 'p123',
+            'payment_method' => $method
         ]);
         $cmPaymentRepository->save($cmPayment);
     }

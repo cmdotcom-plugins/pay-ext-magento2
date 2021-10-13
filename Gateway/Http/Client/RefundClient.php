@@ -10,6 +10,8 @@ namespace CM\Payments\Gateway\Http\Client;
 
 use CM\Payments\Client\Model\Request\RefundCreate;
 use CM\Payments\Client\Refund;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\GuzzleException;
 use Magento\Payment\Gateway\Http\ClientInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 
@@ -36,6 +38,8 @@ class RefundClient implements ClientInterface
      *
      * @param TransferInterface $transferObject
      * @return array
+     * @throws \Exception
+     * @throws GuzzleException
      */
     public function placeRequest(TransferInterface $transferObject)
     {
@@ -44,7 +48,13 @@ class RefundClient implements ClientInterface
         /** @var RefundCreate $refundCreate */
         $refundCreate = $request['payload'];
 
-        $response = $this->refundClient->refund($refundCreate);
+        try {
+            $response = $this->refundClient->refund($refundCreate);
+        } catch (ClientException $exception) {
+            $body = json_decode($exception->getResponse()->getBody()->getContents());
+            $errorMessage = $body->messages[0];
+            throw new ClientException($errorMessage, $exception->getRequest());
+        }
 
         return $response->toArray();
     }
