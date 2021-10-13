@@ -82,7 +82,7 @@ class RefundTransactionBuilder implements BuilderInterface
 
         if (! in_array($cmPayment->getPaymentMethod(), MethodServiceInterface::ALLOW_REFUND_METHODS)) {
             throw new CouldNotRefundException(
-                __('Payment method %1 doesn\'t support refund')
+                __('Payment method %1 doesn\'t support refund', $cmPayment->getPaymentMethod())
             );
         }
 
