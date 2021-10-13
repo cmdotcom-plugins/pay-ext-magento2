@@ -130,31 +130,8 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $shippingItem->setName(self::ITEM_SHIPPING_FEE_NAME);
                 $shippingItem->setDescription(self::ITEM_SHIPPING_FEE_NAME);
                 $shippingItem->setQtyOrdered(1);
-                $shippingItem->setTaxAmount(0);
-                $shippingItem->setPrice($order->getShippingAmount());
-                $shippingItem->setRowTotal($order->getShippingAmount());
 
                 $orderItems[] = $shippingItem;
-            }
-
-            // Adding of discount item
-            if ((float)$order->getDiscountAmount()) {
-                /** @var OrderItemInterface $discountItem */
-                $discountItem = clone $lastItem[0];
-                $discountItem->setOrder($order);
-                $discountItem->setIsVirtual(0);
-                $discountItem->setItemId(
-                    isset($shippingItem) ? $shippingItem->getItemId() + 1 : $lastItem[0]->getItemId() + 1
-                );
-                $discountItem->setSku(self::ITEM_DISCOUNT_SKU);
-                $discountItem->setName(self::ITEM_DISCOUNT_NAME);
-                $discountItem->setDescription(self::ITEM_DISCOUNT_NAME);
-                $discountItem->setQtyOrdered(1);
-                $discountItem->setTaxAmount(0);
-                $discountItem->setPrice($order->getDiscountAmount());
-                $discountItem->setRowTotal($order->getDiscountAmount());
-
-                $orderItems[] = $discountItem;
             }
         }
 
@@ -183,31 +160,8 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $shippingItem->setName(self::ITEM_SHIPPING_FEE_NAME);
                 $shippingItem->setDescription(self::ITEM_SHIPPING_FEE_NAME);
                 $shippingItem->setQty(1);
-                $shippingItem->setTaxAmount(0);
-                $shippingItem->setPrice($quote->getShippingAddress()->getShippingAmount());
-                $shippingItem->setRowTotal($quote->getShippingAddress()->getShippingAmount());
 
                 $quoteItems[] = $shippingItem;
-            }
-
-            // Adding of discount item
-            if ((float)$quote->getShippingAddress()->getDiscountAmount()) {
-                /** @var CartItemInterface $discountItem */
-                $discountItem = clone $lastItem[0];
-                $discountItem->setQuote($quote);
-                $discountItem->setIsVirtual(0);
-                $discountItem->setItemId(
-                    isset($shippingItem) ? $shippingItem->getItemId() + 1 : $lastItem[0]->getItemId() + 1
-                );
-                $discountItem->setSku(self::ITEM_DISCOUNT_SKU);
-                $discountItem->setName(self::ITEM_DISCOUNT_NAME);
-                $discountItem->setDescription(self::ITEM_DISCOUNT_NAME);
-                $discountItem->setQty(1);
-                $discountItem->setTaxAmount(0);
-                $discountItem->setPrice($quote->getShippingAddress()->getDiscountAmount());
-                $discountItem->setRowTotal($quote->getShippingAddress()->getDiscountAmount());
-
-                $quoteItems[] = $discountItem;
             }
         }
 

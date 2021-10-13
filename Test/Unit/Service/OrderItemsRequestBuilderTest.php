@@ -73,9 +73,9 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
         );
         $this->assertSame(1, $orderItemsRequest->getPayload()[0]['quantity']);
         $this->assertSame('EUR', $orderItemsRequest->getPayload()[0]['currency']);
-        $this->assertSame(6897, $orderItemsRequest->getPayload()[0]['unit_amount']);
-        $this->assertSame(6897, $orderItemsRequest->getPayload()[0]['amount']);
-        $this->assertSame(1197, $orderItemsRequest->getPayload()[0]['vat_amount']);
+        $this->assertSame(8094, $orderItemsRequest->getPayload()[0]['unit_amount']);
+        $this->assertSame(8094, $orderItemsRequest->getPayload()[0]['amount']);
+        $this->assertSame(1405, $orderItemsRequest->getPayload()[0]['vat_amount']);
         $this->assertSame('21.0', $orderItemsRequest->getPayload()[0]['vat_rate']);
 
         // Check the second (physical) item
@@ -113,11 +113,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
                 'getDescription' => 'Virtual Item Description',
                 'getIsVirtual' => '1',
                 'getQtyOrdered' => '1',
-                'getRowTotal' => '57.0000',
-                'getPrice' => '57.0000',
-                'getRowTotalInclTax' => '68.9700',
-                'getPriceInclTax' => '68.9700',
-                'getTaxAmount' => '11.9700',
+                'getBaseRowTotal' => '68.9700',
+                'getBaseDiscountAmount' => '0.0000',
+                'getBaseTaxAmount' => '11.9700',
+                'getBaseDiscountTaxCompensationAmount' => '0.0000',
                 'getTaxPercent' => '21.0',
                 'getOrder' => $orderMock,
                 'setItemId' => $this->returnArgument(0)
@@ -133,11 +132,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
                 'getDescription' => 'Physical Item Description',
                 'getIsVirtual' => '0',
                 'getQtyOrdered' => '2',
-                'getRowTotal' => '114.0000',
-                'getPrice' => '57.0000',
-                'getRowTotalInclTax' => '137.9400',
-                'getPriceInclTax' => '68.9700',
-                'getTaxAmount' => '23.9400',
+                'getBaseRowTotal' => '114.0000',
+                'getBaseDiscountAmount' => '0.0000',
+                'getBaseTaxAmount' => '23.9400',
+                'getBaseDiscountTaxCompensationAmount' => '0.0000',
                 'getTaxPercent' => '21.0',
                 'getOrder' => $orderMock,
                 'setItemId' => $this->returnArgument(0)
@@ -160,8 +158,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
         return $this->createConfiguredMock(
             Order::class,
             [
-                'getShippingAmount' => '5.0000',
-                'getDiscountAmount' => '15.0000',
+                'getBaseShippingAmount' => '15.0000',
+                'getBaseDiscountAmount' => '0.0000',
+                'getBaseShippingTaxAmount' => '0.0000',
+                'getBaseShippingDiscountTaxCompensationAmnt' => '0.0000',
                 'getOrderCurrencyCode' => 'EUR',
             ]
         );
@@ -191,9 +191,9 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
         );
         $this->assertSame(1, $orderItemsRequest->getPayload()[0]['quantity']);
         $this->assertSame('EUR', $orderItemsRequest->getPayload()[0]['currency']);
-        $this->assertSame(6897, $orderItemsRequest->getPayload()[0]['unit_amount']);
-        $this->assertSame(6897, $orderItemsRequest->getPayload()[0]['amount']);
-        $this->assertSame(1197, $orderItemsRequest->getPayload()[0]['vat_amount']);
+        $this->assertSame(8094, $orderItemsRequest->getPayload()[0]['unit_amount']);
+        $this->assertSame(8094, $orderItemsRequest->getPayload()[0]['amount']);
+        $this->assertSame(1405, $orderItemsRequest->getPayload()[0]['vat_amount']);
         $this->assertSame('21.0', $orderItemsRequest->getPayload()[0]['vat_rate']);
 
         // Check the second (physical) item
@@ -238,14 +238,13 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
             [
                 'getDescription',
                 'getIsVirtual',
-                'getRowTotal',
-                'getRowTotalInclTax',
-                'getPriceInclTax',
-                'getTaxAmount',
+                'getBaseRowTotal',
+                'getBaseDiscountAmount',
+                'getBaseTaxAmount',
+                'getBaseDiscountTaxCompensationAmount',
                 'getTaxPercent',
             ]
         )->getMock();
-
         $quoteItemVirtualMock->expects($this->any())->method('getItemId')->willReturn(1);
         $quoteItemVirtualMock->expects($this->any())->method('getSku')->willReturn('virtual-item');
         $quoteItemVirtualMock->expects($this->any())->method('getName')->willReturn('Virtual Item Name');
@@ -253,11 +252,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
             ->willReturn('Virtual Item Description');
         $quoteItemVirtualMock->expects($this->any())->method('getIsVirtual')->willReturn(1);
         $quoteItemVirtualMock->expects($this->any())->method('getQty')->willReturn(1);
-        $quoteItemVirtualMock->expects($this->any())->method('getRowTotal')->willReturn('57.0000');
-        $quoteItemVirtualMock->expects($this->any())->method('getPrice')->willReturn('57.0000');
-        $quoteItemVirtualMock->expects($this->any())->method('getRowTotalInclTax')->willReturn('68.9700');
-        $quoteItemVirtualMock->expects($this->any())->method('getPriceInclTax')->willReturn('68.9700');
-        $quoteItemVirtualMock->expects($this->any())->method('getTaxAmount')->willReturn('11.9700');
+        $quoteItemVirtualMock->expects($this->any())->method('getBaseRowTotal')->willReturn('68.9700');
+        $quoteItemVirtualMock->expects($this->any())->method('getBaseDiscountAmount')->willReturn('0.0000');
+        $quoteItemVirtualMock->expects($this->any())->method('getBaseTaxAmount')->willReturn('11.9700');
+        $quoteItemVirtualMock->expects($this->any())->method('getBaseDiscountTaxCompensationAmount')->willReturn('0.0000');
         $quoteItemVirtualMock->expects($this->any())->method('getTaxPercent')->willReturn('21.0');
         $quoteItemVirtualMock->expects($this->any())->method('getQuote')->willReturn($quoteMock);
 
@@ -277,10 +275,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
             [
                 'getDescription',
                 'getIsVirtual',
-                'getRowTotal',
-                'getRowTotalInclTax',
-                'getPriceInclTax',
-                'getTaxAmount',
+                'getBaseRowTotal',
+                'getBaseDiscountAmount',
+                'getBaseTaxAmount',
+                'getBaseDiscountTaxCompensationAmount',
                 'getTaxPercent',
             ]
         )->getMock();
@@ -292,11 +290,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
             ->willReturn('Physical Item Description');
         $quoteItemPhysicalMock->expects($this->any())->method('getIsVirtual')->willReturn(0);
         $quoteItemPhysicalMock->expects($this->any())->method('getQty')->willReturn(2);
-        $quoteItemPhysicalMock->expects($this->any())->method('getRowTotal')->willReturn('114.0000');
-        $quoteItemPhysicalMock->expects($this->any())->method('getPrice')->willReturn('57.0000');
-        $quoteItemPhysicalMock->expects($this->any())->method('getRowTotalInclTax')->willReturn('137.9400');
-        $quoteItemPhysicalMock->expects($this->any())->method('getPriceInclTax')->willReturn('68.9700');
-        $quoteItemPhysicalMock->expects($this->any())->method('getTaxAmount')->willReturn('23.9400');
+        $quoteItemPhysicalMock->expects($this->any())->method('getBaseRowTotal')->willReturn('114.0000');
+        $quoteItemPhysicalMock->expects($this->any())->method('getBaseDiscountAmount')->willReturn('0.0000');
+        $quoteItemPhysicalMock->expects($this->any())->method('getBaseTaxAmount')->willReturn('23.9400');
+        $quoteItemPhysicalMock->expects($this->any())->method('getBaseDiscountTaxCompensationAmount')->willReturn('0.0000');
         $quoteItemPhysicalMock->expects($this->any())->method('getTaxPercent')->willReturn('21.0');
         $quoteItemPhysicalMock->expects($this->any())->method('getQuote')->willReturn($quoteMock);
 
@@ -313,24 +310,31 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
      */
     protected function getQuoteMock(): Quote
     {
-        $shippingAddressMock = $this->createMock(QuoteAddress::class);
-        $shippingAddressMock->method('getData')->withConsecutive(
+        $shippingAddressMock = $this->getMockBuilder(
+            QuoteAddress::class,
+        )->disableOriginalConstructor(
+        )->addMethods(
             [
-                'shipping_amount',
-                'discount_amount'
+                'getBaseShippingAmount',
+                'getBaseShippingTaxAmount',
+                'getBaseShippingDiscountTaxCompensationAmnt'
             ]
-        )->willReturnOnConsecutiveCalls(
-            [
-                '5.0000',
-                '15.0000'
-            ]
-        );
+        )->getMock();
+
+        $shippingAddressMock->expects($this->any())
+            ->method('getBaseShippingAmount')->willReturn('0.0000');
+        $shippingAddressMock->expects($this->any())
+            ->method('getBaseShippingTaxAmount')->willReturn('0.0000');
+        $shippingAddressMock->expects($this->any())
+            ->method('getBaseShippingDiscountTaxCompensationAmnt')->willReturn('0.0000');
 
         $quoteMock = $this->getMockBuilder(
             Quote::class,
         )->disableOriginalConstructor(
         )->onlyMethods(
             [
+                'getIsVirtual',
+                'getBillingAddress',
                 'getShippingAddress'
             ]
         )->addMethods(
@@ -340,6 +344,8 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
         )->getMock();
 
         $quoteMock->expects($this->any())->method('getQuoteCurrencyCode')->willReturn('EUR');
+        $quoteMock->expects($this->any())->method('getIsVirtual')->willReturn(false);
+        $quoteMock->expects($this->any())->method('getBillingAddress')->willReturn($shippingAddressMock);
         $quoteMock->expects($this->any())->method('getShippingAddress')->willReturn($shippingAddressMock);
 
         return $quoteMock;
@@ -363,10 +369,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
             new OrderItemType(),
             new OrderItemQuantity(),
             new OrderItemCurrency(),
-            new OrderItemUnitAmount(),
             new OrderItemAmount(),
-            new OrderItemVatAmount(),
+            new OrderItemUnitAmount(),
             new OrderItemVatRate(),
+            new OrderItemVatAmount()
         ];
 
         $quoteItemRequestParts = [
@@ -377,10 +383,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
             new QuoteItemType(),
             new QuoteItemQuantity(),
             new QuoteItemCurrency(),
-            new QuoteItemUnitAmount(),
             new QuoteItemAmount(),
-            new QuoteItemVatAmount(),
+            new QuoteItemUnitAmount(),
             new QuoteItemVatRate(),
+            new QuoteItemVatAmount()
         ];
 
         $this->orderItemsRequestBuilder = new OrderItemsRequestBuilder(

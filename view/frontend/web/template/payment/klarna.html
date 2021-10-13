@@ -33,10 +33,10 @@
                             <input type="text"
                                    class="input-text"
                                    data-bind="datepicker: {storage: dob,
-                                    options: {'dateFormat': 'yyyy-mm-dd', 'changeMonth': true, 'maxDate': '-18Y',
+                                    options: {'dateFormat': 'dd-mm-yyyy', 'changeMonth': true, 'maxDate': '-18Y',
                                     'changeYear': true, 'yearRange': '-110:-18'}},
                                     value: dob, attr: {id: getCode() + '-dob', readonly: true, name: 'payment[dob]'}"
-                                   data-validate="{required:true, 'validate-date': {dateFormat: 'yyyy-mm-dd'}}">
+                                   data-validate="{required:true, 'validate-date': {dateFormat: 'dd-mm-yyyy'}}">
                         </div>
                     </div>
                 </div>

@@ -207,7 +207,7 @@ class ShopperRequestBuilderTest extends UnitTestCase
             ->getMockForAbstractClass();
 
         $paymentMock->method('getAdditionalInformation')->with('dob')
-            ->willReturn('1980-11-12');
+            ->willReturn('12-11-1980');
         $paymentMock->method('setAdditionalInformation')->willReturnSelf();
 
         $orderMock = $this->getMockBuilder(SalesOrder::class)

@@ -107,10 +107,10 @@
                 <item name="type" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Type</item>
                 <item name="quantity" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Quantity</item>
                 <item name="currency" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Currency</item>
-                <item name="unitAmount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\UnitAmount</item>
                 <item name="amount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\Amount</item>
-                <item name="vat_amount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\VatAmount</item>
+                <item name="unitAmount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\UnitAmount</item>
                 <item name="vat_rate" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\VatRate</item>
+                <item name="vat_amount" xsi:type="object">CM\Payments\Service\Order\Item\Request\Part\VatAmount</item>
             </argument>
             <argument name="quoteItemRequestParts" xsi:type="array">
                 <item name="itemId" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\ItemId</item>
@@ -120,10 +120,10 @@
                 <item name="type" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Type</item>
                 <item name="quantity" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Quantity</item>
                 <item name="currency" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Currency</item>
-                <item name="unitAmount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\UnitAmount</item>
                 <item name="amount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\Amount</item>
-                <item name="vat_amount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\VatAmount</item>
+                <item name="unitAmount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\UnitAmount</item>
                 <item name="vat_rate" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\VatRate</item>
+                <item name="vat_amount" xsi:type="object">CM\Payments\Service\Quote\Item\Request\Part\VatAmount</item>
             </argument>
         </arguments>
     </type>

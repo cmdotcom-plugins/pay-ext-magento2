@@ -19,13 +19,11 @@ interface OrderItemsRequestBuilderInterface
      * Dynamic items skus
      */
     public const ITEM_SHIPPING_FEE_SKU = 'cm-shipping-fee';
-    public const ITEM_DISCOUNT_SKU = 'cm-discount';
 
     /**
      * Dynamic items names
      */
     public const ITEM_SHIPPING_FEE_NAME = 'CM Shipping Fee';
-    public const ITEM_DISCOUNT_NAME = 'CM Discount';
 
     /**
      * Item types

@@ -22,8 +22,6 @@ class Type implements RequestPartByOrderItemInterface
     {
         if ($orderItem->getSku() == OrderItemsRequestBuilderInterface::ITEM_SHIPPING_FEE_SKU) {
             $orderItemCreate->setType(OrderItemsRequestBuilderInterface::TYPE_SHIPPING_FEE);
-        } elseif ($orderItem->getSku() == OrderItemsRequestBuilderInterface::ITEM_DISCOUNT_SKU) {
-            $orderItemCreate->setType(OrderItemsRequestBuilderInterface::TYPE_DISCOUNT);
         } elseif ($orderItem->getIsVirtual()) {
             $orderItemCreate->setType(OrderItemsRequestBuilderInterface::TYPE_DIGITAL);
         } else {

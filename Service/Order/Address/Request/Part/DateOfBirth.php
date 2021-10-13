@@ -40,7 +40,7 @@ class DateOfBirth implements RequestPartByOrderAddressInterface
     {
         $dob = $orderAddress->getOrder()->getPayment()->getAdditionalInformation('dob');
         if (!empty($dob)) {
-            $shopperCreate->setDateOfBirth((string)$dob);
+            $shopperCreate->setDateOfBirth(date("Y-m-d", strtotime((string)$dob)));
         } else {
             $shopperCreate->setDateOfBirth($this->getDobFromCustomer((string)$orderAddress->getCustomerId()));
         }
