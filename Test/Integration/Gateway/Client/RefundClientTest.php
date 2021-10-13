@@ -29,13 +29,27 @@ class RefundClientTest extends IntegrationTestCase
     public function testClientExceptionMessage()
     {
         $refundMock = $this->createMock(Refund::class);
+        $this->objectManager->addSharedInstance($refundMock, Refund::class);
+
         $requestMock = $this->createMock(Request::class);
-        $response = new Response(401, [], '{"messages: ["error message"]}');
-        $refundMock->expects($this->once())->method('refund')->willThrowException(new ClientException('message',$requestMock, $response));
+        $response = new Response(401, [], '{"messages": ["error message"]}');
+        $refundMock->expects($this->once())->method('refund')->willThrowException(
+            new ClientException('message', $requestMock, $response)
+        );
 
         $refundClient = $this->objectManager->create(RefundClient::class);
         $transferMock = $this->createMock(TransferInterface::class);
 
+        $transferMock->expects($this->any())->method('getBody')->willReturn([
+            'payload' => new RefundCreate(
+                '123',
+                '123',
+                '001',
+                'test',
+                1,
+                'EUR'
+            )
+        ]);
         $this->expectExceptionMessage('error message');
         $refundClient->placeRequest($transferMock);
     }
