@@ -19,8 +19,24 @@ class Country implements RequestPartByQuoteInterface
      */
     public function process(CartInterface $quote, OrderCreate $orderCreate): OrderCreate
     {
-        $orderCreate->setCountry($quote->getShippingAddress()->getCountryId());
+        if ($quote->getShippingAddress()) {
+            $orderCreate->setCountry($this->getCountry($quote));
+        }
+
 
         return $orderCreate;
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @return string
+     */
+    private function getCountry(CartInterface $quote): string
+    {
+        if ($quote->getShippingAddress()) {
+            return $quote->getShippingAddress()->getCountryId();
+        }
+
+        return $quote->getCustomer()->getDefaultShipping()->getCountryId();
     }
 }

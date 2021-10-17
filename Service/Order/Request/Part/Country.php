@@ -19,8 +19,21 @@ class Country implements RequestPartByOrderInterface
      */
     public function process(OrderInterface $order, OrderCreate $orderCreate): OrderCreate
     {
-        $orderCreate->setCountry($order->getShippingAddress()->getCountryId());
+        $orderCreate->setCountry($this->getCountry($order));
 
         return $orderCreate;
+    }
+
+    /**
+     * @param OrderInterface $order
+     * @return string
+     */
+    private function getCountry(OrderInterface $order): string
+    {
+        if ($order->getShippingAddress()) {
+            return $order->getShippingAddress()->getCountryId();
+        }
+
+        return $order->getBillingAddress()->getCountryId();
     }
 }
