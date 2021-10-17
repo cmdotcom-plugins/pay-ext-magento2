@@ -23,7 +23,6 @@ class Country implements RequestPartByQuoteInterface
             $orderCreate->setCountry($this->getCountry($quote));
         }
 
-
         return $orderCreate;
     }
 

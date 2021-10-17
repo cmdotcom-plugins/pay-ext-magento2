@@ -255,7 +255,8 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
         $quoteItemVirtualMock->expects($this->any())->method('getBaseRowTotal')->willReturn('68.9700');
         $quoteItemVirtualMock->expects($this->any())->method('getBaseDiscountAmount')->willReturn('0.0000');
         $quoteItemVirtualMock->expects($this->any())->method('getBaseTaxAmount')->willReturn('11.9700');
-        $quoteItemVirtualMock->expects($this->any())->method('getBaseDiscountTaxCompensationAmount')->willReturn('0.0000');
+        $quoteItemVirtualMock->expects($this->any())->method('getBaseDiscountTaxCompensationAmount')
+            ->willReturn('0.0000');
         $quoteItemVirtualMock->expects($this->any())->method('getTaxPercent')->willReturn('21.0');
         $quoteItemVirtualMock->expects($this->any())->method('getQuote')->willReturn($quoteMock);
 
@@ -293,7 +294,8 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
         $quoteItemPhysicalMock->expects($this->any())->method('getBaseRowTotal')->willReturn('114.0000');
         $quoteItemPhysicalMock->expects($this->any())->method('getBaseDiscountAmount')->willReturn('0.0000');
         $quoteItemPhysicalMock->expects($this->any())->method('getBaseTaxAmount')->willReturn('23.9400');
-        $quoteItemPhysicalMock->expects($this->any())->method('getBaseDiscountTaxCompensationAmount')->willReturn('0.0000');
+        $quoteItemPhysicalMock->expects($this->any())->method('getBaseDiscountTaxCompensationAmount')
+            ->willReturn('0.0000');
         $quoteItemPhysicalMock->expects($this->any())->method('getTaxPercent')->willReturn('21.0');
         $quoteItemPhysicalMock->expects($this->any())->method('getQuote')->willReturn($quoteMock);
 

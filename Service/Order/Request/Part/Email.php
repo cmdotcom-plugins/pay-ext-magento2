@@ -28,7 +28,7 @@ class Email implements RequestPartByOrderInterface
      * @param OrderInterface $order
      * @return string
      */
-    private function getEmail (OrderInterface $order): string
+    private function getEmail(OrderInterface $order): string
     {
         return $order->getCustomerEmail() ?: $order->getShippingAddress()->getEmail();
     }
