@@ -19,8 +19,21 @@ class Email implements RequestPartByQuoteInterface
      */
     public function process(CartInterface $quote, OrderCreate $orderCreate): OrderCreate
     {
-        $orderCreate->setEmail($quote->getShippingAddress()->getEmail());
+        $orderCreate->setEmail($this->getEmail($quote));
 
         return $orderCreate;
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @return string
+     */
+    private function getEmail(CartInterface $quote): string
+    {
+        if ($quote->getCustomerIsGuest()) {
+            return $quote->getShippingAddress()->getEmail();
+        }
+
+        return $quote->getCustomer()->getEmail();
     }
 }
