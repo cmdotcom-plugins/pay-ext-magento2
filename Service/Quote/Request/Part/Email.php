@@ -10,6 +10,7 @@ namespace CM\Payments\Service\Quote\Request\Part;
 
 use CM\Payments\Api\Service\Order\Request\RequestPartByQuoteInterface;
 use CM\Payments\Client\Model\Request\OrderCreate;
+use CM\Payments\Exception\EmptyEmailException;
 use Magento\Quote\Api\Data\CartInterface;
 
 class Email implements RequestPartByQuoteInterface
@@ -30,10 +31,13 @@ class Email implements RequestPartByQuoteInterface
      */
     private function getEmail(CartInterface $quote): string
     {
-        if ($quote->getCustomerIsGuest()) {
+        if ($quote->getShippingAddress() && !empty($quote->getShippingAddress()->getEmail())) {
             return $quote->getShippingAddress()->getEmail();
         }
+        if ($quote->getCustomer()) {
+            return $quote->getCustomer()->getEmail();
+        }
 
-        return $quote->getCustomer()->getEmail();
+        throw new EmptyEmailException(__('No email found on quote'));
     }
 }
