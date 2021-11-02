@@ -60,8 +60,8 @@ class ResultTest extends AbstractController
 
         $this->assertRedirect($this->stringContains('checkout/cart'));
         $this->assertSessionMessages(
-            $this->equalTo(['The order reference is not valid!']),
-            MessageInterface::TYPE_ERROR
+            $this->equalTo(['Something went wrong while processing the order.']),
+            MessageInterface::TYPE_WARNING
         );
     }
 
@@ -84,7 +84,7 @@ class ResultTest extends AbstractController
 
         $this->assertRedirect($this->stringContains('checkout/cart'));
         $this->assertSessionMessages(
-            $this->equalTo(['Your payment was cancelled!']),
+            $this->equalTo(['Something went wrong while processing the order.']),
             MessageInterface::TYPE_WARNING
         );
     }
@@ -108,8 +108,8 @@ class ResultTest extends AbstractController
 
         $this->assertRedirect($this->stringContains('checkout/cart'));
         $this->assertSessionMessages(
-            $this->equalTo(['Your payment was cancelled because of errors!']),
-            MessageInterface::TYPE_ERROR
+            $this->equalTo(['Something went wrong while processing the order.']),
+            MessageInterface::TYPE_WARNING
         );
     }
 
@@ -132,8 +132,8 @@ class ResultTest extends AbstractController
 
         $this->assertRedirect($this->stringContains('checkout/cart'));
         $this->assertSessionMessages(
-            $this->equalTo(['Something went wrong with processing the order.']),
-            MessageInterface::TYPE_ERROR
+            $this->equalTo(['Something went wrong while processing the order.']),
+            MessageInterface::TYPE_WARNING
         );
     }
 

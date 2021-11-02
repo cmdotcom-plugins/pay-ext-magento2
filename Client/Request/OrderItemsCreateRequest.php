@@ -70,4 +70,12 @@ class OrderItemsCreateRequest implements RequestInterface
 
         return $payload;
     }
+
+    /**
+     * @param OrderItemCreate $orderItemCreate
+     */
+    public function addOrderItem(OrderItemCreate $orderItemCreate)
+    {
+        $this->orderItems[] = $orderItemCreate;
+    }
 }

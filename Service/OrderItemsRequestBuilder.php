@@ -68,35 +68,11 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
         $orderItemsCreate = [];
         $orderItems = $this->addDynamicOrderItems($orderItems);
         foreach ($orderItems as $orderItem) {
-            /** @var OrderItemCreate $orderCreate */
+            /** @var OrderItemCreate $orderItemCreate */
             $orderItemCreate = $this->clientOrderItemCreateFactory->create();
 
             foreach ($this->orderItemRequestParts as $part) {
                 $orderItemCreate = $part->process($orderItem, $orderItemCreate);
-            }
-
-            $orderItemsCreate[] = $orderItemCreate;
-        }
-
-        return $this->orderItemsCreateRequestFactory->create([
-                                                                 'orderKey' => $orderKey,
-                                                                 'orderItems' => $orderItemsCreate
-                                                             ]);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function createByQuoteItems(string $orderKey, array $quoteItems): OrderItemsCreateRequest
-    {
-        $orderItemsCreate = [];
-        $quoteItems = $this->addDynamicQuoteItems($quoteItems);
-        foreach ($quoteItems as $quoteItem) {
-            /** @var OrderItemCreate $orderCreate */
-            $orderItemCreate = $this->clientOrderItemCreateFactory->create();
-
-            foreach ($this->quoteItemRequestParts as $part) {
-                $orderItemCreate = $part->process($quoteItem, $orderItemCreate);
             }
 
             $orderItemsCreate[] = $orderItemCreate;
@@ -136,6 +112,30 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
         }
 
         return $orderItems;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createByQuoteItems(string $orderKey, array $quoteItems): OrderItemsCreateRequest
+    {
+        $orderItemsCreate = [];
+        $quoteItems = $this->addDynamicQuoteItems($quoteItems);
+        foreach ($quoteItems as $quoteItem) {
+            /** @var OrderItemCreate $orderItemCreate */
+            $orderItemCreate = $this->clientOrderItemCreateFactory->create();
+
+            foreach ($this->quoteItemRequestParts as $part) {
+                $orderItemCreate = $part->process($quoteItem, $orderItemCreate);
+            }
+
+            $orderItemsCreate[] = $orderItemCreate;
+        }
+
+        return $this->orderItemsCreateRequestFactory->create([
+                                                                 'orderKey' => $orderKey,
+                                                                 'orderItems' => $orderItemsCreate
+                                                             ]);
     }
 
     /**
