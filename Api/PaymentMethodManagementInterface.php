@@ -21,7 +21,6 @@ use Magento\Quote\Api\Data\AddressInterface;
  */
 interface PaymentMethodManagementInterface
 {
-
     /**
      * Get payment methods information
      *

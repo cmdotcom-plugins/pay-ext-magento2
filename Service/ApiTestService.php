@@ -12,6 +12,7 @@ use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Service\ApiTestServiceInterface;
 use CM\Payments\Client\Api\RequestInterface;
 use CM\Payments\Client\ApiClient;
+use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Adminhtml\Source\Mode;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
@@ -35,14 +36,22 @@ class ApiTestService implements ApiTestServiceInterface
     private $config;
 
     /**
+     * @var CMPaymentsLogger
+     */
+    private $logger;
+
+    /**
      * ApiTestService constructor
      *
      * @param ConfigInterface $config
+     * @param CMPaymentsLogger $logger
      */
     public function __construct(
-        ConfigInterface $config
+        ConfigInterface $config,
+        CMPaymentsLogger $logger
     ) {
         $this->config = $config;
+        $this->logger = $logger;
 
         try {
             $this->apiConnectionData = [
@@ -52,6 +61,7 @@ class ApiTestService implements ApiTestServiceInterface
                 'merchantKey'      => $this->config->getMerchantKey(),
             ];
         } catch (NoSuchEntityException $e) {
+            $this->logger->critical($e->getMessage());
             $this->apiConnectionData = [];
         }
     }
@@ -72,6 +82,7 @@ class ApiTestService implements ApiTestServiceInterface
                 try {
                     $resultData['result'] = $this->getLatestOrders(date('Y-m-d'));
                 } catch (GuzzleException $e) {
+                    $this->logger->critical($e->getMessage());
                     $resultData['errors'][] = $e->getMessage();
                 }
             }
