@@ -20,4 +20,14 @@
         <observer name="cm_payments_klarna_gateway_data_assign"
                   instance="CM\Payments\Observer\AdditionalDataAssignObserver" />
     </event>
+
+    <event name="cmpayments_before_order_items_create_by_quote">
+        <observer name="cm_payments_add_adjustment_item_method_service"
+                  instance="CM\Payments\Observer\Method\Service\AddOrderItemsAdjustmentObserver" />
+    </event>
+
+    <event name="cmpayments_before_order_items_create">
+        <observer name="cm_payments_add_adjustment_item_order_service"
+                  instance="CM\Payments\Observer\Order\Service\AddOrderItemsAdjustmentObserver" />
+    </event>
 </config>

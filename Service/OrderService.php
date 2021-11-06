@@ -177,7 +177,7 @@ class OrderService implements OrderServiceInterface
         string $orderKey,
         OrderInterface $order
     ): bool {
-        $orderCreateItemsRequest = $this->orderItemsRequestBuilder->create(
+        $orderItemsCreateRequest = $this->orderItemsRequestBuilder->create(
             $orderKey,
             $order->getAllVisibleItems()
         );
@@ -186,17 +186,17 @@ class OrderService implements OrderServiceInterface
             'CM Create order items request',
             [
                 'orderId' => $order->getId(),
-                'requestPayload' => $orderCreateItemsRequest->getPayload()
+                'requestPayload' => $orderItemsCreateRequest->getPayload()
             ]
         );
 
         try {
             $this->eventManager->dispatch('cmpayments_before_order_items_create', [
                 'order' => $order,
-                'orderCreateItemsRequest' => $orderCreateItemsRequest
+                'orderItemsCreateRequest' => $orderItemsCreateRequest
             ]);
 
-            $this->orderClient->createItems($orderCreateItemsRequest);
+            $this->orderClient->createItems($orderItemsCreateRequest);
 
             $this->eventManager->dispatch('cmpayments_after_order_items_create', [
                 'order' => $order

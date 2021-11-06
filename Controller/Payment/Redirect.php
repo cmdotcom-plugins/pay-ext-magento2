@@ -94,7 +94,7 @@ class Redirect extends Action implements HttpGetActionInterface
             $orderId = $order->getRealOrderId();
 
             if (!$orderId) {
-                return $this->redirectToCheckoutCart(__('No order id found.'));
+                throw new LocalizedException(__('No order id found.'));
             }
 
             $cmOrder = $this->orderService->create((int) $order->getEntityId());
@@ -113,7 +113,7 @@ class Redirect extends Action implements HttpGetActionInterface
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage());
 
-            return $this->redirectToCheckoutCart(__('Something went wrong while creating the order.'));
+            return $this->redirectToCheckoutCart(__('Something went wrong while processing the order.'));
         }
     }
 
@@ -123,11 +123,11 @@ class Redirect extends Action implements HttpGetActionInterface
      * @param Phrase $message
      * @return ResultRedirect
      */
-    public function redirectToCheckoutCart(Phrase $message): ResultRedirect
+    private function redirectToCheckoutCart(Phrase $message): ResultRedirect
     {
         $this->checkoutSession->restoreQuote();
 
-        $this->messageManager->addErrorMessage($message);
+        $this->messageManager->addWarningMessage($message);
 
         return $this->redirectFactory->create()
             ->setPath('checkout/cart');

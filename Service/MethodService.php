@@ -24,6 +24,7 @@ use Exception;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
 use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterfaceFactory;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\Data\CartInterface;
@@ -71,6 +72,11 @@ class MethodService implements MethodServiceInterface
     private $paymentDetailsExtensionFactory;
 
     /**
+     * @var ManagerInterface
+     */
+    private $eventManager;
+
+    /**
      * @var CMPaymentsLogger
      */
     private $logger;
@@ -86,6 +92,7 @@ class MethodService implements MethodServiceInterface
      * @param PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory
      * @param ExtendMethodInterface[] $methods
      * @param PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory
+     * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
@@ -97,6 +104,7 @@ class MethodService implements MethodServiceInterface
         PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory,
         array $methods,
         PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory,
+        ManagerInterface $eventManager,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->configService = $configService;
@@ -107,6 +115,7 @@ class MethodService implements MethodServiceInterface
         $this->paymentMethodAdditionalDataFactory = $paymentMethodAdditionalDataFactory;
         $this->methods = $methods;
         $this->paymentDetailsExtensionFactory = $paymentDetailsExtensionFactory;
+        $this->eventManager = $eventManager;
         $this->logger = $cmPaymentsLogger;
     }
 
@@ -122,6 +131,7 @@ class MethodService implements MethodServiceInterface
         }
 
         $availablePaymentMethods = $paymentDetails->getPaymentMethods();
+
         try {
             $cmOrder = $this->createCmOrder($quote);
             if (empty($cmOrder->getOrderKey())) {
@@ -173,7 +183,6 @@ class MethodService implements MethodServiceInterface
                     'error' => $e->getMessage(),
                 ]
             );
-
             // Remove cm_payments_ideal if available because of missing issuer list.
             // Remove cm_payments_klarna if we have exception (can be shopper creation problem or other).
             $availablePaymentMethods = array_filter($availablePaymentMethods, function ($method) {
@@ -195,9 +204,21 @@ class MethodService implements MethodServiceInterface
     {
         $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote);
 
-        return $this->orderClient->create(
+        $this->eventManager->dispatch('cmpayments_before_order_create_by_quote', [
+            'quote' => $quote,
+            'orderCreateRequest' => $orderCreateRequest,
+        ]);
+
+        $orderCreateResult =  $this->orderClient->create(
             $orderCreateRequest
         );
+
+        $this->eventManager->dispatch('cmpayments_after_order_create_by_quote', [
+            'quote' => $quote,
+            'orderCreateResult' => $orderCreateResult,
+        ]);
+
+        return $orderCreateResult;
     }
 
     /**
@@ -208,12 +229,21 @@ class MethodService implements MethodServiceInterface
      */
     private function createCmOrderItems(CartInterface $quote, string $orderKey): void
     {
-        $orderCreateItemsRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
+        $orderItemsCreateRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
             $orderKey,
             $quote->getAllVisibleItems()
         );
 
-        $this->orderClient->createItems($orderCreateItemsRequest);
+        $this->eventManager->dispatch('cmpayments_before_order_items_create_by_quote', [
+            'quote' => $quote,
+            'orderItemsCreateRequest' => $orderItemsCreateRequest
+        ]);
+
+        $this->orderClient->createItems($orderItemsCreateRequest);
+
+        $this->eventManager->dispatch('cmpayments_after_order_items_create_by_quote', [
+            'quote' => $quote
+        ]);
     }
 
     /**

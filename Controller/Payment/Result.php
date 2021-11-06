@@ -19,7 +19,9 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
+use Magento\Framework\Phrase;
 use Magento\Sales\Api\OrderManagementInterface;
 
 class Result extends Action implements HttpGetActionInterface
@@ -50,13 +52,14 @@ class Result extends Action implements HttpGetActionInterface
     private $orderManagement;
 
     /**
-     * @var CMPaymentsLogger
-     */
-    private $logger;
-    /**
      * @var OrderTransactionServiceInterface
      */
     private $orderTransactionService;
+
+    /**
+     * @var CMPaymentsLogger
+     */
+    private $logger;
 
     /**
      * Result constructor
@@ -67,7 +70,7 @@ class Result extends Action implements HttpGetActionInterface
      * @param CheckoutSession $checkoutSession
      * @param RedirectFactory $redirectFactory
      * @param OrderManagementInterface $orderManagement
-     * @param OrderTransactionServiceInterface $orderTransactionServic
+     * @param OrderTransactionServiceInterface $orderTransactionService
      * @param CMPaymentsLogger $logger
      */
     public function __construct(
@@ -101,30 +104,26 @@ class Result extends Action implements HttpGetActionInterface
 
         try {
             if (!$status) {
-                return $this->redirectToCheckout();
+                throw new LocalizedException(__('The Status is not presented in response!'));
             }
 
             $orderIncrementId = $this->checkoutSession->getLastRealOrder()->getIncrementId();
             if (!empty($referenceOrderId) && $referenceOrderId !== $orderIncrementId) {
-                $this->messageManager->addErrorMessage(__('The order reference is not valid!'));
-                return $this->redirectToCheckout();
+                throw new LocalizedException(__('The order reference is not valid!'));
             }
 
             if (in_array($status, [OrderCreate::STATUS_ERROR, OrderCreate::STATUS_CANCELLED])) {
                 $this->orderManagement->cancel($this->checkoutSession->getLastRealOrder()->getId());
 
                 if ($status == OrderCreate::STATUS_ERROR) {
-                    $this->messageManager->addErrorMessage(__('Your payment was cancelled because of errors!'));
+                    throw new LocalizedException(__('Your payment was cancelled because of errors!'));
                 } else {
-                    $this->messageManager->addWarningMessage(__('Your payment was cancelled!'));
+                    throw new LocalizedException(__('Your payment was cancelled!'));
                 }
-
-                return $this->redirectToCheckout();
-            };
+            }
 
             if (!$referenceOrderId || !$orderIncrementId) {
-                $this->messageManager->addErrorMessage(__('The order reference is not valid!'));
-                return $this->redirectToCheckout();
+                throw new LocalizedException(__('The order reference is not valid!'));
             }
 
             // In this state we always redirect the user to the success page and try to update the order status already.
@@ -132,25 +131,29 @@ class Result extends Action implements HttpGetActionInterface
             try {
                 $this->orderTransactionService->process($orderIncrementId);
             } catch (\Exception $exception) {
-                $this->logger->error($exception);
+                $this->logger->critical($exception->getMessage());
             }
 
             return $this->redirectFactory->create()
                 ->setPath('checkout/onepage/success');
         } catch (Exception $exception) {
-            $this->logger->error($exception);
-            $this->messageManager->addErrorMessage(__('Something went wrong with processing the order.'));
+            $this->logger->critical($exception->getMessage());
 
-            return $this->redirectToCheckout();
+            return $this->redirectToCheckoutCart(__('Something went wrong while processing the order.'));
         }
     }
 
     /**
+     * Return to cart with error message
+     *
+     * @param Phrase $message
      * @return Redirect
      */
-    private function redirectToCheckout(): Redirect
+    private function redirectToCheckoutCart(Phrase $message): Redirect
     {
         $this->checkoutSession->restoreQuote();
+
+        $this->messageManager->addWarningMessage($message);
 
         return $this->redirectFactory->create()
             ->setPath('checkout/cart');
