@@ -22,6 +22,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
         /** @var AddOrderItemsAdjustmentService $addOrderItemsAdjustmentService */
         $addOrderItemsAdjustmentService = $this->objectManager->create(AddOrderItemsAdjustmentService::class);
         $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
         $orderItems = [new OrderItemCreate(
             '123',
             'sku',
@@ -29,7 +30,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
             'descr',
             'type',
             1,
-            'USD',
+            $magentoOrder->getOrderCurrencyCode(),
             (int)(100.00 * 100),
             (int)(100.00 * 100),
             0,
@@ -64,6 +65,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
         /** @var AddOrderItemsAdjustmentService $addOrderItemsAdjustmentService */
         $addOrderItemsAdjustmentService = $this->objectManager->create(AddOrderItemsAdjustmentService::class);
         $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
         $orderItems = [new OrderItemCreate(
             '123',
             'sku',
@@ -71,7 +73,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
             'descr',
             'type',
             1,
-            'USD',
+            $magentoOrder->getOrderCurrencyCode(),
             (int)(100.03 * 100),
             (int)(100.03 * 100),
             0,
@@ -90,7 +92,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
             }, $orderItems)
         );
 
-        $orderItemCreate = $this->getOrderItemCreate(-3, -3);
+        $orderItemCreate = $this->getOrderItemCreate(-3, -3, $magentoOrder->getOrderCurrencyCode());
 
         $orderItemsCreateRequestMock->expects($this->once())->method('addOrderItem')->with($orderItemCreate);
         $addOrderItemsAdjustmentService->execute(
@@ -108,6 +110,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
         /** @var AddOrderItemsAdjustmentService $addOrderItemsAdjustmentService */
         $addOrderItemsAdjustmentService = $this->objectManager->create(AddOrderItemsAdjustmentService::class);
         $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
         $orderItems = [new OrderItemCreate(
             '123',
             'sku',
@@ -115,7 +118,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
             'descr',
             'type',
             1,
-            'USD',
+            $magentoOrder->getOrderCurrencyCode(),
             (int)(99.99 * 100),
             (int)(99.99 * 100),
             0,
@@ -129,7 +132,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
             }, $orderItems)
         );
 
-        $orderItemCreate = $this->getOrderItemCreate(1, 1);
+        $orderItemCreate = $this->getOrderItemCreate(1, 1, $magentoOrder->getOrderCurrencyCode());
 
         $orderItemsCreateRequestMock->expects($this->once())->method('addOrderItem')->with($orderItemCreate);
         $addOrderItemsAdjustmentService->execute(
@@ -144,7 +147,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
      * @param int $amount
      * @return OrderItemCreate
      */
-    private function getOrderItemCreate(int $unitAmount, int $amount): OrderItemCreate
+    private function getOrderItemCreate(int $unitAmount, int $amount, string $currencyCode): OrderItemCreate
     {
         $orderItemCreate = $this->objectManager->create(OrderItemCreate::class);
         $orderItemCreate->setItemId(2);
@@ -155,7 +158,7 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
         $orderItemCreate->setQuantity(1);
         $orderItemCreate->setUnitAmount($unitAmount);
         $orderItemCreate->setAmount($amount);
-        $orderItemCreate->setCurrency('USD');
+        $orderItemCreate->setCurrency($currencyCode);
         $orderItemCreate->setVatRate(sprintf("%.1f", 0));
         $orderItemCreate->setVatAmount(0);
 

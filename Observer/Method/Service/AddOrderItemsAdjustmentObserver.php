@@ -15,7 +15,8 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Api\Data\CartInterface;
 
 /**
- * We need this observer due to rounding problems of Magento, see \CM\Payments\Service\Order\Item\AddOrderItemsAdjustmentService
+ * We need this observer due to rounding problems of Magento
+ * See: \CM\Payments\Service\Order\Item\AddOrderItemsAdjustmentService
  */
 class AddOrderItemsAdjustmentObserver implements ObserverInterface
 {

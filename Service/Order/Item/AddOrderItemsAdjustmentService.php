@@ -19,7 +19,8 @@ use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
  *
  * Magento have some rounding problems which causes errors at CM when creating Order Items.
  * Magento grandTotal and the sum of each item price are sometimes not equal.
- * In this Service we compare the grandTotal with the sum of each order item and add a discount item with the difference as amount (negative or positive).
+ * In this Service we compare the grandTotal with the sum of each order item
+ * and add a discount item with the difference as amount (negative or positive).
  */
 class AddOrderItemsAdjustmentService implements AddOrderItemsAdjustmentServiceInterface
 {

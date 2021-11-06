@@ -6,6 +6,7 @@
 
 namespace CM\Payments\Test\Integration\Observer\Order\Service;
 
+use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Client\Model\Request\OrderItemCreate;
 use CM\Payments\Client\Request\OrderItemsCreateRequest;
 use CM\Payments\Observer\AdditionalDataAssignObserver;
@@ -27,6 +28,7 @@ class AddOrderItemsAdjustmentObserverTest extends IntegrationTestCase
 
         $data =  $this->objectManager->create(DataObject::class);
         $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
         $data->setData('order', $magentoOrder);
 
         $orderItems = [new OrderItemCreate(
@@ -36,7 +38,7 @@ class AddOrderItemsAdjustmentObserverTest extends IntegrationTestCase
             'descr',
             'type',
             1,
-            'USD',
+            $magentoOrder->getOrderCurrencyCode(),
             (int)(99.99 * 100),
             (int)(99.99 * 100),
             0,
