@@ -173,6 +173,10 @@ The BanContact payment redirects to the CM.com payment menu. It's recommended to
 
 The BanContact payment redirects to the CM.com payment menu. It's recommended to create a separate 'Afterpay' payment profile in the CM.com portal to show only the Afterpay method in the CM.com payment menu.
 
+## Webhook
+In order to get status updates from CM.com it's required to configure a webhook in the CM.com portal.
+The url for this webhook is: `{{shop_url}}/cmpayments/payment/notification?id={{increment_id}}`
+
 ## Issues and support
 
 You can create issues on our Github repository.
