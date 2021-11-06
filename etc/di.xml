@@ -45,6 +45,8 @@
                 type="CM\Payments\Webapi\PaymentMethodManagement" />
     <preference for="CM\Payments\Api\OrderManagementInterface"
                 type="CM\Payments\Webapi\OrderManagement" />
+    <preference for="CM\Payments\Api\Service\Order\Item\AddOrderItemsAdjustmentServiceInterface"
+                type="CM\Payments\Service\Order\Item\AddOrderItemsAdjustmentService" />
 
     <preference for="CM\Payments\Api\Data\CardDetailsInterface" type="CM\Payments\Model\Data\CardDetails"/>
     <preference for="CM\Payments\Api\Data\BrowserDetailsInterface" type="CM\Payments\Model\Data\BrowserDetails"/>

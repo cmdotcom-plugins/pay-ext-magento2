@@ -8,30 +8,30 @@ declare(strict_types=1);
 
 namespace CM\Payments\Observer\Method\Service;
 
+use CM\Payments\Api\Service\Order\Item\AddOrderItemsAdjustmentServiceInterface;
 use CM\Payments\Client\Api\RequestInterface;
-use CM\Payments\Client\Model\Request\OrderItemCreate;
-use CM\Payments\Client\Model\Request\OrderItemCreateFactory as ClientOrderItemCreateFactory;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Api\Data\CartInterface;
-use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 
+/**
+ * We need this observer due to rounding problems of Magento, see \CM\Payments\Service\Order\Item\AddOrderItemsAdjustmentService
+ */
 class AddOrderItemsAdjustmentObserver implements ObserverInterface
 {
     /**
-     * @var ClientOrderItemCreateFactory
+     * @var AddOrderItemsAdjustmentServiceInterface
      */
-    private $clientOrderItemCreateFactory;
+    private $addOrderItemsAdjustmentService;
 
     /**
-     * AddOrderItemsAdjustmentObserver constructor
-     *
-     * @param ClientOrderItemCreateFactory $clientOrderItemCreateFactory
+     * AddOrderItemsAdjustmentObserver constructor.
+     * @param AddOrderItemsAdjustmentServiceInterface $addOrderItemsAdjustmentService
      */
     public function __construct(
-        ClientOrderItemCreateFactory $clientOrderItemCreateFactory
+        AddOrderItemsAdjustmentServiceInterface $addOrderItemsAdjustmentService
     ) {
-        $this->clientOrderItemCreateFactory = $clientOrderItemCreateFactory;
+        $this->addOrderItemsAdjustmentService = $addOrderItemsAdjustmentService;
     }
 
     /**
@@ -44,35 +44,13 @@ class AddOrderItemsAdjustmentObserver implements ObserverInterface
         $quote = $observer->getEvent()->getDataByKey('quote');
         $grandTotal = (int)round($quote->getGrandTotal() * 100);
 
-        /** @var RequestInterface $orderCreateItemsRequest */
-        $orderCreateItemsRequest = $observer->getEvent()->getDataByKey('orderCreateItemsRequest');
+        /** @var RequestInterface $orderItemsCreateRequest */
+        $orderItemsCreateRequest = $observer->getEvent()->getDataByKey('orderItemsCreateRequest');
 
-        $itemsTotal = 0;
-        foreach ($orderCreateItemsRequest->getPayload() as $item) {
-            $itemsTotal += $item['amount'];
-        }
-
-        $max = $itemsTotal + 0.05 * 100;
-        $min = $itemsTotal - 0.05 * 100;
-        if (($min <= $grandTotal) && ($grandTotal <= $max)) {
-            $difference = $grandTotal - $itemsTotal;
-
-            /** @var OrderItemCreate $orderCreate */
-            $orderItemCreate = $this->clientOrderItemCreateFactory->create();
-
-            $orderItemCreate->setItemId(count($orderCreateItemsRequest->getPayload()) + 1);
-            $orderItemCreate->setType(OrderItemsRequestBuilderInterface::TYPE_DISCOUNT);
-            $orderItemCreate->setSku(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_SKU);
-            $orderItemCreate->setName(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_NAME);
-            $orderItemCreate->setDescription(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_NAME);
-            $orderItemCreate->setQuantity(1);
-            $orderItemCreate->setUnitAmount((int)round($difference));
-            $orderItemCreate->setAmount((int)round($difference));
-            $orderItemCreate->setCurrency($quote->getQuoteCurrencyCode());
-            $orderItemCreate->setVatRate(sprintf("%.1f", 0));
-            $orderItemCreate->setVatAmount(0);
-
-            $orderCreateItemsRequest->addOrderItem($orderItemCreate);
-        }
+        $this->addOrderItemsAdjustmentService->execute(
+            $grandTotal,
+            $quote->getQuoteCurrencyCode(),
+            $orderItemsCreateRequest
+        );
     }
 }

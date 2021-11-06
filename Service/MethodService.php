@@ -131,6 +131,7 @@ class MethodService implements MethodServiceInterface
         }
 
         $availablePaymentMethods = $paymentDetails->getPaymentMethods();
+
         try {
             $cmOrder = $this->createCmOrder($quote);
             if (empty($cmOrder->getOrderKey())) {
@@ -182,7 +183,6 @@ class MethodService implements MethodServiceInterface
                     'error' => $e->getMessage(),
                 ]
             );
-
             // Remove cm_payments_ideal if available because of missing issuer list.
             // Remove cm_payments_klarna if we have exception (can be shopper creation problem or other).
             $availablePaymentMethods = array_filter($availablePaymentMethods, function ($method) {
@@ -229,17 +229,17 @@ class MethodService implements MethodServiceInterface
      */
     private function createCmOrderItems(CartInterface $quote, string $orderKey): void
     {
-        $orderCreateItemsRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
+        $orderItemsCreateRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
             $orderKey,
             $quote->getAllVisibleItems()
         );
 
         $this->eventManager->dispatch('cmpayments_before_order_items_create_by_quote', [
             'quote' => $quote,
-            'orderCreateItemsRequest' => $orderCreateItemsRequest
+            'orderItemsCreateRequest' => $orderItemsCreateRequest
         ]);
 
-        $this->orderClient->createItems($orderCreateItemsRequest);
+        $this->orderClient->createItems($orderItemsCreateRequest);
 
         $this->eventManager->dispatch('cmpayments_after_order_items_create_by_quote', [
             'quote' => $quote
