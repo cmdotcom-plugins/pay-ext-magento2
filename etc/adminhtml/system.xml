@@ -44,6 +44,12 @@
                         payment methods you want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments_methods/profile</config_path>
                 </field>
+                <field id="update_on_result_page" translate="label" type="select" sortOrder="2" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Update order status on result page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>cm_payments/general/update_on_result_page</config_path>
+                </field>
             </group>
 
             <group id="api_details" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"

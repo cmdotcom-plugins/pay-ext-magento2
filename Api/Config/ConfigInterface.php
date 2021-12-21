@@ -24,6 +24,7 @@ interface ConfigInterface
     public const XML_PATH_GENERAL_LIVE_MERCHANT_PASSWORD = 'cm_payments/general/live_merchant_password';
     public const XML_PATH_GENERAL_LIVE_MERCHANT_KEY = 'cm_payments/general/live_merchant_key';
     public const XML_PATH_GENERAL_MODE = 'cm_payments/general/mode';
+    public const XML_PATH_GENERAL_UPDATE_ON_RESULT_PAGE = 'cm_payments/general/update_on_result_page';
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_MODE = 'payment/cm_payments_creditcard/mode';
@@ -174,4 +175,9 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getCreditCardAllowedTypes(): string;
+
+    /**
+     * @return bool
+     */
+    public function isUpdateOnResultPageEnabled(): ?bool;
 }
