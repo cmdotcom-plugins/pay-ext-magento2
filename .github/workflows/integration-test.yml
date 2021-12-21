@@ -36,7 +36,7 @@ jobs:
 
       # Replace <VENDOR> and <MODULE> with the name in your `composer.json`.
       - name: Install the extension in Magento
-        run: docker exec magento-project-community-edition composer require cmdotcom/payments:dev-integration-test-branch
+        run: docker exec magento-project-community-edition composer require cmdotcom/magento2-payments:dev-integration-test-branch
 
       # This step is optional but good to include in your pipeline.
       - name: Run setup:di:compile

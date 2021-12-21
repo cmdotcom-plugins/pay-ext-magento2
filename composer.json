@@ -1,5 +1,5 @@
 {
-    "name": "cmdotcom/payments",
+    "name": "cmdotcom/magento2-payments",
     "description": "CM Payment module for Magento 2",
     "type": "magento2-module",
     "version": "1.0.0",
