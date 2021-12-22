@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Controller\Payment;
 
+use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Service\OrderTransactionServiceInterface;
 use CM\Payments\Client\Model\Request\OrderCreate;
 use CM\Payments\Logger\CMPaymentsLogger;
@@ -60,6 +61,10 @@ class Result extends Action implements HttpGetActionInterface
      * @var CMPaymentsLogger
      */
     private $logger;
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
 
     /**
      * Result constructor
@@ -71,6 +76,7 @@ class Result extends Action implements HttpGetActionInterface
      * @param RedirectFactory $redirectFactory
      * @param OrderManagementInterface $orderManagement
      * @param OrderTransactionServiceInterface $orderTransactionService
+     * @param ConfigInterface $config
      * @param CMPaymentsLogger $logger
      */
     public function __construct(
@@ -81,6 +87,7 @@ class Result extends Action implements HttpGetActionInterface
         RedirectFactory $redirectFactory,
         OrderManagementInterface $orderManagement,
         OrderTransactionServiceInterface $orderTransactionService,
+        ConfigInterface $config,
         CMPaymentsLogger $logger
     ) {
         $this->request = $request;
@@ -89,6 +96,7 @@ class Result extends Action implements HttpGetActionInterface
         $this->redirectFactory = $redirectFactory;
         $this->orderManagement = $orderManagement;
         $this->orderTransactionService = $orderTransactionService;
+        $this->config = $config;
         $this->logger = $logger;
 
         parent::__construct($context);
@@ -129,7 +137,9 @@ class Result extends Action implements HttpGetActionInterface
             // In this state we always redirect the user to the success page and try to update the order status already.
             // The order status will also be updated via the webhook if CM.com change the status of an order.
             try {
-                $this->orderTransactionService->process($orderIncrementId);
+                if ($this->config->isUpdateOnResultPageEnabled()) {
+                    $this->orderTransactionService->process($orderIncrementId);
+                }
             } catch (\Exception $exception) {
                 $this->logger->critical($exception->getMessage());
             }

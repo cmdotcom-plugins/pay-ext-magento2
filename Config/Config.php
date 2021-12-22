@@ -58,6 +58,19 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function isUpdateOnResultPageEnabled(): ?bool
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_UPDATE_ON_RESULT_PAGE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId(),
+            true
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCurrentVersion(): ?string
     {
         return $this->getConfig(

@@ -158,6 +158,27 @@ class ResultTest extends AbstractController
     }
 
     /**
+     * @magentoConfigFixture default_store cm_payments/general/update_on_result_page 0
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testRedirectToSuccessPageWithoutUpdateOrder()
+    {
+        $sessionMock = $this->createMock(Session::class);
+        $sessionMock->method('getLastRealOrder')->willReturn($this->loadOrderById('100000001'));
+        $this->_objectManager->addSharedInstance($sessionMock, Session::class);
+
+        $orderTransactionServiceMock = $this->createMock(OrderTransactionService::class);
+        $orderTransactionServiceMock->expects($this->never())->method('process');
+        $this->_objectManager->addSharedInstance($orderTransactionServiceMock, OrderTransactionService::class);
+
+        $this->getRequest()->setParam('order_reference', '100000001');
+        $this->getRequest()->setParam('status', OrderCreate::STATUS_SUCCESS);
+        $this->dispatch('cmpayments/payment/result');
+
+        $this->assertRedirect($this->stringContains('checkout/onepage/success'));
+    }
+
+    /**
      * @param $orderId
      * @return OrderInterface
      */
