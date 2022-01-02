@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace CM\Payments\Test\Integration\Service;
 
-use CM\Payments\Api\Data\IssuerInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
+use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Api\Service\ShopperServiceInterface;
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Model\CMPaymentUrlFactory;
@@ -41,8 +41,8 @@ use CM\Payments\Service\Quote\Request\Part\ReturnUrls as QuoteReturnUrls;
 use CM\Payments\Service\ShopperService;
 use CM\Payments\Test\Integration\IntegrationTestCase;
 use Exception;
-use Magento\Checkout\Model\PaymentDetails;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Payment\Api\Data\PaymentMethodInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Api\PaymentMethodManagementInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -63,6 +63,10 @@ class MethodServiceTest extends IntegrationTestCase
      * @var ShopperServiceInterface
      */
     private $shopperService;
+    /**
+     * @var OrderServiceInterface|mixed
+     */
+    private $orderService;
 
     /**
      * @magentoConfigFixture default_store payment/checkmo/active 0
@@ -76,7 +80,7 @@ class MethodServiceTest extends IntegrationTestCase
      * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
      * @magentoDataFixture Magento/Sales/_files/quote.php
      */
-    public function testAddMethodAdditionalIdealData()
+    public function testGetMethodsByQoute()
     {
         $magentoQuote = $this->loadQuoteById('test01');
 
@@ -95,62 +99,15 @@ class MethodServiceTest extends IntegrationTestCase
             $this->getMethodResponse()
         );
 
-        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
-        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $magentoMethods = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentmethods = $this->methodService->getMethodsByQuote($magentoQuote, $magentoMethods);
 
-        $methods = $actualPaymentDetails->getPaymentMethods();
-        $issuers = $actualPaymentDetails->getExtensionAttributes()->getCmPaymentsIdeal()->getIssuers();
+        $idealMethod = $actualPaymentmethods[0];
+        $banContactMethod = $actualPaymentmethods[1];
 
-        $idealMethod = $methods[0];
-        $banContactMethod = $methods[1];
-
-        $this->assertEquals(2, count($issuers));
-        $this->assertContainsOnlyInstancesOf(IssuerInterface::class, $issuers);
-
-        $this->assertEquals(2, count($methods));
+        $this->assertEquals(2, count($actualPaymentmethods));
         $this->assertEquals('cm_payments_ideal', $idealMethod->getCode());
         $this->assertEquals('cm_payments_bancontact', $banContactMethod->getCode());
-    }
-
-    /**
-     * @return array[]
-     */
-    private function getMethodResponse()
-    {
-        return [
-            [
-                'method' => 'IDEAL',
-                'ideal_details' => [
-                    'issuers' => [
-                        [
-                            'id' => 'BUNQNL2A',
-                            'name' => 'bunq'
-                        ],
-                        [
-                            'id' => 'ASNBNL21',
-                            'name' => 'ASN Bank'
-                        ]
-                    ],
-                ],
-            ],
-            [
-                'method' => 'BANCONTACT',
-            ]
-        ];
-    }
-
-    /**
-     * @param CartInterface $magentoQuote
-     * @return PaymentDetails
-     * @throws NoSuchEntityException
-     */
-    private function getPaymentMethodList(CartInterface $magentoQuote): PaymentDetails
-    {
-        $paymentMethodManagement = $this->objectManager->create(PaymentMethodManagementInterface::class);
-        $paymentDetails = $this->objectManager->create(PaymentDetails::class);
-        $paymentDetails->setPaymentMethods($paymentMethodManagement->getList($magentoQuote->getId()));
-
-        return $paymentDetails;
     }
 
     /**
@@ -184,13 +141,11 @@ class MethodServiceTest extends IntegrationTestCase
             $this->getMethodResponse()
         );
 
-        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
-        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
+        $paymentMethods = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $paymentMethods);
 
-        $methods = $actualPaymentDetails->getPaymentMethods();
-
-        $banContactMethod = $methods[1];
-        $this->assertEquals(2, count($methods));
+        $banContactMethod = $actualPaymentMethods[1];
+        $this->assertEquals(2, count($actualPaymentMethods));
         $this->assertEquals('cm_payments_bancontact', $banContactMethod->getCode());
     }
 
@@ -225,9 +180,8 @@ class MethodServiceTest extends IntegrationTestCase
             $this->getMethodResponse()
         );
 
-        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
-        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
-        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+        $paymentMethods = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $paymentMethods);
 
         $this->assertEquals(3, count($actualPaymentMethods));
     }
@@ -262,10 +216,9 @@ class MethodServiceTest extends IntegrationTestCase
             $this->getMethodResponse()
         );
 
-        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
+        $paymentMethods = $this->getPaymentMethodList($magentoQuote);
 
-        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
-        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $paymentMethods);
 
         $this->assertEquals(0, count($actualPaymentMethods));
     }
@@ -298,9 +251,8 @@ class MethodServiceTest extends IntegrationTestCase
             $this->getMethodResponse()
         );
 
-        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
-        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
-        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+        $paymentMethods = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $paymentMethods);
 
         $method = $actualPaymentMethods[0];
         $this->assertEquals(1, count($actualPaymentMethods));
@@ -335,9 +287,8 @@ class MethodServiceTest extends IntegrationTestCase
             $this->getMethodResponse()
         );
 
-        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
-        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
-        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+        $paymentMethods = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $paymentMethods);
 
         $method = $actualPaymentMethods[0];
         $this->assertEquals(1, count($actualPaymentMethods));
@@ -370,9 +321,8 @@ class MethodServiceTest extends IntegrationTestCase
             ]
         );
 
-        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
-        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
-        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+        $paymentMethods = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentMethods = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentMethods);
 
         $method = $actualPaymentMethods[0];
         $this->assertEquals(1, count($actualPaymentMethods));
@@ -395,9 +345,8 @@ class MethodServiceTest extends IntegrationTestCase
 
         $this->clientMock->expects($this->exactly(1))->method('execute')->willThrowException(new Exception());
 
-        $paymentDetails = $this->getPaymentMethodList($magentoQuote);
-        $actualPaymentDetails = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentDetails);
-        $actualPaymentMethods = $actualPaymentDetails->getPaymentMethods();
+        $paymentMethods = $this->getPaymentMethodList($magentoQuote);
+        $actualPaymentMethods = $this->methodService->addMethodAdditionalData($magentoQuote, $paymentMethods);
 
         $method = $actualPaymentMethods[0];
         $this->assertEquals(2, count($actualPaymentMethods));
@@ -420,6 +369,18 @@ class MethodServiceTest extends IntegrationTestCase
     }
 
     /**
+     * @param CartInterface $magentoQuote
+     * @return PaymentMethodInterface[]
+     * @throws NoSuchEntityException
+     */
+    private function getPaymentMethodList(CartInterface $magentoQuote): array
+    {
+        $paymentMethodManagement = $this->objectManager->create(PaymentMethodManagementInterface::class);
+
+        return $paymentMethodManagement->getList($magentoQuote->getId());
+    }
+
+    /**
      * Setup of Shopper Service
      */
     private function setupShopperService()
@@ -436,6 +397,33 @@ class MethodServiceTest extends IntegrationTestCase
                 'shopperClient' => $shopperClient
             ]
         );
+    }
+
+    /**
+     * @return array[]
+     */
+    private function getMethodResponse()
+    {
+        return [
+            [
+                'method' => 'IDEAL',
+                'ideal_details' => [
+                    'issuers' => [
+                        [
+                            'id' => 'BUNQNL2A',
+                            'name' => 'bunq'
+                        ],
+                        [
+                            'id' => 'ASNBNL21',
+                            'name' => 'ASN Bank'
+                        ]
+                    ],
+                ],
+            ],
+            [
+                'method' => 'BANCONTACT',
+            ]
+        ];
     }
 
     /**
@@ -487,14 +475,16 @@ class MethodServiceTest extends IntegrationTestCase
             ]
         ]);
 
+        $this->orderService = $this->objectManager->create(OrderServiceInterface::class, [
+            'orderRequestBuilder' =>  $orderRequestBuilder,
+            'orderClient' => $orderClient
+        ]);
+
         $this->methodService = $this->objectManager->create(
             MethodService::class,
             [
                 'orderClient' => $orderClient,
-                'methods' => [
-                    $this->objectManager->create(Ideal::class)
-                ],
-                'orderRequestBuilder' => $orderRequestBuilder
+                'orderService' => $this->orderService
             ]
         );
     }

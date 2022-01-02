@@ -34,7 +34,8 @@ class Email implements RequestPartByQuoteInterface
         if ($quote->getShippingAddress() && !empty($quote->getShippingAddress()->getEmail())) {
             return $quote->getShippingAddress()->getEmail();
         }
-        if ($quote->getCustomer()) {
+
+        if ($quote->getCustomer() && $quote->getCustomer()->getEmail()) {
             return $quote->getCustomer()->getEmail();
         }
 

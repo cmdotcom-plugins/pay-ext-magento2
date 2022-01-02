@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace CM\Payments\Client\Model\Response\Method;
 
-class IdealIssuer
+use CM\Payments\Client\Api\IdealIssuerInterface;
+
+class IdealIssuer implements IdealIssuerInterface
 {
     /**
      * @var string
