@@ -8,21 +8,15 @@ declare(strict_types=1);
 
 namespace CM\Payments\Plugin\Quote;
 
+use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
-use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Config\Config as ConfigService;
-use Magento\Framework\Event\ManagerInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\PaymentMethodManagement;
 
 class PaymentMethodManagementPlugin
 {
-    /**
-     * @var OrderCreate|null
-     */
-    protected $cmOrder = null;
     /**
      * @var ConfigService
      */
@@ -39,11 +33,6 @@ class PaymentMethodManagementPlugin
     private $methodService;
 
     /**
-     * @var ManagerInterface
-     */
-    private $eventManager;
-
-    /**
      * @var OrderServiceInterface
      */
     private $orderService;
@@ -52,59 +41,37 @@ class PaymentMethodManagementPlugin
      * AddMethodsAdditionalData constructor
      *
      * @param ConfigService $configService
-     * @param CartRepositoryInterface $quoteRep ository
+     * @param CartRepositoryInterface $quoteRepository
      * @param MethodServiceInterface $methodService
-     * @param ManagerInterface $eventManager
+     * @param OrderServiceInterface $orderService
      */
     public function __construct(
         ConfigService $configService,
         CartRepositoryInterface $quoteRepository,
         MethodServiceInterface $methodService,
-        OrderServiceInterface $orderService,
-        ManagerInterface $eventManager
+        OrderServiceInterface $orderService
     ) {
         $this->configService = $configService;
         $this->quoteRepository = $quoteRepository;
         $this->methodService = $methodService;
-        $this->eventManager = $eventManager;
         $this->orderService = $orderService;
     }
 
     /**
      * @param PaymentMethodManagement $subject
+     * @param callable $proceed
      * @param int $cartId
-     * @return int
-     * @throws LocalizedException
+     * @return \Magento\Quote\Api\Data\PaymentMethodInterface[]
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function beforeGetList(
-        PaymentMethodManagement $subject,
-        int $cartId
-    ): int {
+    public function aroundGetList(PaymentMethodManagement $subject, callable $proceed, int $cartId)
+    {
+        $availableMethods = $proceed($cartId);
+
         if ($this->configService->isEnabled()) {
             $quote = $this->quoteRepository->getActive($cartId);
-            $this->cmOrder = $this->orderService->createByQuote($quote);
-            $quote->setData('cm_order_key', $this->cmOrder->getOrderKey());
-            $this->quoteRepository->save($quote);
-        }
 
-        return $cartId;
-    }
-
-    /**
-     * @param PaymentMethodManagement $subject
-     * @param \Magento\Quote\Api\Data\PaymentMethodInterface[] $availableMethods
-     * @return array
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    public function afterGetList(
-        PaymentMethodManagement $subject,
-        array $availableMethods
-    ): array {
-        if ($this->configService->isEnabled()) {
-            $cmPaymentMethods = $this->methodService->getCmMethods($this->cmOrder->getOrderKey());
-
-            return $this->methodService->filterMethods($availableMethods, $cmPaymentMethods);
+            return $this->methodService->getMethodsByQuote($quote, $availableMethods);
         }
 
         return $availableMethods;

@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace CM\Payments\Service;
 
 use CM\Payments\Api\Config\ConfigInterface;
-use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Api\OrderInterface as OrderClientInterface;
@@ -22,6 +21,7 @@ use Exception;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 
 class MethodService implements MethodServiceInterface
@@ -54,12 +54,18 @@ class MethodService implements MethodServiceInterface
      * @var OrderServiceInterface
      */
     private $orderService;
+    /**
+     * @var CartRepositoryInterface
+     */
+    private $quoteRepository;
 
     /**
      * MethodService constructor
      *
      * @param ConfigInterface $configService
+     * @param OrderClientInterface $orderClient
      * @param OrderServiceInterface $orderService
+     * @param CartRepositoryInterface $quoteRepository,
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
      * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $cmPaymentsLogger
@@ -68,16 +74,18 @@ class MethodService implements MethodServiceInterface
         ConfigInterface $configService,
         OrderClientInterface $orderClient,
         OrderServiceInterface $orderService,
+        CartRepositoryInterface $quoteRepository,
         OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
         ManagerInterface $eventManager,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->configService = $configService;
+        $this->orderClient = $orderClient;
+        $this->quoteRepository = $quoteRepository;
         $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
         $this->eventManager = $eventManager;
         $this->logger = $cmPaymentsLogger;
         $this->orderService = $orderService;
-        $this->orderClient = $orderClient;
     }
 
     /**
@@ -91,13 +99,12 @@ class MethodService implements MethodServiceInterface
 
         try {
             $cmOrderKey = $this->getCmOrderKey($quote);
+            $this->saveOrderKey($quote, $cmOrderKey);
 
             // Needed for Klarna, AfterPay availability
             $this->orderService->createItemsByQuote($quote, $cmOrderKey);
 
-            $methods = $this->filterMethods($magentoMethods, $this->getCmMethods($cmOrderKey));
-
-            return $methods;
+            return $this->filterMethods($magentoMethods, $this->getCmMethods($cmOrderKey));
         } catch (Exception $e) {
             $this->logger->error(
                 'CM Get Available Methods request',
@@ -129,13 +136,11 @@ class MethodService implements MethodServiceInterface
     public function filterMethods(array $magentoMethods, array $cmMethods): array
     {
         $mappedMethods = $this->getMappedCmPaymentMethods($cmMethods);
-
         foreach ($magentoMethods as $key => $method) {
             if ($this->isCmPaymentsMethod($method->getCode()) && empty($mappedMethods[$method->getCode()])) {
                 unset($magentoMethods[$key]);
             }
         }
-
         return $magentoMethods;
     }
 
@@ -196,6 +201,16 @@ class MethodService implements MethodServiceInterface
         }
 
         return $methods;
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @param string $cmOrderKey
+     */
+    private function saveOrderKey(CartInterface $quote, string $cmOrderKey): void
+    {
+        $quote->setData('cm_order_key', $cmOrderKey);
+        $this->quoteRepository->save($quote);
     }
 
     /**

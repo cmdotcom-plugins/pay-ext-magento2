@@ -19,6 +19,7 @@ use CM\Payments\Service\MethodService;
 use CM\Payments\Service\OrderService;
 use CM\Payments\Test\Unit\UnitTestCase;
 use Magento\Framework\Event\ManagerInterface;
+use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\PaymentMethodInterface;
 
 class MethodServiceTest extends UnitTestCase
@@ -141,6 +142,10 @@ class MethodServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->quoteRepositoryMock = $this->getMockBuilder(CartRepositoryInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->orderService = $this->getMockBuilder(OrderService::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -161,6 +166,7 @@ class MethodServiceTest extends UnitTestCase
             $this->configMock,
             $this->orderClientMock,
             $this->orderService,
+            $this->quoteRepositoryMock,
             $this->orderGetMethodsRequestMock,
             $this->eventManagerMock,
             $this->cmPaymentsLoggerMock
