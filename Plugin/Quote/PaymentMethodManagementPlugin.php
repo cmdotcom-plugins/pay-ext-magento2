@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Plugin\Quote;
 
-use CM\Payments\Api\Model\Domain\CMOrderInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Config\Config as ConfigService;

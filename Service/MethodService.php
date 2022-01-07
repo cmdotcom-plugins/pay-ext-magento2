@@ -165,10 +165,6 @@ class MethodService implements MethodServiceInterface
      */
     private function getCmOrderKey(CartInterface $quote): string
     {
-        if (!empty($quote->getCmOrderKey())) {
-            return $quote->getCmOrderKey();
-        }
-
         $cmOrder = $this->orderService->createByQuote($quote);
 
         if (empty($cmOrder->getOrderKey())) {
