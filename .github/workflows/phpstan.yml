@@ -32,7 +32,7 @@ jobs:
 
       # Install the extension and PHPStan into Magento
       - name: Install the extensions in Magento
-        run: docker exec magento-project-community-edition composer require cmdotcom/magento2-payments:@dev fooman/phpstan-magento2-magic-methods:^0.7
+        run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:@dev fooman/phpstan-magento2-magic-methods:^0.7
 
       # Only the tests in your repository will be run, the default Magento tests are not included in this.
       - name: Run tests

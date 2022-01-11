@@ -37,7 +37,7 @@ jobs:
 
       # Replace <VENDOR> and <MODULE> with the name in your `composer.json`.
       - name: Install the extension in Magento
-        run: docker exec magento-project-community-edition composer require cmdotcom/magento2-payments:dev-unit-test-branch
+        run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:dev-unit-test-branch
 
       # Only the tests in your repository will be run, the default Magento tests are not included in this.
       - name: Run tests
