@@ -21,7 +21,7 @@ Before you begin to integrate Magento with the CM.com payments platform, make su
 1. Installation by Composer
 
    ```
-   composer require cmdotcom/payments
+   composer require cmdotcom-plugins/magento2-payments
    ```
 
    ```
@@ -39,7 +39,7 @@ Before you begin to integrate Magento with the CM.com payments platform, make su
 2. Update by Composer
 
    ```
-   composer update cmdotcom/payments
+   composer update cmdotcom-plugins/magento2-payments
    ```
 
    ```
@@ -102,9 +102,9 @@ Setup local development environment with installed extension
 
 ```
 mkdir extensions
-git clone git@github.com:cmdotcom/pay-ext-magento2.git
+git clone git@github.com:cmdotcom-plugins/pay-ext-magento2.git
 composer config repositories.dev-extensions path extensions/* 
-composer require cmdotcom/payments:@dev
+composer require cmdotcom-plugins/magento2-payments:@dev
 bin/magento module:enable CM_Payments
 bin/magento setup:upgrade
 ```
