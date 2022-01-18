@@ -6,17 +6,17 @@
 
 declare(strict_types=1);
 
-namespace CM\Payments\Plugin\Model;
+namespace CM\Payments\Plugin\Quote;
 
-use CM\Payments\Api\PaymentMethodManagementInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
+use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
-use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
-use Magento\Quote\Api\Data\AddressInterface;
+use Magento\Quote\Api\Data\PaymentMethodInterface;
+use Magento\Quote\Model\PaymentMethodManagement;
 
-class AddMethodsAdditionalData
+class PaymentMethodManagementPlugin
 {
     /**
      * @var ConfigService
@@ -34,42 +34,45 @@ class AddMethodsAdditionalData
     private $methodService;
 
     /**
+     * @var OrderServiceInterface
+     */
+    private $orderService;
+
+    /**
      * AddMethodsAdditionalData constructor
      *
      * @param ConfigService $configService
      * @param CartRepositoryInterface $quoteRepository
      * @param MethodServiceInterface $methodService
+     * @param OrderServiceInterface $orderService
      */
     public function __construct(
         ConfigService $configService,
         CartRepositoryInterface $quoteRepository,
-        MethodServiceInterface $methodService
+        MethodServiceInterface $methodService,
+        OrderServiceInterface $orderService
     ) {
         $this->configService = $configService;
         $this->quoteRepository = $quoteRepository;
         $this->methodService = $methodService;
+        $this->orderService = $orderService;
     }
 
     /**
-     * @param PaymentMethodManagementInterface $subject
-     * @param PaymentDetailsInterface $paymentDetails
+     * @param PaymentMethodManagement $subject
+     * @param PaymentMethodInterface[] $availableMethods
      * @param int $cartId
-     * @param ?AddressInterface $shippingAddress
-     * @return PaymentDetailsInterface
+     * @return PaymentMethodInterface[]
      * @throws NoSuchEntityException
      */
-    public function afterGetPaymentMethods(
-        PaymentMethodManagementInterface $subject,
-        PaymentDetailsInterface $paymentDetails,
-        int $cartId,
-        ?AddressInterface $shippingAddress
-    ): PaymentDetailsInterface {
+    public function afterGetList(PaymentMethodManagement $subject, array $availableMethods, int $cartId)
+    {
         if ($this->configService->isEnabled()) {
             $quote = $this->quoteRepository->getActive($cartId);
 
-            return $this->methodService->addMethodAdditionalData($quote, $paymentDetails);
+            return $this->methodService->getMethodsByQuote($quote, $availableMethods);
         }
 
-        return $paymentDetails;
+        return $availableMethods;
     }
 }

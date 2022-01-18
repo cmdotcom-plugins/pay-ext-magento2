@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace CM\Payments\Test\Integration\Webapi;
 
-use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
-use CM\Payments\Api\Model\Domain\CMOrderInterfaceFactory;
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\ApiClient;
 use CM\Payments\Test\Integration\IntegrationTestCase;
@@ -79,29 +77,6 @@ class PaymentMethodManagementTest extends IntegrationTestCase
         $this->expectException(StateException::class);
         $this->expectExceptionMessage('The shipping address is missing. Set the address and try again.');
         $this->paymentMethodManagement->getPaymentMethods((int)$magentoQuote->getId());
-    }
-
-    /**
-     * @magentoConfigFixture default_store payment/checkmo/active 0
-     * @magentoConfigFixture default_store payment/fake/active 0
-     * @magentoConfigFixture default_store payment/fake_vault/active 0
-     * @magentoConfigFixture default_store cm_payments/general/enabled 1
-     * @magentoConfigFixture default_store payment/cm_payments/active 0
-     * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 0
-     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
-     * @magentoConfigFixture default_store payment/cm_payments_paypal/active 0
-     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
-     * @magentoDataFixture Magento/Sales/_files/quote.php
-     */
-    public function testGetPayments()
-    {
-        $magentoQuote = $this->loadQuoteById('test01');
-
-        $response = $this->paymentMethodManagement
-            ->getPaymentMethods((int)$magentoQuote->getId(), $magentoQuote->getBillingAddress());
-
-        $this->assertEquals('cm_payments_ideal', $response->getPaymentMethods()[0]->getCode());
-        $this->assertEquals('cm_payments_bancontact', $response->getPaymentMethods()[1]->getCode());
     }
 
     protected function setUp(): void

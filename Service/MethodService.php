@@ -8,31 +8,26 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
-use CM\Payments\Api\Data\PaymentMethodAdditionalDataInterfaceFactory;
-use CM\Payments\Api\Service\Method\ExtendMethodInterface;
+use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
-use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
-use CM\Payments\Api\Service\OrderRequestBuilderInterface;
+use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Client\Api\OrderInterface as OrderClientInterface;
-use CM\Payments\Client\Model\Response\OrderCreate;
 use CM\Payments\Client\Model\Response\PaymentMethod;
 use CM\Payments\Client\Request\OrderGetMethodsRequestFactory;
-use CM\Payments\Config\Config as ConfigService;
+use CM\Payments\Exception\PaymentMethodNotFoundException;
 use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\ConfigProvider;
 use Exception;
-use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterface;
-use Magento\Checkout\Api\Data\PaymentDetailsExtensionInterfaceFactory;
-use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 
 class MethodService implements MethodServiceInterface
 {
     /**
-     * @var ConfigService
+     * @var ConfigInterface
      */
     private $configService;
 
@@ -42,34 +37,9 @@ class MethodService implements MethodServiceInterface
     private $orderClient;
 
     /**
-     * @var OrderRequestBuilderInterface
-     */
-    private $orderRequestBuilder;
-
-    /**
-     * @var OrderItemsRequestBuilderInterface
-     */
-    private $orderItemsRequestBuilder;
-
-    /**
      * @var OrderGetMethodsRequestFactory
      */
     private $orderGetMethodsRequestFactory;
-
-    /**
-     * @var PaymentMethodAdditionalDataInterfaceFactory
-     */
-    private $paymentMethodAdditionalDataFactory;
-
-    /**
-     * @var ExtendMethodInterface[]
-     */
-    private $methods;
-
-    /**
-     * @var PaymentDetailsExtensionInterfaceFactory
-     */
-    private $paymentDetailsExtensionFactory;
 
     /**
      * @var ManagerInterface
@@ -79,103 +49,65 @@ class MethodService implements MethodServiceInterface
     /**
      * @var CMPaymentsLogger
      */
+
     private $logger;
+
+    /**
+     * @var OrderServiceInterface
+     */
+
+    private $orderService;
+    /**
+     * @var CartRepositoryInterface
+     */
+    private $quoteRepository;
 
     /**
      * MethodService constructor
      *
-     * @param ConfigService $configService
+     * @param ConfigInterface $configService
      * @param OrderClientInterface $orderClient
-     * @param OrderRequestBuilderInterface $orderRequestBuilder
-     * @param OrderItemsRequestBuilderInterface $orderItemsRequestBuilder
+     * @param OrderServiceInterface $orderService
+     * @param CartRepositoryInterface $quoteRepository,
      * @param OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory
-     * @param PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory
-     * @param ExtendMethodInterface[] $methods
-     * @param PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory
      * @param ManagerInterface $eventManager
      * @param CMPaymentsLogger $cmPaymentsLogger
      */
     public function __construct(
-        ConfigService $configService,
+        ConfigInterface $configService,
         OrderClientInterface $orderClient,
-        OrderRequestBuilderInterface $orderRequestBuilder,
-        OrderItemsRequestBuilderInterface $orderItemsRequestBuilder,
+        OrderServiceInterface $orderService,
+        CartRepositoryInterface $quoteRepository,
         OrderGetMethodsRequestFactory $orderGetMethodsRequestFactory,
-        PaymentMethodAdditionalDataInterfaceFactory $paymentMethodAdditionalDataFactory,
-        array $methods,
-        PaymentDetailsExtensionInterfaceFactory $paymentDetailsExtensionFactory,
         ManagerInterface $eventManager,
         CMPaymentsLogger $cmPaymentsLogger
     ) {
         $this->configService = $configService;
         $this->orderClient = $orderClient;
-        $this->orderRequestBuilder = $orderRequestBuilder;
-        $this->orderItemsRequestBuilder = $orderItemsRequestBuilder;
+        $this->quoteRepository = $quoteRepository;
         $this->orderGetMethodsRequestFactory = $orderGetMethodsRequestFactory;
-        $this->paymentMethodAdditionalDataFactory = $paymentMethodAdditionalDataFactory;
-        $this->methods = $methods;
-        $this->paymentDetailsExtensionFactory = $paymentDetailsExtensionFactory;
         $this->eventManager = $eventManager;
         $this->logger = $cmPaymentsLogger;
+        $this->orderService = $orderService;
     }
 
     /**
      * @inheritDoc
      */
-    public function addMethodAdditionalData(
-        CartInterface $quote,
-        PaymentDetailsInterface $paymentDetails
-    ): PaymentDetailsInterface {
+    public function getMethodsByQuote(CartInterface $quote, array $magentoMethods): array
+    {
         if ($quote->getGrandTotal() <= 0) {
-            return $paymentDetails;
+            return $magentoMethods;
         }
 
-        $availablePaymentMethods = $paymentDetails->getPaymentMethods();
-
         try {
-            $cmOrder = $this->createCmOrder($quote);
-            if (empty($cmOrder->getOrderKey())) {
-                throw new LocalizedException(
-                    __("The Methods were not requested properly because of CM Order creation problem.")
-                );
-            } else {
-                // Needed for Klarna, AfterPay availability
-                $this->createCmOrderItems($quote, $cmOrder->getOrderKey());
-            }
+            $cmOrderKey = $this->getCmOrderKey($quote);
+            $this->saveOrderKey($quote, $cmOrderKey);
 
-            $cmPaymentMethods = $this->orderClient->getMethods(
-                $cmOrder->getOrderKey()
-            );
-            $cmPaymentMethods = $this->getMappedCmPaymentMethods($cmPaymentMethods);
+            // Needed for Klarna, AfterPay availability
+            $this->orderService->createItemsByQuote($quote, $cmOrderKey);
 
-            $paymentDetailsExtension = $paymentDetails->getExtensionAttributes();
-            if ($paymentDetailsExtension == null) {
-                /** @var PaymentDetailsExtensionInterface $paymentDetailsExtension */
-                $paymentDetailsExtension = $this->paymentDetailsExtensionFactory->create();
-            }
-
-            foreach ($availablePaymentMethods as $id => $paymentMethod) {
-                if (!$this->isCmPaymentsMethod($paymentMethod->getCode())) {
-                    continue;
-                }
-
-                if (!isset($cmPaymentMethods[$paymentMethod->getCode()])) {
-                    unset($availablePaymentMethods[$id]);
-                }
-
-                foreach ($this->methods as $method) {
-                    if (isset($cmPaymentMethods[$paymentMethod->getCode()])) {
-                        $paymentDetailsExtension = $method->extend(
-                            $paymentMethod->getCode(),
-                            $cmPaymentMethods[$paymentMethod->getCode()],
-                            $paymentDetailsExtension
-                        );
-                    }
-                }
-            }
-
-            $paymentDetails->setExtensionAttributes($paymentDetailsExtension);
-            $paymentDetails->setPaymentMethods($availablePaymentMethods);
+            return $this->filterMethods($magentoMethods, $this->getCmMethods($cmOrderKey));
         } catch (Exception $e) {
             $this->logger->error(
                 'CM Get Available Methods request',
@@ -185,65 +117,66 @@ class MethodService implements MethodServiceInterface
             );
             // Remove cm_payments_ideal if available because of missing issuer list.
             // Remove cm_payments_klarna if we have exception (can be shopper creation problem or other).
-            $availablePaymentMethods = array_filter($availablePaymentMethods, function ($method) {
+            return array_filter($magentoMethods, function ($method) {
                 return !in_array($method->getCode(), [ConfigProvider::CODE_IDEAL, ConfigProvider::CODE_KLARNA]);
             });
+        }
+    }
 
-            $paymentDetails->setPaymentMethods($availablePaymentMethods);
+    /**
+     * @inheritDoc
+     */
+    public function getCmMethods(string $orderKey): array
+    {
+        return $this->orderClient->getMethods(
+            $orderKey
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function filterMethods(array $magentoMethods, array $cmMethods): array
+    {
+        $mappedMethods = $this->getMappedCmPaymentMethods($cmMethods);
+        foreach ($magentoMethods as $key => $method) {
+            if ($this->isCmPaymentsMethod($method->getCode()) && empty($mappedMethods[$method->getCode()])) {
+                unset($magentoMethods[$key]);
+            }
+        }
+        return $magentoMethods;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMethodFromList(string $method, array $cmMethods): PaymentMethod
+    {
+        foreach ($cmMethods as $cmMethod) {
+            if ($cmMethod->getMethod() === $method) {
+                return $cmMethod;
+            }
         }
 
-        return $paymentDetails;
+        throw new PaymentMethodNotFoundException(__('Method not found'));
     }
 
     /**
      * @param CartInterface $quote
-     * @return OrderCreate
+     * @return string
      * @throws LocalizedException
      */
-    private function createCmOrder(CartInterface $quote): OrderCreate
+    private function getCmOrderKey(CartInterface $quote): string
     {
-        $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote);
+        $cmOrder = $this->orderService->createByQuote($quote);
 
-        $this->eventManager->dispatch('cmpayments_before_order_create_by_quote', [
-            'quote' => $quote,
-            'orderCreateRequest' => $orderCreateRequest,
-        ]);
+        if (empty($cmOrder->getOrderKey())) {
+            throw new LocalizedException(
+                __("The Methods were not requested properly because of CM Order creation problem.")
+            );
+        }
 
-        $orderCreateResult =  $this->orderClient->create(
-            $orderCreateRequest
-        );
-
-        $this->eventManager->dispatch('cmpayments_after_order_create_by_quote', [
-            'quote' => $quote,
-            'orderCreateResult' => $orderCreateResult,
-        ]);
-
-        return $orderCreateResult;
-    }
-
-    /**
-     * @param CartInterface $quote
-     * @param string $orderKey
-     * @return void
-     * @throws LocalizedException
-     */
-    private function createCmOrderItems(CartInterface $quote, string $orderKey): void
-    {
-        $orderItemsCreateRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
-            $orderKey,
-            $quote->getAllVisibleItems()
-        );
-
-        $this->eventManager->dispatch('cmpayments_before_order_items_create_by_quote', [
-            'quote' => $quote,
-            'orderItemsCreateRequest' => $orderItemsCreateRequest
-        ]);
-
-        $this->orderClient->createItems($orderItemsCreateRequest);
-
-        $this->eventManager->dispatch('cmpayments_after_order_items_create_by_quote', [
-            'quote' => $quote
-        ]);
+        return $cmOrder->getOrderKey();
     }
 
     /**
@@ -267,6 +200,16 @@ class MethodService implements MethodServiceInterface
         }
 
         return $methods;
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @param string $cmOrderKey
+     */
+    private function saveOrderKey(CartInterface $quote, string $cmOrderKey): void
+    {
+        $quote->setData('cm_order_key', $cmOrderKey);
+        $this->quoteRepository->save($quote);
     }
 
     /**

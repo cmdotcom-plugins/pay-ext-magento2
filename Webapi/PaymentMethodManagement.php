@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace CM\Payments\Webapi;
 
 use CM\Payments\Api\PaymentMethodManagementInterface;
+use CM\Payments\Api\Service\MethodServiceInterface;
+use CM\Payments\Exception\PaymentMethodNotFoundException;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Checkout\Model\PaymentDetailsFactory;
 use Magento\Framework\Exception\InputException;
@@ -40,6 +42,10 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
      * @var CartTotalRepositoryInterface
      */
     private $cartTotalsRepository;
+    /**
+     * @var MethodServiceInterface
+     */
+    private $methodService;
 
     /**
      * @param CheckoutPaymentMethodManagementInterface $paymentMethodManagement
@@ -51,12 +57,14 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
         CheckoutPaymentMethodManagementInterface $paymentMethodManagement,
         PaymentDetailsFactory $paymentDetailsFactory,
         CartTotalRepositoryInterface $cartTotalsRepository,
-        CartRepositoryInterface $quoteRepository
+        CartRepositoryInterface $quoteRepository,
+        MethodServiceInterface $methodService
     ) {
         $this->paymentMethodManagement = $paymentMethodManagement;
         $this->paymentDetailsFactory = $paymentDetailsFactory;
         $this->cartTotalsRepository = $cartTotalsRepository;
         $this->quoteRepository = $quoteRepository;
+        $this->methodService = $methodService;
     }
 
     /**
@@ -78,6 +86,27 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
         $paymentDetails->setTotals($this->cartTotalsRepository->get($cartId));
 
         return $paymentDetails;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIbanIssuers(int $cartId): array
+    {
+        /** @var Quote $quote */
+        $quote = $this->quoteRepository->getActive($cartId);
+        $this->validateQuote($quote);
+
+        try {
+            $cmMethods = $this->methodService->getCmMethods($quote->getCmOrderKey());
+            $idealMethod = $this->methodService->getMethodFromList(MethodServiceInterface::CM_METHOD_IDEAL, $cmMethods);
+
+            return $idealMethod->getIdealIssuers();
+        } catch (PaymentMethodNotFoundException $exception) {
+            throw new InputException(
+                __('Ideal method not found in the list')
+            );
+        }
     }
 
     /**

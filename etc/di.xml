@@ -62,14 +62,6 @@
         </arguments>
     </type>
 
-    <type name="CM\Payments\Service\MethodService">
-        <arguments>
-            <argument name="methods" xsi:type="array">
-                <item name="ideal" xsi:type="object">CM\Payments\Service\Method\Ideal</item>
-            </argument>
-        </arguments>
-    </type>
-
     <type name="CM\Payments\Service\OrderRequestBuilder">
         <arguments>
             <argument name="orderRequestParts" xsi:type="array">
@@ -816,4 +808,10 @@
         </arguments>
     </type>
     <!-- END CM Payments (Logger) -->
+
+    <type name="Magento\Quote\Api\PaymentMethodManagementInterface">
+        <plugin name="cm_payments_quote_api_payment_methods_compare_methods"
+                type="CM\Payments\Plugin\Quote\PaymentMethodManagementPlugin" sortOrder="100" />
+    </type>
+
 </config>

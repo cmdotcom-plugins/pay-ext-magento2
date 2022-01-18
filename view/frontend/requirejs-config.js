@@ -6,12 +6,10 @@
 var config = {
     config: {
         mixins: {
+            // We need to save the guestEmail to the quote to get the CM.com payment methods by quote
             'Magento_Checkout/js/model/shipping-save-processor/default': {
                 'CM_Payments/js/model/shipping-save-processor/default-mixin': true
             },
-            'Magento_Checkout/js/action/get-payment-information': {
-                'CM_Payments/js/action/get-payment-information-mixin': true
-            }
         }
     }
 };

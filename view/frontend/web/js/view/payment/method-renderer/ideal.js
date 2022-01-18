@@ -6,19 +6,26 @@
 define([
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/action/redirect-on-success',
+    'CM_Payments/js/action/ideal/get-issuers',
     'mage/url',
-    'jquery'
+    'jquery',
+    'loader',
+    'ko'
 ], function (
     Component,
     redirectOnSuccessAction,
+    getIssuers,
     url,
-    $
+    $,
+    loader,
+    ko
 ) {
     'use strict';
     return Component.extend({
         defaults: {
             template: 'CM_Payments/payment/ideal',
             selectedIssuer: null,
+            issuers: ko.observable([]),
             paymentConfig: ''
         },
 
@@ -31,6 +38,15 @@ define([
             this._super();
             this.paymentConfig = window.checkoutConfig.payment[this.item.method];
 
+            $('#iban-select').trigger('processStart');
+
+            var self = this;
+
+            getIssuers().done(function(issuers) {
+                self.issuers(issuers);
+                $('#iban-select').trigger('processStop');
+            });
+
             return this;
         },
 
@@ -41,15 +57,6 @@ define([
          */
         getForm: function () {
             return $('#' + this.item.method + '-form');
-        },
-
-        /**
-         * Get issuer list
-         *
-         * @returns {*|*[]}
-         */
-        getIssuers: function () {
-            return this.paymentConfig.issuers || [];
         },
 
         /**

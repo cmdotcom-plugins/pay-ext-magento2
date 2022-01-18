@@ -25,6 +25,7 @@ use CM\Payments\Model\ConfigProvider;
 use GuzzleHttp\Exception\RequestException;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 
@@ -173,6 +174,30 @@ class OrderService implements OrderServiceInterface
     /**
      * @inheritDoc
      */
+    public function createByQuote(CartInterface $quote): CMOrderInterface
+    {
+        $orderCreateRequest = $this->orderRequestBuilder->createByQuote($quote);
+
+        $this->eventManager->dispatch('cmpayments_before_order_create_by_quote', [
+            'quote' => $quote,
+            'orderCreateRequest' => $orderCreateRequest,
+        ]);
+
+        $orderCreateResult =  $this->orderClient->create(
+            $orderCreateRequest
+        );
+
+        $this->eventManager->dispatch('cmpayments_after_order_create_by_quote', [
+            'quote' => $quote,
+            'orderCreateResult' => $orderCreateResult,
+        ]);
+
+        return $this->createCmOrder($orderCreateResult, $orderCreateRequest);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function createItems(
         string $orderKey,
         OrderInterface $order
@@ -221,6 +246,30 @@ class OrderService implements OrderServiceInterface
         }
 
         return true;
+    }
+
+    /**
+     * @param CartInterface $quote
+     * @param string $orderKey
+     * @throws LocalizedException
+     */
+    public function createItemsByQuote(CartInterface $quote, string $orderKey): void
+    {
+        $orderItemsCreateRequest = $this->orderItemsRequestBuilder->createByQuoteItems(
+            $orderKey,
+            $quote->getAllVisibleItems()
+        );
+
+        $this->eventManager->dispatch('cmpayments_before_order_items_create_by_quote', [
+            'quote' => $quote,
+            'orderItemsCreateRequest' => $orderItemsCreateRequest
+        ]);
+
+        $this->orderClient->createItems($orderItemsCreateRequest);
+
+        $this->eventManager->dispatch('cmpayments_after_order_items_create_by_quote', [
+            'quote' => $quote
+        ]);
     }
 
     /**

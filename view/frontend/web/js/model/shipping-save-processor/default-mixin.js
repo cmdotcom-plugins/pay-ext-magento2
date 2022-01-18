@@ -38,6 +38,7 @@ define([
                 selectBillingAddressAction(quote.shippingAddress());
             }
 
+            // We need to save the guestEmail to the quote to get the CM.com payment methods by quote
             if (quote.guestEmail) {
                 let shippingAddress = quote.shippingAddress();
                 shippingAddress.email = quote.guestEmail;
@@ -63,18 +64,7 @@ define([
             ).done(
                 function (response) {
                     quote.setTotals(response.totals);
-                    let methods = methodConverter(response['payment_methods']);
-                    if (typeof response['extension_attributes'] !== 'undefined') {
-                        _.each(methods, function (method) {
-                            if (typeof response['extension_attributes'][method.method] !== 'undefined') {
-                                _.each(response['extension_attributes'][method.method], function (data, property) {
-                                    window.checkoutConfig.payment[method.method][property] = data;
-                                });
-                            }
-                        });
-                    }
-
-                    paymentService.setPaymentMethods(methods);
+                    paymentService.setPaymentMethods(methodConverter(response['payment_methods']));
                     fullScreenLoader.stopLoader();
                 }
             ).fail(

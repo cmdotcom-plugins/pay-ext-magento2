@@ -22,10 +22,10 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <!-- ko if: getIssuers() -->
-        <div class="field-select-billing">
+        <!-- ko if: issuers() -->
+        <div id="iban-select" class="field-select-billing" data-mage-init='{"loader": { "icon": "{store URL}/static/{static version}/frontend/Magento/luma/en_US/images/loader-2.gif"}}'>
             <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
-                <select data-bind="options: getIssuers(), optionsValue: 'code', optionsText: 'title',
+                <select data-bind="options: issuers(), optionsValue: 'id', optionsText: 'name',
                     optionsCaption: '-- Please select --', value: selectedIssuer" data-validate="{required:true}">
                 </select>
             </form>

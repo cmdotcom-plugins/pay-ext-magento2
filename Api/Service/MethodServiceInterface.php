@@ -8,12 +8,15 @@ declare(strict_types=1);
 
 namespace CM\Payments\Api\Service;
 
+use CM\Payments\Client\Model\Response\PaymentMethod;
+use CM\Payments\Exception\PaymentMethodNotFoundException;
 use CM\Payments\Model\ConfigProvider;
-use Magento\Checkout\Api\Data\PaymentDetailsInterface;
+use Magento\Quote\Api\Data\PaymentMethodInterface;
 use Magento\Quote\Api\Data\CartInterface;
 
 interface MethodServiceInterface
 {
+    public const CM_METHOD_IDEAL = 'IDEAL';
     /**
      * Methods List
      */
@@ -37,7 +40,7 @@ interface MethodServiceInterface
         'MASTERCARD' => ConfigProvider::CODE_CREDIT_CARD,
         'MAESTRO' => ConfigProvider::CODE_MAESTRO,
         'V_PAY' => ConfigProvider::CODE_VPAY,
-        'IDEAL' => ConfigProvider::CODE_IDEAL,
+        MethodServiceInterface::CM_METHOD_IDEAL => ConfigProvider::CODE_IDEAL,
         'PAYPAL_EXPRESS_CHECKOUT' => ConfigProvider::CODE_PAYPAL,
         'BANCONTACT' => ConfigProvider::CODE_BANCONTACT,
         'ELV' => ConfigProvider::CODE_ELV,
@@ -68,12 +71,32 @@ interface MethodServiceInterface
     ];
 
     /**
+     * Get methods from CM and compare it with Magento methods
+     * @param PaymentMethodInterface[] $magentoMethods
      * @param CartInterface $quote
-     * @param PaymentDetailsInterface $paymentDetails
-     * @return PaymentDetailsInterface
+     * @return PaymentMethodInterface[]
      */
-    public function addMethodAdditionalData(
-        CartInterface $quote,
-        PaymentDetailsInterface $paymentDetails
-    ): PaymentDetailsInterface;
+    public function getMethodsByQuote(CartInterface $quote, array $magentoMethods): array;
+
+    /**
+     * @param string $orderKey
+     * @return PaymentMethod[]
+     */
+    public function getCmMethods(string $orderKey): array;
+
+    /**
+     * @param PaymentMethodInterface[] $magentoMethods
+     * @param PaymentMethod[] $cmMethods
+     * @return PaymentMethodInterface[]
+     */
+    public function filterMethods(array $magentoMethods, array $cmMethods): array;
+
+    /**
+     * @param string $method
+     * @param PaymentMethod[] $cmMethods
+     * @return PaymentMethod
+     *
+     * @throws PaymentMethodNotFoundException
+     */
+    public function getMethodFromList(string $method, array $cmMethods): PaymentMethod;
 }

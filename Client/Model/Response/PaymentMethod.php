@@ -18,7 +18,7 @@ class PaymentMethod
     private $method;
 
     /**
-     * @var IdealIssuer[]
+     * @var \CM\Payments\Client\Api\IdealIssuerInterface
      */
     private $idealIssuers;
 
@@ -44,7 +44,7 @@ class PaymentMethod
     }
 
     /**
-     * @return IdealIssuer[]
+     * @return \CM\Payments\Client\Api\IdealIssuerInterface[]
      */
     public function getIdealIssuers(): array
     {
@@ -53,12 +53,29 @@ class PaymentMethod
 
     /**
      * @param array $issuers
-     * @return IdealIssuer[]
+     * @return IdealIssuerInterface[]
      */
     private function mapIssuers(array $issuers): array
     {
-        return array_map(function ($issuer) {
-            return new IdealIssuer($issuer);
-        }, $issuers);
+        return $this->sortIdealIssuers(
+            array_map(function ($issuer) {
+                return new IdealIssuer($issuer);
+            }, $issuers)
+        );
+    }
+
+    /**
+     * Sort ideal issuers asc by name
+     *
+     * @param IdealIssuer[] $issuerList
+     * @return IdealIssuer[]
+     */
+    private function sortIdealIssuers(array $issuerList): array
+    {
+        usort($issuerList, function ($a, $b) {
+            return strcmp($a->getName(), $b->getName());
+        });
+
+        return $issuerList;
     }
 }
