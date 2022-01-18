@@ -49,10 +49,13 @@ class MethodService implements MethodServiceInterface
     /**
      * @var CMPaymentsLogger
      */
+
     private $logger;
+
     /**
      * @var OrderServiceInterface
      */
+
     private $orderService;
     /**
      * @var CartRepositoryInterface

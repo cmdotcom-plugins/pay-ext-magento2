@@ -38,6 +38,7 @@ define([
                 selectBillingAddressAction(quote.shippingAddress());
             }
 
+            // We need to save the guestEmail to the quote to get the CM.com payment methods by quote
             if (quote.guestEmail) {
                 let shippingAddress = quote.shippingAddress();
                 shippingAddress.email = quote.guestEmail;

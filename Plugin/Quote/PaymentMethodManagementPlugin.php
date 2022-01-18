@@ -11,7 +11,9 @@ namespace CM\Payments\Plugin\Quote;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
+use Magento\Quote\Api\Data\PaymentMethodInterface;
 use Magento\Quote\Model\PaymentMethodManagement;
 
 class PaymentMethodManagementPlugin
@@ -58,15 +60,13 @@ class PaymentMethodManagementPlugin
 
     /**
      * @param PaymentMethodManagement $subject
-     * @param callable $proceed
+     * @param PaymentMethodInterface[] $availableMethods
      * @param int $cartId
-     * @return \Magento\Quote\Api\Data\PaymentMethodInterface[]
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @return PaymentMethodInterface[]
+     * @throws NoSuchEntityException
      */
-    public function aroundGetList(PaymentMethodManagement $subject, callable $proceed, int $cartId)
+    public function afterGetList(PaymentMethodManagement $subject, array $availableMethods, int $cartId)
     {
-        $availableMethods = $proceed($cartId);
-
         if ($this->configService->isEnabled()) {
             $quote = $this->quoteRepository->getActive($cartId);
 
