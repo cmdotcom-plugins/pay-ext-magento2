@@ -337,6 +337,40 @@ class MethodServiceTest extends IntegrationTestCase
      * @magentoConfigFixture default_store payment/checkmo/active 0
      * @magentoConfigFixture default_store payment/fake/active 0
      * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store payment/cm_payments/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_applepay/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 0
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     */
+    public function testApplePayRedirectPaymentMethod()
+    {
+        $magentoQuote = $this->loadQuoteById('test01');
+
+        $this->clientMock->expects($this->exactly(3))->method('execute')->willReturnOnConsecutiveCalls(
+            [
+                'order_key' => '2287A1617D93780EF28044B98438BF2F',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ],
+            [],
+            $this->getMethodResponse()
+        );
+
+        $magentoMethods = [
+            $this->getPaymentMethod(ConfigProvider::CODE_APPLEPAY)
+        ];
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $magentoMethods);
+
+        $method = $actualPaymentMethods[0];
+        $this->assertEquals(1, count($actualPaymentMethods));
+        $this->assertEquals('cm_payments_applepay', $method->getCode());
+    }
+
+    /**
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
      * @magentoConfigFixture default_store payment/cm_payments/active 1
      * @magentoConfigFixture default_store payment/cm_payments_ideal/active 0
      * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 0

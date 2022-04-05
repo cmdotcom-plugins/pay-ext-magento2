@@ -792,6 +792,67 @@
     </virtualType>
     <!-- END CM Payments (AfterPay) Method -->
 
+    <!-- BEGIN CM Payments (ApplePay) Method -->
+    <virtualType name="CMPaymentsApplePayFacade" type="CMPaymentsFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_APPLEPAY</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMApplePayValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">CMApplePayValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMApplePayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMApplePayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMApplePayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMApplePayConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMApplePayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMApplePayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMApplePayGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_APPLEPAY</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMApplePayValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMApplePayCountryValidator</item>
+                <item name="currency" xsi:type="string">CMApplePayCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMApplePayCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMApplePayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMApplePayCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMApplePayGenericConfig</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (ApplePay) Method -->
+
     <!-- BEGIN CM Payments (Logger) -->
     <type name="CM\Payments\Logger\Handler">
         <arguments>

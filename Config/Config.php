@@ -233,6 +233,18 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function getApplePayPaymentProfile(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_APPLEPAY_PROFILE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCmPaymentsMenuPaymentProfile(): ?string
     {
         return $this->getConfig(
