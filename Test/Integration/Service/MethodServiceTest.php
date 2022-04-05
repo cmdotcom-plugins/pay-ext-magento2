@@ -354,7 +354,11 @@ class MethodServiceTest extends IntegrationTestCase
                 'expires_on' => '2021-07-12T08:10:57Z'
             ],
             [],
-            $this->getMethodResponse()
+            [
+                [
+                    'method' => 'APPLE_PAY',
+                ]
+            ]
         );
 
         $magentoMethods = [
