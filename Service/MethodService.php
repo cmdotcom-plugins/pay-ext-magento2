@@ -189,11 +189,11 @@ class MethodService implements MethodServiceInterface
     {
         $methods = [];
         foreach ($cmPaymentMethods as $cmPaymentMethod) {
-            if (!isset(self::METHODS_MAPPING[$cmPaymentMethod->getMethod()])) {
+            $mappedMethodCode = $this->getMappedMethod($cmPaymentMethod->getMethod());
+            if (empty($mappedMethodCode)) {
                 continue;
             }
 
-            $mappedMethodCode = self::METHODS_MAPPING[$cmPaymentMethod->getMethod()];
             if ($this->configService->isPaymentMethodActive($mappedMethodCode)) {
                 $methods[$mappedMethodCode] = $cmPaymentMethod;
             }
@@ -219,5 +219,17 @@ class MethodService implements MethodServiceInterface
     private function isCmPaymentsMethod(string $paymentMethodCode): bool
     {
         return strpos($paymentMethodCode, ConfigProvider::CODE . '_') !== false;
+    }
+
+    private function getMappedMethod (string $method): string
+    {
+        foreach (array_keys(self::METHODS_MAPPING) as $key) {
+            preg_match('/'. $key .'/', $method, $matches);
+            if (count($matches) > 0) {
+                return self::METHODS_MAPPING[$key];
+            }
+        }
+
+        return '';
     }
 }

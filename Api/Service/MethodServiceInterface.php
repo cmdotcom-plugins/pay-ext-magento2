@@ -30,7 +30,8 @@ interface MethodServiceInterface
         ConfigProvider::CODE_ELV,
         ConfigProvider::CODE_KLARNA,
         ConfigProvider::CODE_AFTERPAY,
-        ConfigProvider::CODE_APPLEPAY
+        ConfigProvider::CODE_APPLEPAY,
+        ConfigProvider::CODE_GIFTCARD
     ];
 
     /**
@@ -48,6 +49,7 @@ interface MethodServiceInterface
         'KLARNA' => ConfigProvider::CODE_KLARNA,
         'AFTERPAY_OPEN_INVOICE' => ConfigProvider::CODE_AFTERPAY,
         'APPLE_PAY' => ConfigProvider::CODE_APPLEPAY,
+        '(.*)_GIFTCARD' => ConfigProvider::CODE_GIFTCARD,
     ];
 
     /**
