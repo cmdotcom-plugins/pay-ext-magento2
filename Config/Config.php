@@ -170,6 +170,9 @@ class Config implements ConfigInterface
             case ConfigProvider::CODE_AFTERPAY:
                 $paymentMethodProfile = $this->getAfterPayPaymentProfile() ?? $defaultPaymentMethodProfile;
                 break;
+            case ConfigProvider::CODE_APPLEPAY:
+                $paymentMethodProfile = $this->getApplePayPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
             case ConfigProvider::CODE_CM_PAYMENTS_MENU:
                 $paymentMethodProfile = $this->getCmPaymentsMenuPaymentProfile() ?? $defaultPaymentMethodProfile;
                 break;
