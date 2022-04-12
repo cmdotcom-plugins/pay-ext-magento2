@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v1
 
       - name: Run codesniffer on everything excluding the Tests directory
-        run: docker run --volume $(pwd)/:/app/workdir michielgerritsen/magento-coding-standard:latest --severity=1 --ignore=*/Test/*
+        run: docker run --volume $(pwd)/:/app/workdir michielgerritsen/magento-coding-standard:latest --severity=6 --ignore=*/Test/*
 
       - name: Run codesniffer on the Tests directory
         run: docker run --volume $(pwd)/Test:/app/workdir michielgerritsen/magento-coding-standard:latest --severity=10
