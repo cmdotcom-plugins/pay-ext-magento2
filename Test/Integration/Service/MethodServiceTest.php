@@ -394,7 +394,7 @@ class MethodServiceTest extends IntegrationTestCase
             [],
             [
                 [
-                    'method' => 'GIFTCARD',
+                    'method' => 'FASHION_GIFTCARD',
                 ]
             ]
         );

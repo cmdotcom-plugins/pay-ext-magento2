@@ -49,7 +49,7 @@ interface MethodServiceInterface
         'KLARNA' => ConfigProvider::CODE_KLARNA,
         'AFTERPAY_OPEN_INVOICE' => ConfigProvider::CODE_AFTERPAY,
         'APPLE_PAY' => ConfigProvider::CODE_APPLEPAY,
-        '(.*)_GIFTCARD' => ConfigProvider::CODE_GIFTCARD,
+        '(.*)GIFTCARD' => ConfigProvider::CODE_GIFTCARD,
     ];
 
     /**
