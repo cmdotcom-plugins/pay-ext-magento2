@@ -162,6 +162,14 @@ class MethodService implements MethodServiceInterface
     }
 
     /**
+     * @inheritDoc
+     */
+    public function isCmPaymentsMethod(string $paymentMethodCode): bool
+    {
+        return strpos($paymentMethodCode, ConfigProvider::CODE) !== false;
+    }
+
+    /**
      * @param CartInterface $quote
      * @return string
      * @throws LocalizedException
@@ -210,14 +218,5 @@ class MethodService implements MethodServiceInterface
     {
         $quote->setData('cm_order_key', $cmOrderKey);
         $this->quoteRepository->save($quote);
-    }
-
-    /**
-     * @param string $paymentMethodCode
-     * @return bool
-     */
-    private function isCmPaymentsMethod(string $paymentMethodCode): bool
-    {
-        return strpos($paymentMethodCode, ConfigProvider::CODE . '_') !== false;
     }
 }

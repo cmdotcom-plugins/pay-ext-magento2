@@ -164,6 +164,13 @@ interface ConfigInterface
     public function getNsa3dsLibrary(): string;
 
     /**
+     * Check if given method is direct
+     * @param string $method
+     * @return bool
+     */
+    public function isMethodDirect(string $method): bool;
+
+    /**
      * @return bool
      */
     public function isCreditCardDirect(): bool;

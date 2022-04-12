@@ -194,7 +194,7 @@ class PaymentService implements PaymentServiceInterface
             $this->logger->error('Empty payment id', ['response' => $paymentCreateResponse]);
             throw new EmptyPaymentIdException(__('Empty payment id'));
         }
-        $cmPayment = $this->saveCMPayment($order, $cmOrder, $paymentCreateResponse);
+        $this->saveCMPayment($order, $cmOrder, $paymentCreateResponse);
 
         $additionalInformation['cm_payment_id'] = $paymentCreateResponse->getId();
         $order->getPayment()->setAdditionalInformation($additionalInformation);

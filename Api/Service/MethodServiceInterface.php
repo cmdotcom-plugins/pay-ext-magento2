@@ -92,11 +92,18 @@ interface MethodServiceInterface
     public function filterMethods(array $magentoMethods, array $cmMethods): array;
 
     /**
-     * @param string $method
+     * @param string $methodO
      * @param PaymentMethod[] $cmMethods
      * @return PaymentMethod
      *
      * @throws PaymentMethodNotFoundException
      */
     public function getMethodFromList(string $method, array $cmMethods): PaymentMethod;
+
+    /**
+     * Check if given payment is an CM.com payment method
+     * @param string $paymentMethodCode
+     * @return bool
+     */
+    public function isCmPaymentsMethod(string $paymentMethodCode): bool;
 }
