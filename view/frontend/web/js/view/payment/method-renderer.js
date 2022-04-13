@@ -35,6 +35,7 @@ define([
             {type: 'cm_payments_klarna', component: klarnaComponent},
             {type: 'cm_payments_afterpay', component: defaultComponent},
             {type: 'cm_payments_applepay', component: defaultComponent},
+            {type: 'cm_payments_giftcard', component: defaultComponent},
         ];
 
     $.each(methods, function (k, method) {

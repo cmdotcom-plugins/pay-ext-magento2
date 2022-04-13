@@ -32,6 +32,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
     public const XML_PATH_PAYMENT_AFTERPAY_PROFILE = 'payment/cm_payments_afterpay/profile';
     public const XML_PATH_PAYMENT_APPLEPAY_PROFILE = 'payment/cm_payments_applepay/profile';
+    public const XML_PATH_PAYMENT_GIFTCARD_PROFILE = 'payment/cm_payments_giftcard/profile';
     public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
     /**
@@ -129,6 +130,14 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getApplePayPaymentProfile(): ?string;
+
+    /**
+     * Get Payment Profile for Giftcard Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getAGiftCardPaymentProfile(): ?string;
 
     /**
      * Get Payment Profile for CM Payments Menu Method

@@ -40,6 +40,7 @@ class ConfigProvider implements ConfigProviderInterface
     public const CODE_KLARNA = 'cm_payments_klarna';
     public const CODE_AFTERPAY = 'cm_payments_afterpay';
     public const CODE_APPLEPAY = 'cm_payments_applepay';
+    public const CODE_GIFTCARD = 'cm_payments_giftcard';
     public const CODE_CM_PAYMENTS_MENU = 'cm_payments';
 
     /**
