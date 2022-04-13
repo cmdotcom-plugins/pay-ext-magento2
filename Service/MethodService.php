@@ -221,6 +221,10 @@ class MethodService implements MethodServiceInterface
         return strpos($paymentMethodCode, ConfigProvider::CODE . '_') !== false;
     }
 
+    /**
+     * @param string $method
+     * @return string
+     */
     private function getMappedMethod (string $method): string
     {
         foreach (array_keys(self::METHODS_MAPPING) as $key) {
