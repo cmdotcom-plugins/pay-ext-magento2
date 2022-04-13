@@ -34,7 +34,6 @@
         "magento/module-payment": "^100.2",
         "magento/module-quote": "^101.0",
         "magento/module-sales": "^102.0||^103.0",
-        "cmpayments/guzzle-psp-authentication-middleware": "^1.0",
         "guzzlehttp/guzzle": "^6.3 || ^7.0"
     },
     "autoload": {

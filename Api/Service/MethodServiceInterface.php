@@ -30,7 +30,9 @@ interface MethodServiceInterface
         ConfigProvider::CODE_BANCONTACT,
         ConfigProvider::CODE_ELV,
         ConfigProvider::CODE_KLARNA,
-        ConfigProvider::CODE_AFTERPAY
+        ConfigProvider::CODE_AFTERPAY,
+        ConfigProvider::CODE_APPLEPAY,
+        ConfigProvider::CODE_GIFTCARD
     ];
 
     /**
@@ -46,7 +48,9 @@ interface MethodServiceInterface
         'BANCONTACT' => ConfigProvider::CODE_BANCONTACT,
         'ELV' => ConfigProvider::CODE_ELV,
         'KLARNA' => ConfigProvider::CODE_KLARNA,
-        'AFTERPAY_OPEN_INVOICE' => ConfigProvider::CODE_AFTERPAY
+        'AFTERPAY_OPEN_INVOICE' => ConfigProvider::CODE_AFTERPAY,
+        'APPLE_PAY' => ConfigProvider::CODE_APPLEPAY,
+        '(.*)GIFTCARD' => ConfigProvider::CODE_GIFTCARD,
     ];
 
     /**
