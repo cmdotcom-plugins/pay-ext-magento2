@@ -16,6 +16,7 @@ use Magento\Quote\Api\Data\CartInterface;
 
 interface MethodServiceInterface
 {
+    public const CM_METHOD_MENU = 'cm_payments';
     public const CM_METHOD_IDEAL = 'IDEAL';
     /**
      * Methods List

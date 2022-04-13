@@ -140,7 +140,9 @@ class MethodService implements MethodServiceInterface
     {
         $mappedMethods = $this->getMappedCmPaymentMethods($cmMethods);
         foreach ($magentoMethods as $key => $method) {
-            if ($this->isCmPaymentsMethod($method->getCode()) && empty($mappedMethods[$method->getCode()])) {
+            if ($this->isCmPaymentsMethod($method->getCode()) &&
+                (empty($mappedMethods[$method->getCode()]) && $method->getCode() !== MethodServiceInterface::CM_METHOD_MENU)
+            ) {
                 unset($magentoMethods[$key]);
             }
         }
