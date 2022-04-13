@@ -282,6 +282,7 @@
             </cm_payments_afterpay>
             <cm_payments_applepay>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsApplePayFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -307,6 +308,7 @@
             </cm_payments_applepay>
             <cm_payments_giftcard>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsGiftCardFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
