@@ -97,7 +97,7 @@ interface MethodServiceInterface
     public function filterMethods(array $magentoMethods, array $cmMethods): array;
 
     /**
-     * @param string $methodO
+     * @param string $method
      * @param PaymentMethod[] $cmMethods
      * @return PaymentMethod
      *
