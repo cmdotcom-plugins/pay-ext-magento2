@@ -226,7 +226,7 @@ class MethodService implements MethodServiceInterface
      * @param string $method
      * @return string
      */
-    private function getMappedMethod (string $method): string
+    private function getMappedMethod(string $method): string
     {
         foreach (array_keys(self::METHODS_MAPPING) as $key) {
             preg_match('/'. $key .'/', $method, $matches);
