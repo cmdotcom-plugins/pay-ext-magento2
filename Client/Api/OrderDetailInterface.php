@@ -12,7 +12,7 @@ use CM\Payments\Client\Model\Response\Payment\Payment;
 
 interface OrderDetailInterface
 {
-    const LEVEL_SAFE = 'SAFE';
+    public const LEVEL_SAFE = 'SAFE';
 
     /**
      * @return bool
