@@ -140,12 +140,11 @@ class MethodService implements MethodServiceInterface
     {
         $mappedMethods = $this->getMappedCmPaymentMethods($cmMethods);
         foreach ($magentoMethods as $key => $method) {
-            if ($this->isCmPaymentsMethod($method->getCode()) &&
-                (empty($mappedMethods[$method->getCode()]) && $method->getCode() !== MethodServiceInterface::CM_METHOD_MENU)
-            ) {
+            if ($this->isCmPaymentDisabled($mappedMethods, $method->getCode())) {
                 unset($magentoMethods[$key]);
             }
         }
+
         return $magentoMethods;
     }
 
@@ -169,6 +168,20 @@ class MethodService implements MethodServiceInterface
     public function isCmPaymentsMethod(string $paymentMethodCode): bool
     {
         return strpos($paymentMethodCode, ConfigProvider::CODE) !== false;
+    }
+
+    /**
+     * @param array $mappedMethods
+     * @param string $method
+     * @return bool
+     */
+    private function isCmPaymentDisabled(array $mappedMethods, string $method): bool
+    {
+        return $this->isCmPaymentsMethod($method) &&
+        (
+            empty($mappedMethods[$method]) &&
+            $method !== MethodServiceInterface::CM_METHOD_MENU
+        );
     }
 
     /**
