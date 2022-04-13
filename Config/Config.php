@@ -170,6 +170,9 @@ class Config implements ConfigInterface
             case ConfigProvider::CODE_AFTERPAY:
                 $paymentMethodProfile = $this->getAfterPayPaymentProfile() ?? $defaultPaymentMethodProfile;
                 break;
+            case ConfigProvider::CODE_APPLEPAY:
+                $paymentMethodProfile = $this->getApplePayPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
             case ConfigProvider::CODE_CM_PAYMENTS_MENU:
                 $paymentMethodProfile = $this->getCmPaymentsMenuPaymentProfile() ?? $defaultPaymentMethodProfile;
                 break;
@@ -225,6 +228,18 @@ class Config implements ConfigInterface
     {
         return $this->getConfig(
             self::XML_PATH_PAYMENT_AFTERPAY_PROFILE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getApplePayPaymentProfile(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_APPLEPAY_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
