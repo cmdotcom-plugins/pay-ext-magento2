@@ -16,6 +16,7 @@ use Magento\Quote\Api\Data\CartInterface;
 
 interface MethodServiceInterface
 {
+    public const CM_METHOD_MENU = 'cm_payments';
     public const CM_METHOD_IDEAL = 'IDEAL';
     /**
      * Methods List
@@ -103,4 +104,11 @@ interface MethodServiceInterface
      * @throws PaymentMethodNotFoundException
      */
     public function getMethodFromList(string $method, array $cmMethods): PaymentMethod;
+
+    /**
+     * Check if given payment is an CM.com payment method
+     * @param string $paymentMethodCode
+     * @return bool
+     */
+    public function isCmPaymentsMethod(string $paymentMethodCode): bool;
 }

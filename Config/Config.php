@@ -327,6 +327,23 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function isMethodDirect(string $method): bool
+    {
+        $mode = $this->getConfig(
+            'payment/' . $method . '/mode',
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+
+        if (empty($mode)) {
+            return false;
+        }
+
+        return $mode === MethodMode::DIRECT;
+    }
+    /**
+     * @inheritDoc
+     */
     public function isCreditCardDirect(): bool
     {
         $mode = $this->getConfig(

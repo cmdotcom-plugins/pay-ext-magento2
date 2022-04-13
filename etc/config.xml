@@ -21,6 +21,7 @@
         <payment>
             <cm_payments>
                 <active>1</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -46,6 +47,7 @@
             </cm_payments>
             <cm_payments_ideal>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsIdealFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -98,6 +100,7 @@
             </cm_payments_creditcard>
             <cm_payments_maestro>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsMaestroFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -123,6 +126,7 @@
             </cm_payments_maestro>
             <cm_payments_vpay>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsVPayFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -148,6 +152,7 @@
             </cm_payments_vpay>
             <cm_payments_paypal>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsPaypalFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -173,6 +178,7 @@
             </cm_payments_paypal>
             <cm_payments_bancontact>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsBanContactFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -198,6 +204,7 @@
             </cm_payments_bancontact>
             <cm_payments_elv>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsElvFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -223,6 +230,7 @@
             </cm_payments_elv>
             <cm_payments_klarna>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsKlarnaFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -248,6 +256,7 @@
             </cm_payments_klarna>
             <cm_payments_afterpay>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsAfterPayFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -273,6 +282,7 @@
             </cm_payments_afterpay>
             <cm_payments_applepay>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsApplePayFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -298,6 +308,7 @@
             </cm_payments_applepay>
             <cm_payments_giftcard>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsGiftCardFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>

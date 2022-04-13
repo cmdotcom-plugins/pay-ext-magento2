@@ -116,12 +116,14 @@ class ConfigProvider implements ConfigProviderInterface
                     $this->getCode() => [
                         'is_enabled' => $this->configService->isEnabled(),
                         'image'      => $this->getImage($this->getCode()),
+                        'is_direct'  => $this->configService->isMethodDirect($this->getCode()),
                     ],
                 ],
             ];
 
             foreach (MethodServiceInterface::METHODS as $code) {
                 $config['payment'][$code]['image'] = $this->getImage($code);
+                $config['payment'][$code]['is_direct'] = $this->configService->isMethodDirect($code);
 
                 if ($code == self::CODE_IDEAL) {
                     $config['payment'][$code]['issuers'] = [];
@@ -134,7 +136,6 @@ class ConfigProvider implements ConfigProviderInterface
                 }
 
                 if ($code == self::CODE_CREDIT_CARD) {
-                    $config['payment'][$code]['is_direct'] = $this->configService->isCreditCardDirect();
                     $config['payment'][$code]['allowedTypesIcons'] = $this->getCreditCardAllowedTypesIcons($code);
                     $config['payment'][$code]['successPage'] = $this->urlBuilder->getUrl(
                         'checkout/onepage/success',
