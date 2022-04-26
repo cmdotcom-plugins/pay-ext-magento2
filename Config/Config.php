@@ -71,6 +71,30 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function getCustomerSuccessUrl(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_CUSTOM_SUCCESS_URL,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCustomerErrorUrl(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_CUSTOM_ERROR_URL,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCurrentVersion(): ?string
     {
         return $this->getConfig(

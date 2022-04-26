@@ -111,6 +111,29 @@
                     <field id="cm_payments_general/status/enabled">1</field>
                 </depends>
             </group>
+
+            <group id="pwa" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label><![CDATA[Headless Integration]]></label>
+                <comment>
+                    <![CDATA[
+                        <p>
+                        These settings are only required if a headless integration is being used.
+                        </p>
+                    ]]>
+                </comment>
+                <field id="pwa_return_url_success" translate="label" type="text" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Success Redirect Path</label>
+                    <config_path>cm_payments/general/custom_success_url</config_path>
+                </field>
+                <field id="pwa_return_url_error" translate="label" type="text" sortOrder="2" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Error Redirect Path</label>
+                    <config_path>cm_payments/general/custom_error_url</config_path>
+                </field>
+
+            </group>
         </section>
 
         <section id="cm_payments_methods" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="20"
