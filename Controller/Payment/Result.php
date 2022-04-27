@@ -144,8 +144,7 @@ class Result extends Action implements HttpGetActionInterface
                 $this->logger->critical($exception->getMessage());
             }
 
-            return $this->redirectFactory->create()
-                ->setPath('checkout/onepage/success');
+            return $this->redirectToSuccessPage($orderIncrementId);
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage());
 
@@ -161,11 +160,35 @@ class Result extends Action implements HttpGetActionInterface
      */
     private function redirectToCheckoutCart(Phrase $message): Redirect
     {
-        $this->checkoutSession->restoreQuote();
+        $customReturnUrl = $this->config->getCustomerErrorUrl();
 
-        $this->messageManager->addWarningMessage($message);
+        if (!$customReturnUrl) {
+            $this->checkoutSession->restoreQuote();
+            $this->messageManager->addWarningMessage($message);
+        }
+
+        $redirectParams = '?utm_nooverride=1';
+        $returnUrl = $customReturnUrl ?? 'checkout/cart';
 
         return $this->redirectFactory->create()
-            ->setPath('checkout/cart');
+            ->setPath($returnUrl . $redirectParams);
+    }
+
+    /**
+     * @param string $orderIncrementId
+     * @return Redirect
+     */
+    private function redirectToSuccessPage(string $orderIncrementId): Redirect
+    {
+        $redirectParams = '?utm_nooverride=1';
+
+        if ($this->config->getCustomerSuccessUrl()) {
+            $redirectParams .= '&order_increment_id=' . $orderIncrementId;
+        }
+
+        $returnUrl = $this->config->getCustomerSuccessUrl() ?? 'checkout/onepage/success';
+
+        return $this->redirectFactory->create()
+            ->setPath($returnUrl . $redirectParams);
     }
 }
