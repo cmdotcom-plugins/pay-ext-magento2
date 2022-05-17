@@ -181,3 +181,5 @@ The url for this webhook is: `{{shop_url}}/cmpayments/payment/notification?id={{
 
 You can create issues on our Github repository.
 If you have other questions, or need specific payment methods in your test account, contact us at support.payments@cm.com
+
+[//]: # "Test"
