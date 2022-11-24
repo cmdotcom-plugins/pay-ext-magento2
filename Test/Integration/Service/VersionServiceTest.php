@@ -84,7 +84,7 @@ class VersionServiceTest extends IntegrationTestCase
         $clientMock
             ->expects($this->once())
             ->method('request')
-            ->willThrowException(new ClientException('error', new Request('GET', 'test')));
+            ->willThrowException(new ClientException('error', new Request('GET', 'test'), new Response(500)));
 
         $clientFactoryMock->expects($this->once())->method('create')->willReturn($clientMock);
         $versionService = $this->objectManager->create(

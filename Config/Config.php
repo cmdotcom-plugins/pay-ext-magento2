@@ -395,6 +395,17 @@ class Config implements ConfigInterface
         );
     }
 
+    public function getIsKlarnaManualCapture(): bool
+    {
+        $manualCapture = $this->getConfig(
+            self::XML_PATH_PAYMENT_KLARNA_MANUAL_CAPTURE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+
+        return $manualCapture === '1' || $manualCapture === true;
+    }
+
     /**
      * Get config value by path
      *

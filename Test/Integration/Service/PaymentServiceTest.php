@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace CM\Payments\Test\Integration\Service;
 
 use CM\Payments\Api\Model\Data\OrderInterfaceFactory;
+use CM\Payments\Api\Model\Data\PaymentInterface;
+use CM\Payments\Api\Model\Data\PaymentInterfaceFactory;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
@@ -18,6 +20,11 @@ use CM\Payments\Client\Model\CMPaymentUrlFactory;
 use CM\Payments\Client\Model\Response\ShopperCreate;
 use CM\Payments\Client\Order;
 use CM\Payments\Client\Payment;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order\Payment as MagentoPayment;
 use CM\Payments\Model\Data\BrowserDetails;
 use CM\Payments\Model\Data\CardDetails;
 use CM\Payments\Service\OrderRequestBuilder;
@@ -217,6 +224,149 @@ class PaymentServiceTest extends IntegrationTestCase
         $this->assertNotNull(
             $payment->getId()
         );
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoConfigFixture default_store payment/cm_payments_klarna/manual_capture 1
+     */
+    public function testCapturePayment()
+    {
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
+        $cmOrderFactory = $this->objectManager->create(OrderInterfaceFactory::class);
+        $cmOrderOrder = $cmOrderFactory->create();
+        $cmOrderRepository = $this->objectManager->get(CMOrderRepositoryInterface::class);
+        $cmOrderOrder->setIncrementId($magentoOrder->getIncrementId());
+        $cmOrderOrder->setOrderId((int) $magentoOrder->getEntityId());
+        $cmOrderOrder->setOrderKey('0287A1617D93780EF28044B98438BF2M');
+        $cmOrderRepository->save($cmOrderOrder);
+
+        // Add cm payment
+        $cmPaymentFactory = $this->objectManager->create(PaymentInterfaceFactory::class);
+        /** @var PaymentInterface $cmOrderOrder */
+        $cmPayment = $cmPaymentFactory->create();
+        $cmPaymentRepository = $this->objectManager->get(CMPaymentRepositoryInterface::class);
+        $cmPayment->setIncrementId($magentoOrder->getIncrementId());
+        $cmPayment->setOrderId((int) $magentoOrder->getEntityId());
+        $cmPayment->setOrderKey('0287A1617D93780EF28044B98438BF2M');
+        $cmPayment->setPaymentId('11122');
+        $cmPayment->setPaymentMethod('KLARNA');
+        $cmPaymentRepository->save($cmPayment);
+
+        $this->clientMock->expects($this->once())->method('execute');
+
+        /** @var MagentoPayment $payment */
+        $payment = $this->objectManager->create(MagentoPayment::class);
+        $payment->setLastTransId('11122');
+
+        $magentoOrder->setPayment($payment);
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        $this->paymentService->captureKlarnaPayment($magentoOrder);
+
+        $magentoOrderHistory = $magentoOrder->getStatusHistories();
+
+        $this->assertEquals('Payment successfully captured', end($magentoOrderHistory)->getComment());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     * @magentoConfigFixture default_store payment/cm_payments_klarna/manual_capture 1
+     */
+    public function testCapturePaymentException()
+    {
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
+        $cmOrderFactory = $this->objectManager->create(OrderInterfaceFactory::class);
+        $cmOrderOrder = $cmOrderFactory->create();
+        $cmOrderRepository = $this->objectManager->get(CMOrderRepositoryInterface::class);
+        $cmOrderOrder->setIncrementId($magentoOrder->getIncrementId());
+        $cmOrderOrder->setOrderId((int) $magentoOrder->getEntityId());
+        $cmOrderOrder->setOrderKey('0287A1617D93780EF28044B98438BF2M');
+        $cmOrderRepository->save($cmOrderOrder);
+
+        // Add cm payment
+        $cmPaymentFactory = $this->objectManager->create(PaymentInterfaceFactory::class);
+        /** @var PaymentInterface $cmOrderOrder */
+        $cmPayment = $cmPaymentFactory->create();
+        $cmPaymentRepository = $this->objectManager->get(CMPaymentRepositoryInterface::class);
+        $cmPayment->setIncrementId($magentoOrder->getIncrementId());
+        $cmPayment->setOrderId((int) $magentoOrder->getEntityId());
+        $cmPayment->setOrderKey('0287A1617D93780EF28044B98438BF2M');
+        $cmPayment->setPaymentId('11122');
+        $cmPayment->setPaymentMethod('KLARNA');
+        $cmPaymentRepository->save($cmPayment);
+
+        $this->clientMock->expects($this->once())->method('execute')->willThrowException(
+            new RequestException(
+                json_encode(['messages' => 'Already captured"']),
+                new Request('GET', 'test'),
+                new Response(400)
+            )
+        );
+
+        /** @var MagentoPayment $payment */
+        $payment = $this->objectManager->create(MagentoPayment::class);
+        $payment->setLastTransId('11122');
+
+        $magentoOrder->setPayment($payment);
+        $repository = $this->objectManager->get(OrderRepositoryInterface::class);
+        $repository->save($magentoOrder);
+
+        $this->paymentService->captureKlarnaPayment($magentoOrder);
+
+        $magentoOrderHistory = $magentoOrder->getStatusHistories();
+
+        $this->assertMatchesRegularExpression('/Payment capture error:/', end($magentoOrderHistory)->getComment());
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testCapturePaymentDisabled()
+    {
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+        $this->clientMock->expects($this->never())->method('execute');
+
+        $this->paymentService->captureKlarnaPayment($magentoOrder);
+    }
+
+    /**
+     * @magentoDataFixture Magento/Sales/_files/order.php
+     */
+    public function testDontCapturePayment()
+    {
+        $magentoOrder = $this->loadOrderById('100000001');
+        $magentoOrder = $this->addCurrencyToOrder($magentoOrder);
+
+        $cmOrderFactory = $this->objectManager->create(OrderInterfaceFactory::class);
+        $cmOrderOrder = $cmOrderFactory->create();
+        $cmOrderRepository = $this->objectManager->get(CMOrderRepositoryInterface::class);
+        $cmOrderOrder->setIncrementId($magentoOrder->getIncrementId());
+        $cmOrderOrder->setOrderId((int) $magentoOrder->getEntityId());
+        $cmOrderOrder->setOrderKey('0287A1617D93780EF28044B98438BF2M');
+        $cmOrderRepository->save($cmOrderOrder);
+
+        // Add cm payment
+        $cmPaymentFactory = $this->objectManager->create(PaymentInterfaceFactory::class);
+        /** @var PaymentInterface $cmOrderOrder */
+        $cmPayment = $cmPaymentFactory->create();
+        $cmPaymentRepository = $this->objectManager->get(CMPaymentRepositoryInterface::class);
+        $cmPayment->setIncrementId($magentoOrder->getIncrementId());
+        $cmPayment->setOrderId((int) $magentoOrder->getEntityId());
+        $cmPayment->setOrderKey('0287A1617D93780EF28044B98438BF2M');
+        $cmPayment->setPaymentId('11122');
+        $cmPayment->setPaymentMethod('IDEAL');
+        $cmPaymentRepository->save($cmPayment);
+
+        $this->clientMock->expects($this->never())->method('execute');
+
+        $this->paymentService->captureKlarnaPayment($magentoOrder);
     }
 
     /**

@@ -10,7 +10,9 @@ namespace CM\Payments\Client;
 
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Api\PaymentInterface;
+use CM\Payments\Client\Model\Request\PaymentCaptureCreate;
 use CM\Payments\Client\Model\Response\PaymentCreate;
+use CM\Payments\Client\Request\PaymentCaptureCreateRequest;
 use CM\Payments\Client\Request\PaymentCreateRequest;
 
 class Payment implements PaymentInterface
@@ -41,5 +43,15 @@ class Payment implements PaymentInterface
         );
 
         return new PaymentCreate($response);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function capture(PaymentCaptureCreateRequest $paymentCaptureCreateRequest): void
+    {
+        $this->apiClient->execute(
+            $paymentCaptureCreateRequest
+        );
     }
 }

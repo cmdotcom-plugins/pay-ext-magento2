@@ -252,6 +252,7 @@
                 <transaction_type>redirect</transaction_type>
                 <order_expiry_unit>HOURS</order_expiry_unit>
                 <order_expiry_duration>8</order_expiry_duration>
+                <manual_capture>0</manual_capture>
                 <group>cm</group>
             </cm_payments_klarna>
             <cm_payments_afterpay>

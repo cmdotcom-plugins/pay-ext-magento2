@@ -8,10 +8,12 @@ declare(strict_types=1);
 
 namespace CM\Payments\Test\Unit\Service;
 
+use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Model\Data\OrderInterface;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
 use CM\Payments\Api\Model\Data\PaymentInterfaceFactory as CMPaymentDataFactory;
 use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface;
+use CM\Payments\Api\Service\PaymentCaptureRequestBuilderInterface;
 use CM\Payments\Model\Domain\PaymentOrderStatus;
 use CM\Payments\Api\Model\OrderRepositoryInterface as CMOrderRepositoryInterface;
 use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInterface;
@@ -61,6 +63,11 @@ class PaymentServiceTest extends UnitTestCase
      * @var PaymentRequestBuilderInterface|MockObject
      */
     private $paymentRequestBuilderMock;
+
+    /**
+     * @var PaymentCaptureRequestBuilderInterface|MockObject
+     */
+    private $paymentCaptureRequestBuilderMock;
 
     /**
      * @var CMPaymentDataFactory|MockObject
@@ -266,6 +273,10 @@ class PaymentServiceTest extends UnitTestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->paymentCaptureRequestBuilderMock = $this->getMockBuilder(PaymentCaptureRequestBuilderInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->cmPaymentDataFactoryMock = $this->getMockupFactory(
             CMPaymentData::class,
             CMPaymentDataInterface::class
@@ -332,10 +343,15 @@ class PaymentServiceTest extends UnitTestCase
             )
         );
 
+        $configMock = $this->getMockBuilder(ConfigInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->paymentService = new PaymentService(
             $this->orderRepositoryMock,
             $this->paymentClientMock,
             $this->paymentRequestBuilderMock,
+            $this->paymentCaptureRequestBuilderMock,
             $this->cmPaymentDataFactoryMock,
             $this->orderServiceMock,
             $this->cmPaymentFactoryMock,
@@ -343,7 +359,8 @@ class PaymentServiceTest extends UnitTestCase
             $this->cmOrderRepositoryMock,
             $this->eventManagerMock,
             $this->cmPaymentsLoggerMock,
-            $this->paymentOrderStatusInterfaceFactory
+            $this->paymentOrderStatusInterfaceFactory,
+            $configMock
         );
     }
 }
