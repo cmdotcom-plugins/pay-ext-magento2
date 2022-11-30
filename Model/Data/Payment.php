@@ -18,7 +18,7 @@ class Payment extends AbstractExtensibleModel implements PaymentInterface
      */
     public function getOrderId(): int
     {
-        return $this->getData(self::ORDER_ID);
+        return (int) $this->getData(self::ORDER_ID);
     }
 
     /**
