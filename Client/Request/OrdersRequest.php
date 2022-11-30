@@ -28,7 +28,7 @@ class OrdersRequest implements RequestInterface
      */
     public function __construct(string $date)
     {
-        $this->date = $date ?? date('Y-m-d');
+        $this->date = $date;
     }
     /**
      * @inheritDoc

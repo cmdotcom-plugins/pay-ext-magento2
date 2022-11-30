@@ -6,6 +6,10 @@ parameters:
         - '#Undefined variable: \$block#'
         - '#Variable \$escaper might not be defined.#'
         - '#Undefined variable: \$escaper#'
+        - '#Method CM\\Payments\\Api\\Data\\IssuerInterface::getExtensionAttributes\(\) has invalid return type CM\\Payments\\Api\\Data\\IssuerExtensionInterface\.#'
+        - '#Parameter \$extensionAttributes of method CM\\Payments\\Api\\Data\\IssuerInterface::setExtensionAttributes\(\) has invalid type CM\\Payments\\Api\\Data\\IssuerExtensionInterface\.#'
+        - '#Method CM\\Payments\\Model\\Issuer::getExtensionAttributes\(\) has invalid return type CM\\Payments\\Api\\Data\\IssuerExtensionInterface\.#'
+        - '#Parameter \$extensionAttributes of method CM\\Payments\\Model\\Issuer::setExtensionAttributes\(\) has invalid type CM\\Payments\\Api\\Data\\IssuerExtensionInterface\.#'
     fileExtensions:
         - php
         - phtml
