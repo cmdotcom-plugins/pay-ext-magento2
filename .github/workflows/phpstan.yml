@@ -36,6 +36,9 @@ jobs:
       - name: Install the extensions in Magento
         run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:@dev
 
+      - name: Enable the extension
+        run: docker exec magento-project-community-edition bash -c "php bin/magento module:enable CM_Payments && php bin/magento setup:upgrade && php bin/magento setup:di:compile"
+
       # Only the tests in your repository will be run, the default Magento tests are not included in this.
       - name: Run tests
         run: docker exec magento-project-community-edition vendor/bin/phpstan analyze -c /data/extensions/${{ github.event.repository.name }}/phpstan.neon /data/extensions/${{ github.event.repository.name }}
