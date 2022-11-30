@@ -39,6 +39,8 @@ class ConfigProvider implements ConfigProviderInterface
     public const CODE_ELV = 'cm_payments_elv';
     public const CODE_KLARNA = 'cm_payments_klarna';
     public const CODE_AFTERPAY = 'cm_payments_afterpay';
+    public const CODE_APPLEPAY = 'cm_payments_applepay';
+    public const CODE_GIFTCARD = 'cm_payments_giftcard';
     public const CODE_CM_PAYMENTS_MENU = 'cm_payments';
 
     /**
@@ -114,12 +116,14 @@ class ConfigProvider implements ConfigProviderInterface
                     $this->getCode() => [
                         'is_enabled' => $this->configService->isEnabled(),
                         'image'      => $this->getImage($this->getCode()),
+                        'is_direct'  => $this->configService->isMethodDirect($this->getCode()),
                     ],
                 ],
             ];
 
             foreach (MethodServiceInterface::METHODS as $code) {
                 $config['payment'][$code]['image'] = $this->getImage($code);
+                $config['payment'][$code]['is_direct'] = $this->configService->isMethodDirect($code);
 
                 if ($code == self::CODE_IDEAL) {
                     $config['payment'][$code]['issuers'] = [];
@@ -132,7 +136,6 @@ class ConfigProvider implements ConfigProviderInterface
                 }
 
                 if ($code == self::CODE_CREDIT_CARD) {
-                    $config['payment'][$code]['is_direct'] = $this->configService->isCreditCardDirect();
                     $config['payment'][$code]['allowedTypesIcons'] = $this->getCreditCardAllowedTypesIcons($code);
                     $config['payment'][$code]['successPage'] = $this->urlBuilder->getUrl(
                         'checkout/onepage/success',

@@ -25,12 +25,16 @@ interface ConfigInterface
     public const XML_PATH_GENERAL_LIVE_MERCHANT_KEY = 'cm_payments/general/live_merchant_key';
     public const XML_PATH_GENERAL_MODE = 'cm_payments/general/mode';
     public const XML_PATH_GENERAL_UPDATE_ON_RESULT_PAGE = 'cm_payments/general/update_on_result_page';
+    public const XML_PATH_GENERAL_CUSTOM_SUCCESS_URL = 'cm_payments/general/custom_success_url';
+    public const XML_PATH_GENERAL_CUSTOM_ERROR_URL = 'cm_payments/general/custom_error_url';
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_MODE = 'payment/cm_payments_creditcard/mode';
     public const XML_PATH_PAYMENT_CREDIT_CARD_ALLOWED_TYPES = 'payment/cm_payments_creditcard/allowed_cctypes';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
     public const XML_PATH_PAYMENT_AFTERPAY_PROFILE = 'payment/cm_payments_afterpay/profile';
+    public const XML_PATH_PAYMENT_APPLEPAY_PROFILE = 'payment/cm_payments_applepay/profile';
+    public const XML_PATH_PAYMENT_GIFTCARD_PROFILE = 'payment/cm_payments_giftcard/profile';
     public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
     /**
@@ -122,6 +126,22 @@ interface ConfigInterface
     public function getAfterPayPaymentProfile(): ?string;
 
     /**
+     * Get Payment Profile for ApplePay Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getApplePayPaymentProfile(): ?string;
+
+    /**
+     * Get Payment Profile for Giftcard Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getAGiftCardPaymentProfile(): ?string;
+
+    /**
      * Get Payment Profile for CM Payments Menu Method
      *
      * @return ?string
@@ -164,6 +184,13 @@ interface ConfigInterface
     public function getNsa3dsLibrary(): string;
 
     /**
+     * Check if given method is direct
+     * @param string $method
+     * @return bool
+     */
+    public function isMethodDirect(string $method): bool;
+
+    /**
      * @return bool
      */
     public function isCreditCardDirect(): bool;
@@ -180,4 +207,14 @@ interface ConfigInterface
      * @return bool
      */
     public function isUpdateOnResultPageEnabled(): ?bool;
+
+    /**
+     * @return string
+     */
+    public function getCustomerSuccessUrl(): ?string;
+
+    /**
+     * @return string
+     */
+    public function getCustomerErrorUrl(): ?string;
 }

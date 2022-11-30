@@ -9,7 +9,7 @@
     <default>
         <cm_payments>
             <general>
-                <current_version>v0.2.0</current_version>
+                <current_version>v1.1.2</current_version>
                 <mode>test</mode>
                 <test_merchant_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
                 <test_merchant_password backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
@@ -21,6 +21,7 @@
         <payment>
             <cm_payments>
                 <active>1</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -46,6 +47,7 @@
             </cm_payments>
             <cm_payments_ideal>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsIdealFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -98,6 +100,7 @@
             </cm_payments_creditcard>
             <cm_payments_maestro>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsMaestroFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -123,6 +126,7 @@
             </cm_payments_maestro>
             <cm_payments_vpay>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsVPayFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -148,6 +152,7 @@
             </cm_payments_vpay>
             <cm_payments_paypal>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsPaypalFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -173,6 +178,7 @@
             </cm_payments_paypal>
             <cm_payments_bancontact>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsBanContactFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -198,6 +204,7 @@
             </cm_payments_bancontact>
             <cm_payments_elv>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsElvFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -223,6 +230,7 @@
             </cm_payments_elv>
             <cm_payments_klarna>
                 <active>0</active>
+                <mode>direct</mode>
                 <model>CMPaymentsKlarnaFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -248,6 +256,7 @@
             </cm_payments_klarna>
             <cm_payments_afterpay>
                 <active>0</active>
+                <mode>redirect</mode>
                 <model>CMPaymentsAfterPayFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
@@ -271,6 +280,58 @@
                 <order_expiry_duration>8</order_expiry_duration>
                 <group>cm</group>
             </cm_payments_afterpay>
+            <cm_payments_applepay>
+                <active>0</active>
+                <mode>redirect</mode>
+                <model>CMPaymentsApplePayFacade</model>
+                <order_status>pending</order_status>
+                <payment_action>initialize</payment_action>
+                <title>ApplePay by CM.com</title>
+                <currency>EUR</currency>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_use_internal>1</can_use_internal>
+                <can_refund>1</can_refund>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <is_gateway>1</is_gateway>
+                <sort_order>10</sort_order>
+                <allowspecific>0</allowspecific>
+                <allow_specific_currency>0</allow_specific_currency>
+                <allow_specific_shipping_method>0</allow_specific_shipping_method>
+                <allow_specific_customer_group>0</allow_specific_customer_group>
+                <allow_amount>0</allow_amount>
+                <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
+                <transaction_type>redirect</transaction_type>
+                <order_expiry_unit>HOURS</order_expiry_unit>
+                <order_expiry_duration>8</order_expiry_duration>
+                <group>cm</group>
+            </cm_payments_applepay>
+            <cm_payments_giftcard>
+                <active>0</active>
+                <mode>redirect</mode>
+                <model>CMPaymentsGiftCardFacade</model>
+                <order_status>pending</order_status>
+                <payment_action>initialize</payment_action>
+                <title>Gift card by CM.com</title>
+                <currency>EUR</currency>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_use_internal>1</can_use_internal>
+                <can_refund>1</can_refund>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <is_gateway>1</is_gateway>
+                <sort_order>10</sort_order>
+                <allowspecific>0</allowspecific>
+                <allow_specific_currency>0</allow_specific_currency>
+                <allow_specific_shipping_method>0</allow_specific_shipping_method>
+                <allow_specific_customer_group>0</allow_specific_customer_group>
+                <allow_amount>0</allow_amount>
+                <custom_payment_link_lifetime>0</custom_payment_link_lifetime>
+                <transaction_type>redirect</transaction_type>
+                <order_expiry_unit>HOURS</order_expiry_unit>
+                <order_expiry_duration>8</order_expiry_duration>
+                <group>cm</group>
+            </cm_payments_giftcard>
         </payment>
         <csp>
             <policies>

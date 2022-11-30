@@ -115,37 +115,29 @@ class Result extends Action implements HttpGetActionInterface
                 throw new LocalizedException(__('The Status is not presented in response!'));
             }
 
-            $orderIncrementId = $this->checkoutSession->getLastRealOrder()->getIncrementId();
-            if (!empty($referenceOrderId) && $referenceOrderId !== $orderIncrementId) {
+            if (!$referenceOrderId) {
                 throw new LocalizedException(__('The order reference is not valid!'));
             }
 
             if (in_array($status, [OrderCreate::STATUS_ERROR, OrderCreate::STATUS_CANCELLED])) {
-                $this->orderManagement->cancel($this->checkoutSession->getLastRealOrder()->getId());
-
-                if ($status == OrderCreate::STATUS_ERROR) {
+                if ($status === OrderCreate::STATUS_ERROR) {
                     throw new LocalizedException(__('Your payment was cancelled because of errors!'));
                 } else {
                     throw new LocalizedException(__('Your payment was cancelled!'));
                 }
             }
 
-            if (!$referenceOrderId || !$orderIncrementId) {
-                throw new LocalizedException(__('The order reference is not valid!'));
-            }
-
             // In this state we always redirect the user to the success page and try to update the order status already.
             // The order status will also be updated via the webhook if CM.com change the status of an order.
             try {
                 if ($this->config->isUpdateOnResultPageEnabled()) {
-                    $this->orderTransactionService->process($orderIncrementId);
+                    $this->orderTransactionService->process($referenceOrderId);
                 }
             } catch (\Exception $exception) {
                 $this->logger->critical($exception->getMessage());
             }
 
-            return $this->redirectFactory->create()
-                ->setPath('checkout/onepage/success');
+            return $this->redirectToSuccessPage($referenceOrderId);
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage());
 
@@ -161,11 +153,35 @@ class Result extends Action implements HttpGetActionInterface
      */
     private function redirectToCheckoutCart(Phrase $message): Redirect
     {
-        $this->checkoutSession->restoreQuote();
+        $customReturnUrl = $this->config->getCustomerErrorUrl();
 
-        $this->messageManager->addWarningMessage($message);
+        if (!$customReturnUrl) {
+            $this->checkoutSession->restoreQuote();
+            $this->messageManager->addWarningMessage($message);
+        }
+
+        $redirectParams = '?utm_nooverride=1';
+        $returnUrl = $customReturnUrl ?? 'checkout/cart';
 
         return $this->redirectFactory->create()
-            ->setPath('checkout/cart');
+            ->setPath($returnUrl . $redirectParams);
+    }
+
+    /**
+     * @param string $orderIncrementId
+     * @return Redirect
+     */
+    private function redirectToSuccessPage(string $orderIncrementId): Redirect
+    {
+        $redirectParams = '?utm_nooverride=1';
+
+        if ($this->config->getCustomerSuccessUrl()) {
+            $redirectParams .= '&order_increment_id=' . $orderIncrementId;
+        }
+
+        $returnUrl = $this->config->getCustomerSuccessUrl() ?? 'checkout/onepage/success';
+
+        return $this->redirectFactory->create()
+            ->setPath($returnUrl . $redirectParams);
     }
 }

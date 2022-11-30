@@ -16,6 +16,7 @@ use Magento\Quote\Api\Data\CartInterface;
 
 interface MethodServiceInterface
 {
+    public const CM_METHOD_MENU = 'cm_payments';
     public const CM_METHOD_IDEAL = 'IDEAL';
     /**
      * Methods List
@@ -29,7 +30,9 @@ interface MethodServiceInterface
         ConfigProvider::CODE_BANCONTACT,
         ConfigProvider::CODE_ELV,
         ConfigProvider::CODE_KLARNA,
-        ConfigProvider::CODE_AFTERPAY
+        ConfigProvider::CODE_AFTERPAY,
+        ConfigProvider::CODE_APPLEPAY,
+        ConfigProvider::CODE_GIFTCARD
     ];
 
     /**
@@ -45,7 +48,9 @@ interface MethodServiceInterface
         'BANCONTACT' => ConfigProvider::CODE_BANCONTACT,
         'ELV' => ConfigProvider::CODE_ELV,
         'KLARNA' => ConfigProvider::CODE_KLARNA,
-        'AFTERPAY_OPEN_INVOICE' => ConfigProvider::CODE_AFTERPAY
+        'AFTERPAY_OPEN_INVOICE' => ConfigProvider::CODE_AFTERPAY,
+        'APPLE_PAY' => ConfigProvider::CODE_APPLEPAY,
+        '(.*)GIFTCARD' => ConfigProvider::CODE_GIFTCARD,
     ];
 
     /**
@@ -99,4 +104,11 @@ interface MethodServiceInterface
      * @throws PaymentMethodNotFoundException
      */
     public function getMethodFromList(string $method, array $cmMethods): PaymentMethod;
+
+    /**
+     * Check if given payment is an CM.com payment method
+     * @param string $paymentMethodCode
+     * @return bool
+     */
+    public function isCmPaymentsMethod(string $paymentMethodCode): bool;
 }

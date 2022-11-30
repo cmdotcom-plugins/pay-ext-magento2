@@ -140,10 +140,11 @@ class MethodService implements MethodServiceInterface
     {
         $mappedMethods = $this->getMappedCmPaymentMethods($cmMethods);
         foreach ($magentoMethods as $key => $method) {
-            if ($this->isCmPaymentsMethod($method->getCode()) && empty($mappedMethods[$method->getCode()])) {
+            if ($this->isCmPaymentDisabled($mappedMethods, $method->getCode())) {
                 unset($magentoMethods[$key]);
             }
         }
+
         return $magentoMethods;
     }
 
@@ -159,6 +160,28 @@ class MethodService implements MethodServiceInterface
         }
 
         throw new PaymentMethodNotFoundException(__('Method not found'));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isCmPaymentsMethod(string $paymentMethodCode): bool
+    {
+        return strpos($paymentMethodCode, ConfigProvider::CODE) !== false;
+    }
+
+    /**
+     * @param array $mappedMethods
+     * @param string $method
+     * @return bool
+     */
+    private function isCmPaymentDisabled(array $mappedMethods, string $method): bool
+    {
+        return $this->isCmPaymentsMethod($method) &&
+        (
+            empty($mappedMethods[$method]) &&
+            $method !== MethodServiceInterface::CM_METHOD_MENU
+        );
     }
 
     /**
@@ -189,11 +212,11 @@ class MethodService implements MethodServiceInterface
     {
         $methods = [];
         foreach ($cmPaymentMethods as $cmPaymentMethod) {
-            if (!isset(self::METHODS_MAPPING[$cmPaymentMethod->getMethod()])) {
+            $mappedMethodCode = $this->getMappedMethod($cmPaymentMethod->getMethod());
+            if (empty($mappedMethodCode)) {
                 continue;
             }
 
-            $mappedMethodCode = self::METHODS_MAPPING[$cmPaymentMethod->getMethod()];
             if ($this->configService->isPaymentMethodActive($mappedMethodCode)) {
                 $methods[$mappedMethodCode] = $cmPaymentMethod;
             }
@@ -213,11 +236,18 @@ class MethodService implements MethodServiceInterface
     }
 
     /**
-     * @param string $paymentMethodCode
-     * @return bool
+     * @param string $method
+     * @return string
      */
-    private function isCmPaymentsMethod(string $paymentMethodCode): bool
+    private function getMappedMethod(string $method): string
     {
-        return strpos($paymentMethodCode, ConfigProvider::CODE . '_') !== false;
+        foreach (array_keys(self::METHODS_MAPPING) as $key) {
+            preg_match('/'. $key .'/', $method, $matches);
+            if (count($matches) > 0) {
+                return self::METHODS_MAPPING[$key];
+            }
+        }
+
+        return '';
     }
 }

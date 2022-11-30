@@ -71,6 +71,30 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function getCustomerSuccessUrl(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_CUSTOM_SUCCESS_URL,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCustomerErrorUrl(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_CUSTOM_ERROR_URL,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCurrentVersion(): ?string
     {
         return $this->getConfig(
@@ -170,6 +194,12 @@ class Config implements ConfigInterface
             case ConfigProvider::CODE_AFTERPAY:
                 $paymentMethodProfile = $this->getAfterPayPaymentProfile() ?? $defaultPaymentMethodProfile;
                 break;
+            case ConfigProvider::CODE_APPLEPAY:
+                $paymentMethodProfile = $this->getApplePayPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
+            case ConfigProvider::CODE_GIFTCARD:
+                $paymentMethodProfile = $this->getAGiftCardPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
             case ConfigProvider::CODE_CM_PAYMENTS_MENU:
                 $paymentMethodProfile = $this->getCmPaymentsMenuPaymentProfile() ?? $defaultPaymentMethodProfile;
                 break;
@@ -225,6 +255,30 @@ class Config implements ConfigInterface
     {
         return $this->getConfig(
             self::XML_PATH_PAYMENT_AFTERPAY_PROFILE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getApplePayPaymentProfile(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_APPLEPAY_PROFILE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAGiftCardPaymentProfile(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_GIFTCARD_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
@@ -294,6 +348,23 @@ class Config implements ConfigInterface
         return $baseUrl . 'nca-3ds-web-sdk.js';
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function isMethodDirect(string $method): bool
+    {
+        $mode = $this->getConfig(
+            'payment/' . $method . '/mode',
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+
+        if (empty($mode)) {
+            return false;
+        }
+
+        return $mode === MethodMode::DIRECT;
+    }
     /**
      * @inheritDoc
      */

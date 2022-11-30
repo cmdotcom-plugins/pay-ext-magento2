@@ -27,37 +27,37 @@ class ShopperCreate
     ];
 
     /**
-     * @var string
+     * @var ?string
      */
     private $shopperId;
 
     /**
-     * @var array
+     * @var ?array
      */
     private $name;
 
     /**
-     * @var array
+     * @var ?array
      */
     private $address;
 
     /**
-     * @var string
+     * @var ?string
      */
     private $email;
 
     /**
-     * @var string
+     * @var ?string
      */
     private $gender;
 
     /**
-     * @var string
+     * @var ?string
      */
     private $dateOfBirth;
 
     /**
-     * @var string
+     * @var ?string
      */
     private $phoneNumber;
 
@@ -181,9 +181,9 @@ class ShopperCreate
     }
 
     /**
-     * @param string $gender
+     * @param ?string $gender
      */
-    public function setGender(string $gender): void
+    public function setGender(?string $gender): void
     {
         $this->gender = $gender;
     }
@@ -213,9 +213,9 @@ class ShopperCreate
     }
 
     /**
-     * @param string $phoneNumber
+     * @param ?string $phoneNumber
      */
-    public function setPhoneNumber(string $phoneNumber): void
+    public function setPhoneNumber(?string $phoneNumber): void
     {
         $this->phoneNumber = $phoneNumber;
     }
