@@ -21,6 +21,7 @@ define([
         defaults: {
             template: 'CM_Payments/payment/klarna',
             dob: ko.observable(null),
+            value: ko.observable(null),
             paymentConfig: ''
         },
 
