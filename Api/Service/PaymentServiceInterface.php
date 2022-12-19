@@ -14,6 +14,7 @@ use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface;
 use CM\Payments\Client\Api\CMPaymentInterface;
 use CM\Payments\Exception\EmptyPaymentIdException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Sales\Model\Order;
 
 interface PaymentServiceInterface
 {
@@ -36,4 +37,11 @@ interface PaymentServiceInterface
      * @return \CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface
      */
     public function getPaymentStatus(string $paymentId): PaymentOrderStatusInterface;
+
+    /**
+     * Manually capture Klarna payment
+     * @param Order $order
+     * @return void
+     */
+    public function captureKlarnaPayment(Order $order): void;
 }

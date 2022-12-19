@@ -30,4 +30,9 @@
         <observer name="cm_payments_add_adjustment_item_order_service"
                   instance="CM\Payments\Observer\Order\Service\AddOrderItemsAdjustmentObserver" />
     </event>
+
+    <event name="sales_order_shipment_save_after">
+        <observer name="cm_payments_sales_order_shipment_save_after"
+                  instance="CM\Payments\Observer\SalesOrderShipmentAfterObserver" />
+    </event>
 </config>

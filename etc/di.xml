@@ -25,6 +25,8 @@
                 type="CM\Payments\Service\OrderItemsRequestBuilder" />
     <preference for="CM\Payments\Api\Service\PaymentRequestBuilderInterface"
                 type="CM\Payments\Service\PaymentRequestBuilder" />
+    <preference for="CM\Payments\Api\Service\PaymentCaptureRequestBuilderInterface"
+                type="CM\Payments\Service\PaymentCaptureRequestBuilder" />
     <preference for="CM\Payments\Api\Service\ShopperRequestBuilderInterface"
                 type="CM\Payments\Service\ShopperRequestBuilder" />
     <preference for="CM\Payments\Api\Client\ApiClientInterface" type="CM\Payments\Client\ApiClient" />
@@ -58,6 +60,15 @@
                 <item name="idealDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\IdealDetails</item>
                 <item name="elvDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\ElvDetails</item>
                 <item name="cardDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\CardDetails</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="CM\Payments\Service\PaymentCaptureRequestBuilder">
+        <arguments>
+            <argument name="parts" xsi:type="array">
+                <item name="amount" xsi:type="object">CM\Payments\Service\Payment\Capture\Request\Part\Amount</item>
+                <item name="currency" xsi:type="object">CM\Payments\Service\Payment\Capture\Request\Part\Currency</item>
             </argument>
         </arguments>
     </type>

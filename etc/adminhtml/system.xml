@@ -1068,6 +1068,15 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
+                <field id="manual_capture" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1"
+                       showInStore="1" canRestore="1">
+                    <label>Capture payment after shipping is created</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/cm_payments_klarna/manual_capture</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
             </group>
 
             <group id="cm_payments_afterpay" translate="label" type="text" sortOrder="100" showInDefault="1"

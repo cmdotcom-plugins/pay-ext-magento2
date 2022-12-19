@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
+use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Data\BrowserDetailsInterface;
 use CM\Payments\Api\Data\CardDetailsInterface;
 use CM\Payments\Api\Model\Data\PaymentInterface as CMPaymentDataInterface;
@@ -17,6 +18,7 @@ use CM\Payments\Api\Model\PaymentRepositoryInterface as CMPaymentRepositoryInter
 use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterfaceFactory;
 use CM\Payments\Api\Service\MethodServiceInterface;
 use CM\Payments\Api\Service\OrderServiceInterface;
+use CM\Payments\Api\Service\PaymentCaptureRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentRequestBuilderInterface;
 use CM\Payments\Api\Service\PaymentServiceInterface;
 use CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface;
@@ -32,6 +34,7 @@ use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order;
 
 class PaymentService implements PaymentServiceInterface
 {
@@ -91,10 +94,21 @@ class PaymentService implements PaymentServiceInterface
     private $paymentOrderStatusFactory;
 
     /**
+     * @var PaymentCaptureRequestBuilderInterface
+     */
+    private $paymentCaptureRequestBuilder;
+
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
+
+    /**
      * PaymentService constructor.
      * @param OrderRepositoryInterface $orderRepository
      * @param CMPaymentClientInterface $paymentClient
      * @param PaymentRequestBuilderInterface $paymentRequestBuilder
+     * @param PaymentCaptureRequestBuilderInterface $paymentCaptureRequestBuilder
      * @param CMPaymentDataFactory $cmPaymentDataFactory
      * @param OrderServiceInterface $orderService
      * @param CMPaymentFactory $cmPaymentFactory
@@ -108,6 +122,7 @@ class PaymentService implements PaymentServiceInterface
         OrderRepositoryInterface $orderRepository,
         CMPaymentClientInterface $paymentClient,
         PaymentRequestBuilderInterface $paymentRequestBuilder,
+        PaymentCaptureRequestBuilderInterface $paymentCaptureRequestBuilder,
         CMPaymentDataFactory $cmPaymentDataFactory,
         OrderServiceInterface $orderService,
         CMPaymentFactory $cmPaymentFactory,
@@ -115,11 +130,13 @@ class PaymentService implements PaymentServiceInterface
         CMOrderRepositoryInterface $cmOrderRepository,
         ManagerInterface $eventManager,
         CMPaymentsLogger $logger,
-        PaymentOrderStatusInterfaceFactory $paymentOrderStatusFactory
+        PaymentOrderStatusInterfaceFactory $paymentOrderStatusFactory,
+        ConfigInterface $config
     ) {
         $this->orderRepository = $orderRepository;
         $this->paymentClient = $paymentClient;
         $this->paymentRequestBuilder = $paymentRequestBuilder;
+        $this->paymentCaptureRequestBuilder = $paymentCaptureRequestBuilder;
         $this->cmPaymentDataFactory = $cmPaymentDataFactory;
         $this->cmPaymentFactory = $cmPaymentFactory;
         $this->cmOrderRepository = $cmOrderRepository;
@@ -128,6 +145,7 @@ class PaymentService implements PaymentServiceInterface
         $this->logger = $logger;
         $this->orderService = $orderService;
         $this->paymentOrderStatusFactory = $paymentOrderStatusFactory;
+        $this->config = $config;
     }
 
     /**
@@ -230,6 +248,33 @@ class PaymentService implements PaymentServiceInterface
             'orderId' => $order->getIncrementId(),
             'status' => $order->getStatus()
         ]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function captureKlarnaPayment(Order $order): void
+    {
+        if (!$this->config->getIsKlarnaManualCapture()) {
+            return;
+        }
+        $cmOrder = $this->cmOrderRepository->getByOrderId((int) $order->getEntityId());
+        $cmPaymentId = $order->getPayment()->getLastTransId();
+
+        $cmPayment = $this->cmPaymentRepository->getByPaymentId($cmPaymentId);
+        $klarnaMethod = MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_KLARNA];
+        if ($cmPayment->getPaymentMethod() !== $klarnaMethod) {
+            return;
+        }
+
+        $captureRequest = $this->paymentCaptureRequestBuilder->create($cmOrder->getOrderKey(), $cmPaymentId, $order);
+        try {
+            $this->paymentClient->capture($captureRequest);
+            $order->addCommentToStatusHistory('Payment successfully captured');
+        } catch (\Exception $exception) {
+            $this->logger->error($exception);
+            $order->addCommentToStatusHistory('Payment capture error: '. $exception->getMessage());
+        }
     }
 
     /**

@@ -35,6 +35,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_AFTERPAY_PROFILE = 'payment/cm_payments_afterpay/profile';
     public const XML_PATH_PAYMENT_APPLEPAY_PROFILE = 'payment/cm_payments_applepay/profile';
     public const XML_PATH_PAYMENT_GIFTCARD_PROFILE = 'payment/cm_payments_giftcard/profile';
+    public const XML_PATH_PAYMENT_KLARNA_MANUAL_CAPTURE = 'payment/cm_payments_klarna/manual_capture';
     public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
 
     /**
@@ -202,6 +203,11 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getCreditCardAllowedTypes(): string;
+
+    /**
+     * @return bool
+     */
+    public function getIsKlarnaManualCapture(): bool;
 
     /**
      * @return bool
