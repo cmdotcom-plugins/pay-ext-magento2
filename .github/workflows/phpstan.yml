@@ -15,9 +15,9 @@ jobs:
           - PHP_VERSION: php73-fpm
             MAGENTO_VERSION: 2.3.6
           - PHP_VERSION: php74-fpm
-            MAGENTO_VERSION: 2.4.2
-          - PHP_VERSION: php74-fpm
             MAGENTO_VERSION: 2.4.3-p1
+          - PHP_VERSION: php81-fpm
+            MAGENTO_VERSION: 2.4.5-p1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -34,7 +34,10 @@ jobs:
 
       # Install the extension and PHPStan into Magento
       - name: Install the extensions in Magento
-        run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:@dev fooman/phpstan-magento2-magic-methods:^0.7
+        run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:@dev
+
+      - name: Enable the extension
+        run: docker exec magento-project-community-edition bash -c "php bin/magento module:enable CM_Payments && php bin/magento setup:upgrade && php bin/magento setup:di:compile"
 
       # Only the tests in your repository will be run, the default Magento tests are not included in this.
       - name: Run tests

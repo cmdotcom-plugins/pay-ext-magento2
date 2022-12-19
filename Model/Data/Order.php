@@ -18,7 +18,7 @@ class Order extends AbstractExtensibleModel implements OrderInterface
      */
     public function getOrderId(): int
     {
-        return $this->getData(self::ORDER_ID);
+        return (int) $this->getData(self::ORDER_ID);
     }
 
     /**

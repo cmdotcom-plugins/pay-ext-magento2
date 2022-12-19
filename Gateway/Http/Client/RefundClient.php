@@ -53,7 +53,7 @@ class RefundClient implements ClientInterface
         } catch (ClientException $exception) {
             $body = json_decode($exception->getResponse()->getBody()->getContents());
             $errorMessage = $body->messages[0];
-            throw new ClientException($errorMessage, $exception->getRequest());
+            throw new ClientException($errorMessage, $exception->getRequest(), $exception->getResponse());
         }
 
         return $response->toArray();
