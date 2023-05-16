@@ -50,6 +50,15 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>cm_payments/general/update_on_result_page</config_path>
                 </field>
+                <field id="check_available_methods" translate="label comment" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Check available methods in cm before every order</label>
+                    <comment><![CDATA[Disable this to disable checking of available payment methods and iban issuers
+                        in CM.com before payment methods are displayed. Removes duplicate "Q_" orders from CM.com
+                        order history, but means that payment methods in magento must be correctly configured.]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>cm_payments/general/check_available_methods</config_path>
+                </field>
             </group>
 
             <group id="api_details" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"

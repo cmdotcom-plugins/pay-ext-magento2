@@ -8,8 +8,10 @@ declare(strict_types=1);
 
 namespace CM\Payments\Webapi;
 
+use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\PaymentMethodManagementInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
+use CM\Payments\Client\Model\Response\Method\IdealIssuer;
 use CM\Payments\Exception\PaymentMethodNotFoundException;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Checkout\Model\PaymentDetailsFactory;
@@ -42,10 +44,16 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
      * @var CartTotalRepositoryInterface
      */
     private $cartTotalsRepository;
+
     /**
      * @var MethodServiceInterface
      */
     private $methodService;
+
+    /**
+     * @var ConfigInterface
+     */
+    private ConfigInterface $configService;
 
     /**
      * @param CheckoutPaymentMethodManagementInterface $paymentMethodManagement
@@ -58,13 +66,15 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
         PaymentDetailsFactory $paymentDetailsFactory,
         CartTotalRepositoryInterface $cartTotalsRepository,
         CartRepositoryInterface $quoteRepository,
-        MethodServiceInterface $methodService
+        MethodServiceInterface $methodService,
+        ConfigInterface $configService
     ) {
         $this->paymentMethodManagement = $paymentMethodManagement;
         $this->paymentDetailsFactory = $paymentDetailsFactory;
         $this->cartTotalsRepository = $cartTotalsRepository;
         $this->quoteRepository = $quoteRepository;
         $this->methodService = $methodService;
+        $this->configService = $configService;
     }
 
     /**
@@ -93,6 +103,16 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
      */
     public function getIbanIssuers(int $cartId): array
     {
+        if (!$this->configService->isAvailablePaymentMethodsCheckEnabled()) {
+            $issuers = [];
+
+            foreach (MethodServiceInterface::IDEAL_ISSUERS as $issuer) {
+                $issuers[] = new IdealIssuer($issuer);
+            }
+
+            return $issuers;
+        }
+
         /** @var Quote $quote */
         $quote = $this->quoteRepository->getActive($cartId);
         $this->validateQuote($quote);

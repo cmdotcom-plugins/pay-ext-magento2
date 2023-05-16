@@ -71,6 +71,19 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function isAvailablePaymentMethodsCheckEnabled(): ?bool
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_CHECK_AVAILABLE_PAYMENT_METHODS,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId(),
+            true
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCustomerSuccessUrl(): ?string
     {
         return $this->getConfig(
