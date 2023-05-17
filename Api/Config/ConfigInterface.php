@@ -25,6 +25,7 @@ interface ConfigInterface
     public const XML_PATH_GENERAL_LIVE_MERCHANT_KEY = 'cm_payments/general/live_merchant_key';
     public const XML_PATH_GENERAL_MODE = 'cm_payments/general/mode';
     public const XML_PATH_GENERAL_UPDATE_ON_RESULT_PAGE = 'cm_payments/general/update_on_result_page';
+    public const XML_PATH_GENERAL_CHECK_AVAILABLE_PAYMENT_METHODS = 'cm_payments/general/check_available_methods';
     public const XML_PATH_GENERAL_CUSTOM_SUCCESS_URL = 'cm_payments/general/custom_success_url';
     public const XML_PATH_GENERAL_CUSTOM_ERROR_URL = 'cm_payments/general/custom_error_url';
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
@@ -213,6 +214,11 @@ interface ConfigInterface
      * @return bool
      */
     public function isUpdateOnResultPageEnabled(): ?bool;
+
+    /**
+     * @return bool
+     */
+    public function isAvailablePaymentMethodsCheckEnabled(): ?bool;
 
     /**
      * @return string

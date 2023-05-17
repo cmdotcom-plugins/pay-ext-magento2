@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace CM\Payments\Plugin\Quote;
 
 use CM\Payments\Api\Service\MethodServiceInterface;
-use CM\Payments\Api\Service\OrderServiceInterface;
 use CM\Payments\Config\Config as ConfigService;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartRepositoryInterface;
@@ -34,28 +33,20 @@ class PaymentMethodManagementPlugin
     private $methodService;
 
     /**
-     * @var OrderServiceInterface
-     */
-    private $orderService;
-
-    /**
      * AddMethodsAdditionalData constructor
      *
      * @param ConfigService $configService
      * @param CartRepositoryInterface $quoteRepository
      * @param MethodServiceInterface $methodService
-     * @param OrderServiceInterface $orderService
      */
     public function __construct(
         ConfigService $configService,
         CartRepositoryInterface $quoteRepository,
-        MethodServiceInterface $methodService,
-        OrderServiceInterface $orderService
+        MethodServiceInterface $methodService
     ) {
         $this->configService = $configService;
         $this->quoteRepository = $quoteRepository;
         $this->methodService = $methodService;
-        $this->orderService = $orderService;
     }
 
     /**
@@ -67,7 +58,7 @@ class PaymentMethodManagementPlugin
      */
     public function afterGetList(PaymentMethodManagement $subject, array $availableMethods, int $cartId)
     {
-        if ($this->configService->isEnabled()) {
+        if ($this->configService->isEnabled() && $this->configService->isAvailablePaymentMethodsCheckEnabled()) {
             $quote = $this->quoteRepository->getActive($cartId);
 
             return $this->methodService->getMethodsByQuote($quote, $availableMethods);

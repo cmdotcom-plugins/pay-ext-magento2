@@ -76,6 +76,64 @@ interface MethodServiceInterface
     ];
 
     /**
+     * Mapping of magento ideal issuers
+     */
+    public const IDEAL_ISSUERS = [
+        [
+            'id' => 'BUNQNL2A',
+            'name' => 'bunq',
+        ],
+        [
+            'id' => 'ASNBNL21',
+            'name' => 'ASN Bank',
+        ],
+        [
+            'id' => 'RBRBNL21',
+            'name' => 'RegioBank',
+        ],
+        [
+            'id' => 'TRIONL2U',
+            'name' => 'Triodos Bank',
+        ],
+        [
+            'id' => 'FVLBNL22',
+            'name' => 'Van Lanschot Bankiers',
+        ],
+        [
+            'id' => 'MOYONL21',
+            'name' => 'Moneyou',
+        ],
+        [
+            'id' => 'SNSBNL2A',
+            'name' => 'SNS Bank',
+        ],
+        [
+            'id' => 'KNABNL2H',
+            'name' => 'Knab',
+        ],
+        [
+            'id' => 'INGBNL2A',
+            'name' => 'ING Bank',
+        ],
+        [
+            'id' => 'HANDNL2A',
+            'name' => 'Handelsbanken',
+        ],
+        [
+            'id' => 'KREDBE22',
+            'name' => 'KBC',
+        ],
+        [
+            'id' => 'ABNANL2A',
+            'name' => 'ABN Amro Bank',
+        ],
+        [
+            'id' => 'RABONL2U',
+            'name' => 'Rabobank'
+        ]
+    ];
+
+    /**
      * Get methods from CM and compare it with Magento methods
      * @param PaymentMethodInterface[] $magentoMethods
      * @param CartInterface $quote
