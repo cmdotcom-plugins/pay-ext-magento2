@@ -53,13 +53,15 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
     /**
      * @var ConfigInterface
      */
-    private ConfigInterface $configService;
+    private $configService;
 
     /**
      * @param CheckoutPaymentMethodManagementInterface $paymentMethodManagement
      * @param PaymentDetailsFactory $paymentDetailsFactory
      * @param CartTotalRepositoryInterface $cartTotalsRepository
      * @param CartRepositoryInterface $quoteRepository
+     * @param MethodServiceInterface $methodService
+     * @param ConfigInterface $configService
      */
     public function __construct(
         CheckoutPaymentMethodManagementInterface $paymentMethodManagement,
