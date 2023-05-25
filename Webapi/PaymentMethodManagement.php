@@ -53,7 +53,7 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
     /**
      * @var ConfigInterface
      */
-    private ConfigInterface $configService;
+    private $configService;
 
     /**
      * @param CheckoutPaymentMethodManagementInterface $paymentMethodManagement
