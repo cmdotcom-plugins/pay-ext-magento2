@@ -204,6 +204,12 @@ class Config implements ConfigInterface
             case ConfigProvider::CODE_BANCONTACT:
                 $paymentMethodProfile = $this->getBanContactPaymentProfile() ?? $defaultPaymentMethodProfile;
                 break;
+            case ConfigProvider::CODE_BELFIUS:
+                $paymentMethodProfile = $this->getBelfiusPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
+            case ConfigProvider::CODE_KBC:
+                $paymentMethodProfile = $this->getKbcPaymentProfile() ?? $defaultPaymentMethodProfile;
+                break;
             case ConfigProvider::CODE_AFTERPAY:
                 $paymentMethodProfile = $this->getAfterPayPaymentProfile() ?? $defaultPaymentMethodProfile;
                 break;
@@ -256,6 +262,30 @@ class Config implements ConfigInterface
     {
         return $this->getConfig(
             self::XML_PATH_PAYMENT_BANCONTACT_PROFILE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBelfiusPaymentProfile(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_BELFIUS_PROFILE,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getKbcPaymentProfile(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_KBC_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );

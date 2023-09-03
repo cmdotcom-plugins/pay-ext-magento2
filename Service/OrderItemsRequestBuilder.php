@@ -133,9 +133,9 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
         }
 
         return $this->orderItemsCreateRequestFactory->create([
-                                                                 'orderKey' => $orderKey,
-                                                                 'orderItems' => $orderItemsCreate
-                                                             ]);
+            'orderKey' => $orderKey,
+            'orderItems' => $orderItemsCreate
+        ]);
     }
 
     /**
