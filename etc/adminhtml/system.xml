@@ -59,6 +59,12 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>cm_payments/general/check_available_methods</config_path>
                 </field>
+                <field id="enabled" translate="label" type="select" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Log all outgoing rest api calls</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>cm_payments/general/log_all_calls</config_path>
+                </field>
             </group>
 
             <group id="api_details" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"

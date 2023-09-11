@@ -132,6 +132,19 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function isLogAllRestApiCalls(): bool
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_LOG_ALL_API_CALLS,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId(),
+            true
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCurrentVersion(): ?string
     {
         return $this->getConfig(

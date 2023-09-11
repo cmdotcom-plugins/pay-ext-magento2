@@ -19,6 +19,7 @@
                 <check_available_methods>1</check_available_methods>
                 <shipping_fee_name>CM Shipping Fee</shipping_fee_name>
                 <adjustment_fee_name>CM Adjustment Fee</adjustment_fee_name>
+                <log_all_calls>0</log_all_calls>
             </general>
         </cm_payments>
         <payment>
