@@ -236,14 +236,6 @@
         </arguments>
     </virtualType>
 
-<!--    requestBuilder-->
-<!--    transferFactory-->
-<!--    client-->
-<!--    handler-->
-<!--    validator-->
-<!--    logger-->
-<!--    errorMessageMapper-->
-
     <!-- CM Refund command -->
     <virtualType name="CMRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
         <arguments>
@@ -638,7 +630,6 @@
     </virtualType>
     <!-- END CM Payments (BanContact) Method -->
 
-
     <!-- BEGIN CM Payments (Belfius) Method -->
     <virtualType name="CMPaymentsBelfiusFacade" type="CMPaymentsFacade">
         <arguments>
@@ -649,7 +640,6 @@
         </arguments>
     </virtualType>
 
-        <!-- BEGIN valueHandlerPool -->
     <virtualType name="CMBelfiusValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
         <arguments>
             <argument name="handlers" xsi:type="array">
@@ -663,9 +653,7 @@
             <argument name="configInterface" xsi:type="object">CMBelfiusGenericConfig</argument>
         </arguments>
     </virtualType>
-        <!-- END valueHandlerPool -->
 
-        <!-- BEGIN validatorPool -->
     <virtualType name="CMBelfiusValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
         <arguments>
             <argument name="validators" xsi:type="array">
@@ -686,9 +674,7 @@
             <argument name="config" xsi:type="object">CMBelfiusGenericConfig</argument>
         </arguments>
     </virtualType>
-        <!-- END validatorPool -->
 
-        <!-- BEGIN commandPool -->
     <virtualType name="CMBelfiusCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
         <arguments>
             <argument name="commands" xsi:type="array">
@@ -697,23 +683,13 @@
             </argument>
         </arguments>
     </virtualType>
-        <!-- END commandPool -->
 
-        <!-- START config -->
     <virtualType name="CMBelfiusGenericConfig" type="Magento\Payment\Gateway\Config\Config">
         <arguments>
             <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_BELFIUS</argument>
         </arguments>
     </virtualType>
-        <!-- END config -->
-
-    <!-- END CM Payments (BanContact) Method -->
-
-
-
-
-
-
+    <!-- END CM Payments (Belfius) Method -->
 
     <!-- BEGIN CM Payments (KBC) Method -->
     <virtualType name="CMPaymentsKbcFacade" type="CMPaymentsFacade">
@@ -725,7 +701,6 @@
         </arguments>
     </virtualType>
 
-    <!-- BEGIN valueHandlerPool -->
     <virtualType name="CMKbcValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
         <arguments>
             <argument name="handlers" xsi:type="array">
@@ -739,9 +714,7 @@
             <argument name="configInterface" xsi:type="object">CMKbcGenericConfig</argument>
         </arguments>
     </virtualType>
-    <!-- END valueHandlerPool -->
 
-    <!-- BEGIN validatorPool -->
     <virtualType name="CMKbcValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
         <arguments>
             <argument name="validators" xsi:type="array">
@@ -762,9 +735,7 @@
             <argument name="config" xsi:type="object">CMKbcGenericConfig</argument>
         </arguments>
     </virtualType>
-    <!-- END validatorPool -->
 
-    <!-- BEGIN commandPool -->
     <virtualType name="CMKbcCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
         <arguments>
             <argument name="commands" xsi:type="array">
@@ -773,18 +744,13 @@
             </argument>
         </arguments>
     </virtualType>
-    <!-- END commandPool -->
 
-    <!-- START config -->
     <virtualType name="CMKbcGenericConfig" type="Magento\Payment\Gateway\Config\Config">
         <arguments>
             <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_KBC</argument>
         </arguments>
     </virtualType>
-    <!-- END config -->
-
-    <!-- END CM Payments (BanContact) Method -->
-
+    <!-- END CM Payments (KBC) Method -->
 
     <!-- BEGIN CM Payments (ELV) Method -->
     <virtualType name="CMPaymentsElvFacade" type="CMPaymentsFacade">

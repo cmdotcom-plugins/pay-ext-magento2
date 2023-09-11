@@ -991,13 +991,6 @@
                 </field>
             </group>
 
-
-
-
-
-
-
-
             <group id="cm_payments_kbc" translate="label" type="text" sortOrder="70" showInDefault="1"
                    showInWebsite="1" showInStore="1">
                 <label>KBC by CM.com</label>
