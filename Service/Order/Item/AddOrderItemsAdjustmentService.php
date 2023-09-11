@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service\Order\Item;
 
+use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Service\Order\Item\AddOrderItemsAdjustmentServiceInterface;
 use CM\Payments\Client\Model\Request\OrderItemCreate;
 use CM\Payments\Client\Model\Request\OrderItemCreateFactory as ClientOrderItemCreateFactory;
@@ -30,14 +31,22 @@ class AddOrderItemsAdjustmentService implements AddOrderItemsAdjustmentServiceIn
     private $clientOrderItemCreateFactory;
 
     /**
+     * @var ConfigInterface
+     */
+    private ConfigInterface $config;
+
+    /**
      * AddOrderItemsAdjustmentObserver constructor
      *
      * @param ClientOrderItemCreateFactory $clientOrderItemCreateFactory
+     * @param ConfigInterface $config
      */
     public function __construct(
-        ClientOrderItemCreateFactory $clientOrderItemCreateFactory
+        ClientOrderItemCreateFactory $clientOrderItemCreateFactory,
+        ConfigInterface $config
     ) {
         $this->clientOrderItemCreateFactory = $clientOrderItemCreateFactory;
+        $this->config = $config;
     }
 
     /**
@@ -63,8 +72,8 @@ class AddOrderItemsAdjustmentService implements AddOrderItemsAdjustmentServiceIn
             $orderItemCreate->setItemId(count($orderItemsCreateRequest->getPayload()) + 1);
             $orderItemCreate->setType(OrderItemsRequestBuilderInterface::TYPE_DISCOUNT);
             $orderItemCreate->setSku(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_SKU);
-            $orderItemCreate->setName(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_NAME);
-            $orderItemCreate->setDescription(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_NAME);
+            $orderItemCreate->setName($this->config->getAdjustmentFeeName());
+            $orderItemCreate->setDescription($this->config->getAdjustmentFeeName());
             $orderItemCreate->setQuantity(1);
             $orderItemCreate->setUnitAmount((int)round($difference));
             $orderItemCreate->setAmount((int)round($difference));

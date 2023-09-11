@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Service;
 
+use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Service\Order\Item\Request\RequestPartByOrderItemInterface;
 use CM\Payments\Api\Service\Order\Item\Request\RequestPartByQuoteItemInterface;
 use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
@@ -41,21 +42,29 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
     private $quoteItemRequestParts;
 
     /**
+     * @var ConfigInterface
+     */
+    private ConfigInterface $config;
+
+    /**
      * OrderItemsRequestBuilder constructor
      *
      * @param ClientOrderItemCreateFactory $clientOrderItemCreateFactory
      * @param OrderItemsCreateRequestFactory $orderItemsCreateRequestFactory
+     * @param ConfigInterface $config
      * @param RequestPartByOrderItemInterface[] $orderItemRequestParts
      * @param RequestPartByQuoteItemInterface[] $quoteItemRequestParts
      */
     public function __construct(
         ClientOrderItemCreateFactory $clientOrderItemCreateFactory,
         OrderItemsCreateRequestFactory $orderItemsCreateRequestFactory,
+        ConfigInterface $config,
         array $orderItemRequestParts,
         array $quoteItemRequestParts
     ) {
         $this->clientOrderItemCreateFactory = $clientOrderItemCreateFactory;
         $this->orderItemsCreateRequestFactory = $orderItemsCreateRequestFactory;
+        $this->config = $config;
         $this->orderItemRequestParts = $orderItemRequestParts;
         $this->quoteItemRequestParts = $quoteItemRequestParts;
     }
@@ -79,9 +88,9 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
         }
 
         return $this->orderItemsCreateRequestFactory->create([
-                                                                 'orderKey' => $orderKey,
-                                                                 'orderItems' => $orderItemsCreate
-                                                             ]);
+            'orderKey' => $orderKey,
+            'orderItems' => $orderItemsCreate
+        ]);
     }
 
     /**
@@ -103,8 +112,8 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $shippingItem->setIsVirtual(0);
                 $shippingItem->setItemId($lastItem[0]->getItemId() + 1);
                 $shippingItem->setSku(self::ITEM_SHIPPING_FEE_SKU);
-                $shippingItem->setName(self::ITEM_SHIPPING_FEE_NAME);
-                $shippingItem->setDescription(self::ITEM_SHIPPING_FEE_NAME);
+                $shippingItem->setName($this->config->getShippingFeeName());
+                $shippingItem->setDescription($this->config->getShippingFeeName());
                 $shippingItem->setQtyOrdered(1);
 
                 $orderItems[] = $shippingItem;
@@ -133,9 +142,9 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
         }
 
         return $this->orderItemsCreateRequestFactory->create([
-                                                                 'orderKey' => $orderKey,
-                                                                 'orderItems' => $orderItemsCreate
-                                                             ]);
+            'orderKey' => $orderKey,
+            'orderItems' => $orderItemsCreate
+        ]);
     }
 
     /**
@@ -157,8 +166,8 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
                 $shippingItem->setIsVirtual(0);
                 $shippingItem->setItemId($lastItem[0]->getItemId() + 1);
                 $shippingItem->setSku(self::ITEM_SHIPPING_FEE_SKU);
-                $shippingItem->setName(self::ITEM_SHIPPING_FEE_NAME);
-                $shippingItem->setDescription(self::ITEM_SHIPPING_FEE_NAME);
+                $shippingItem->setName($this->config->getShippingFeeName());
+                $shippingItem->setDescription($this->config->getShippingFeeName());
                 $shippingItem->setQty(1);
 
                 $quoteItems[] = $shippingItem;

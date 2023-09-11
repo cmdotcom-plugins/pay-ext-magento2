@@ -141,7 +141,21 @@
                     <label>Error Redirect Path</label>
                     <config_path>cm_payments/general/custom_error_url</config_path>
                 </field>
+            </group>
 
+            <group id="fee_labels" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label><![CDATA[Fee Labels]]></label>
+                <field id="shipping_fee_name" translate="label" type="text" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Shipping Fee Name</label>
+                    <config_path>cm_payments/general/shipping_fee_name</config_path>
+                </field>
+                <field id="adjustment_fee_name" translate="label" type="text" sortOrder="2" showInDefault="1"
+                       showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Adjustment Fee Name</label>
+                    <config_path>cm_payments/general/adjustment_fee_name</config_path>
+                </field>
             </group>
         </section>
 
