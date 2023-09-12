@@ -108,6 +108,43 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function getShippingFeeName(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_SHIPPING_FEE_NAME,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAdjustmentFeeName(): ?string
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_ADJUSTMENT_FEE_NAME,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isLogAllRestApiCalls(): bool
+    {
+        return $this->getConfig(
+            self::XML_PATH_PAYMENT_LOG_ALL_API_CALLS,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId(),
+            true
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCurrentVersion(): ?string
     {
         return $this->getConfig(

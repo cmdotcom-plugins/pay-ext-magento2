@@ -153,8 +153,8 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
         $orderItemCreate->setItemId(2);
         $orderItemCreate->setType(OrderItemsRequestBuilderInterface::TYPE_DISCOUNT);
         $orderItemCreate->setSku(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_SKU);
-        $orderItemCreate->setName(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_NAME);
-        $orderItemCreate->setDescription(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_NAME);
+        $orderItemCreate->setName('CM Adjustment Fee');
+        $orderItemCreate->setDescription('CM Adjustment Fee');
         $orderItemCreate->setQuantity(1);
         $orderItemCreate->setUnitAmount($unitAmount);
         $orderItemCreate->setAmount($amount);

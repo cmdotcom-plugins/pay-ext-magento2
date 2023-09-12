@@ -28,6 +28,9 @@ interface ConfigInterface
     public const XML_PATH_GENERAL_CHECK_AVAILABLE_PAYMENT_METHODS = 'cm_payments/general/check_available_methods';
     public const XML_PATH_GENERAL_CUSTOM_SUCCESS_URL = 'cm_payments/general/custom_success_url';
     public const XML_PATH_GENERAL_CUSTOM_ERROR_URL = 'cm_payments/general/custom_error_url';
+    public const XML_PATH_GENERAL_SHIPPING_FEE_NAME = 'cm_payments/general/shipping_fee_name';
+    public const XML_PATH_GENERAL_ADJUSTMENT_FEE_NAME = 'cm_payments/general/adjustment_fee_name';
+    public const XML_PATH_PAYMENT_LOG_ALL_API_CALLS = 'cm_payments/general/log_all_calls';
     public const XML_PATH_PAYMENT_PROFILE = 'payment/cm_payments_methods/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_PROFILE = 'payment/cm_payments_creditcard/profile';
     public const XML_PATH_PAYMENT_CREDIT_CARD_MODE = 'payment/cm_payments_creditcard/mode';
@@ -229,4 +232,19 @@ interface ConfigInterface
      * @return string
      */
     public function getCustomerErrorUrl(): ?string;
+
+    /**
+     * @return string
+     */
+    public function getShippingFeeName(): ?string;
+
+    /**
+     * @return string
+     */
+    public function getAdjustmentFeeName(): ?string;
+
+    /**
+     * @return bool
+     */
+    public function isLogAllRestApiCalls(): bool;
 }

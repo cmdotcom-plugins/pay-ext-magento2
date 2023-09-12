@@ -11,6 +11,7 @@ namespace CM\Payments\Client;
 use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Client\Api\ApiClientInterface;
 use CM\Payments\Client\Api\RequestInterface;
+use CM\Payments\Logger\CMPaymentsLogger;
 use CM\Payments\Model\Adminhtml\Source\Mode;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
@@ -35,14 +36,22 @@ class ApiClient implements ApiClientInterface
     private $config;
 
     /**
+     * @var CMPaymentsLogger
+     */
+    private CMPaymentsLogger $logger;
+
+    /**
      * ApiClient constructor.
      *
+     * @param CMPaymentsLogger $logger
      * @param ConfigInterface $config
      */
     public function __construct(
-        ConfigInterface $config
+        ConfigInterface $config,
+        CMPaymentsLogger $logger
     ) {
         $this->config = $config;
+        $this->logger = $logger;
     }
 
     /**
@@ -72,6 +81,18 @@ class ApiClient implements ApiClientInterface
             $response = [];
         } else {
             $response = \GuzzleHttp\json_decode($response, true);
+        }
+
+        if ($this->config->isLogAllRestApiCalls()) {
+            $this->logger->debug(
+                'CM REST request:',
+                [
+                    'method' => $request->getRequestMethod(),
+                    'endpoint' => $request->getEndpoint(),
+                    'options' => \json_encode($options, JSON_PRETTY_PRINT),
+                    'response' => \json_encode($response, JSON_PRETTY_PRINT)
+                ]
+            );
         }
 
         return $response;
