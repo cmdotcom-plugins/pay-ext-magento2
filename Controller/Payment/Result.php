@@ -107,22 +107,28 @@ class Result extends Action implements HttpGetActionInterface
      */
     public function execute()
     {
+        $this->logger->info('CM Order Result.', ['Params' => \json_encode($this->request->getParams())]);
+
         $referenceOrderId = $this->request->getParam('order_reference');
         $status = $this->request->getParam('status');
 
         try {
             if (!$status) {
+                $this->logger->error('CM Order Result. Error: The Status is not presented in response!');
                 throw new LocalizedException(__('The Status is not presented in response!'));
             }
 
             if (!$referenceOrderId) {
+                $this->logger->error('CM Order Result. Error: The order reference is not valid');
                 throw new LocalizedException(__('The order reference is not valid!'));
             }
 
             if (in_array($status, [OrderCreate::STATUS_ERROR, OrderCreate::STATUS_CANCELLED])) {
                 if ($status === OrderCreate::STATUS_ERROR) {
+                    $this->logger->error('CM Order Result. Error: Your payment was cancelled because of errors!');
                     throw new LocalizedException(__('Your payment was cancelled because of errors!'));
                 } else {
+                    $this->logger->error('CM Order Result. Error: Your payment was cancelled!');
                     throw new LocalizedException(__('Your payment was cancelled!'));
                 }
             }
