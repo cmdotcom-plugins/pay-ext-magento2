@@ -72,6 +72,11 @@ class Notification extends Action implements HttpGetActionInterface, CsrfAwareAc
      */
     public function execute()
     {
+        $this->logger->info(
+            'CM Order Change notification.',
+            ['Params' => \json_encode($this->request->getParams())]
+        );
+
         /** @var Json $resultPage */
         $resultPage = $this->resultJsonFactory->create();
         $orderReference = $this->request->getParam('id');
