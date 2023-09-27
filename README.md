@@ -93,7 +93,7 @@ For more details on the configuring see the payment methonds section below.
 
 ## Requirements
 
-- Magento Open Source version 2.3.x & 2.4.x
+- Magento Open Source / Enterprise version 2.3.x & 2.4.x
 - PHP 7.3+
 
 ## Setup local development environment
@@ -172,6 +172,14 @@ The BanContact payment redirects to the CM.com payment menu. It's recommended to
 ### Afterpay
 
 The BanContact payment redirects to the CM.com payment menu. It's recommended to create a separate 'Afterpay' payment profile in the CM.com portal to show only the Afterpay method in the CM.com payment menu.
+
+### KBC
+
+The KBC payment redirects to the CM.com payment menu. It's recommended to create a separate 'KBC' payment profile in the CM.com portal to show only the KBC method in the CM.com payment menu.
+
+### Belfius
+
+The Belfius payment redirects to the CM.com payment menu. It's recommended to create a separate 'Belfius' payment profile in the CM.com portal to show only the Belfius method in the CM.com payment menu.
 
 ## Webhook
 In order to get status updates from CM.com it's required to configure a webhook in the CM.com portal.
