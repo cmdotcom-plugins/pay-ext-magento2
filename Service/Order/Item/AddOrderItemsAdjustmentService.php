@@ -66,11 +66,15 @@ class AddOrderItemsAdjustmentService implements AddOrderItemsAdjustmentServiceIn
         $min = $itemsTotal - 0.05 * 100;
         $difference = $grandTotal - $itemsTotal;
         if (($min <= $grandTotal) && ($grandTotal <= $max) && $difference !== 0) {
+            $type = $difference > 0
+                ? OrderItemsRequestBuilderInterface::TYPE_SURCHARGE
+                : OrderItemsRequestBuilderInterface::TYPE_DISCOUNT;
+
             /** @var OrderItemCreate $orderCreate */
             $orderItemCreate = $this->clientOrderItemCreateFactory->create();
 
             $orderItemCreate->setItemId(count($orderItemsCreateRequest->getPayload()) + 1);
-            $orderItemCreate->setType(OrderItemsRequestBuilderInterface::TYPE_DISCOUNT);
+            $orderItemCreate->setType($type);
             $orderItemCreate->setSku(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_SKU);
             $orderItemCreate->setName($this->config->getAdjustmentFeeName());
             $orderItemCreate->setDescription($this->config->getAdjustmentFeeName());
