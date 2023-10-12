@@ -24,6 +24,7 @@ class ApiClient implements ApiClientInterface
      */
     public const API_TEST_URL = 'https://testsecure.docdatapayments.com/ps/api/public/v1/merchants/';
     public const API_URL = 'https://secure.docdatapayments.com/ps/api/public/v1/merchants/';
+    public const THIS_IS_JUST_A_TEST = 'test';
 
     /**
      * @var HttpClient
