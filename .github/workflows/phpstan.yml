@@ -18,8 +18,6 @@ jobs:
             MAGENTO_VERSION: 2.4.3-p1
           - PHP_VERSION: php81-fpm
             MAGENTO_VERSION: 2.4.5-p1
-          - PHP_VERSION: php82-fpm
-            MAGENTO_VERSION: 2.4.6-p1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
