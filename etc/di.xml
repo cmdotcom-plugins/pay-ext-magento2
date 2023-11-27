@@ -752,6 +752,67 @@
     </virtualType>
     <!-- END CM Payments (KBC) Method -->
 
+    <!-- BEGIN CM Payments (CBC) Method -->
+    <virtualType name="CMPaymentsCbcFacade" type="CMPaymentsFacade">
+        <arguments>
+            <argument name="code" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_CBC</argument>
+            <argument name="valueHandlerPool" xsi:type="object">CMCbcValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">CMCbcValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">CMCbcCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCbcValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">CMCbcConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCbcConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CMCbcGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCbcValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">CMCbcCountryValidator</item>
+                <item name="currency" xsi:type="string">CMCbcCurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCbcCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMCbcGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCbcCurrencyValidator" type="CM\Payments\Gateway\Validator\CurrencyValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">CMCbcGenericConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCbcCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">CMInitializeCommand</item>
+                <item name="refund" xsi:type="string">CMRefundCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="CMCbcGenericConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CM\Payments\Model\ConfigProvider::CODE_CBC</argument>
+        </arguments>
+    </virtualType>
+    <!-- END CM Payments (CBC) Method -->
+
     <!-- BEGIN CM Payments (ELV) Method -->
     <virtualType name="CMPaymentsElvFacade" type="CMPaymentsFacade">
         <arguments>
