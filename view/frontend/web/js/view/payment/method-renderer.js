@@ -33,6 +33,7 @@ define([
             {type: 'cm_payments_bancontact', component: defaultComponent},
             {type: 'cm_payments_belfius', component: defaultComponent},
             {type: 'cm_payments_kbc', component: defaultComponent},
+            {type: 'cm_payments_cbc', component: defaultComponent},
             {type: 'cm_payments_elv', component: elvComponent},
             {type: 'cm_payments_klarna', component: klarnaComponent},
             {type: 'cm_payments_afterpay', component: defaultComponent},

@@ -37,6 +37,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_CREDIT_CARD_ALLOWED_TYPES = 'payment/cm_payments_creditcard/allowed_cctypes';
     public const XML_PATH_PAYMENT_BANCONTACT_PROFILE = 'payment/cm_payments_bancontact/profile';
     public const XML_PATH_PAYMENT_BELFIUS_PROFILE = 'payment/cm_payments_belfius/profile';
+    public const XML_PATH_PAYMENT_CBC_PROFILE = 'payment/cm_payments_cbc/profile';
     public const XML_PATH_PAYMENT_KBC_PROFILE = 'payment/cm_payments_kbc/profile';
     public const XML_PATH_PAYMENT_AFTERPAY_PROFILE = 'payment/cm_payments_afterpay/profile';
     public const XML_PATH_PAYMENT_APPLEPAY_PROFILE = 'payment/cm_payments_applepay/profile';
@@ -139,6 +140,14 @@ interface ConfigInterface
      * @throws NoSuchEntityException
      */
     public function getKbcPaymentProfile(): ?string;
+
+    /**
+     * Get Payment Profile for CBC Method
+     *
+     * @return ?string
+     * @throws NoSuchEntityException
+     */
+    public function getCbcPaymentProfile(): ?string;
 
     /**
      * Get Payment Profile for AfterPay Method
