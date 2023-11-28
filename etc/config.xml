@@ -264,7 +264,7 @@
             <cm_payments_cbc>
                 <active>0</active>
                 <mode>redirect</mode>
-                <model>CMPaymentsKbcFacade</model>
+                <model>CMPaymentsCbcFacade</model>
                 <order_status>pending</order_status>
                 <payment_action>initialize</payment_action>
                 <title>CBC by CM.com</title>
