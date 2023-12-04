@@ -337,7 +337,7 @@ class Config implements ConfigInterface
     public function getCbcPaymentProfile(): ?string
     {
         return $this->getConfig(
-            self::XML_PATH_PAYMENT_KBC_PROFILE,
+            self::XML_PATH_PAYMENT_CBC_PROFILE,
             ScopeInterface::SCOPE_STORES,
             (string)$this->storeManager->getStore()->getId()
         );
