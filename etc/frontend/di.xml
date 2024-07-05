@@ -36,4 +36,8 @@
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
     </type>
+
+    <type name="Magento\Quote\Observer\SubmitObserver">
+        <plugin name="adjust_order_email_send_flag" type="CM\Payments\Plugin\AdjustOrderEmailSendFlag" sortOrder="1" disabled="false" />
+    </type>
 </config>

@@ -44,6 +44,14 @@
                         payment methods you want to show to the customer.]]></comment>
                     <config_path>payment/cm_payments_methods/profile</config_path>
                 </field>
+                <field id="send_order_email_for_paid" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send new order email for only paid orders</label>
+                    <comment><![CDATA[This will disable default Magento order sending right after order is placed
+                        (for only CM Payments) and instead will send email when invoice is paid]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>cm_payments/general/send_order_email_for_paid</config_path>
+                </field>
                 <field id="update_on_result_page" translate="label" type="select" sortOrder="2" showInDefault="1"
                        showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Update order status on result page</label>

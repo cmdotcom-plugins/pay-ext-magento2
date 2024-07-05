@@ -84,6 +84,19 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
+    public function isSendOrderEmailForPaid(): bool
+    {
+        return $this->getConfig(
+            self::XML_PATH_GENERAL_SEND_ORDER_EMAIL_FOR_PAID,
+            ScopeInterface::SCOPE_STORES,
+            (string)$this->storeManager->getStore()->getId(),
+            true
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getCustomerSuccessUrl(): ?string
     {
         return $this->getConfig(
