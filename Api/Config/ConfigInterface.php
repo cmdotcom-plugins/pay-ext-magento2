@@ -26,6 +26,7 @@ interface ConfigInterface
     public const XML_PATH_GENERAL_MODE = 'cm_payments/general/mode';
     public const XML_PATH_GENERAL_UPDATE_ON_RESULT_PAGE = 'cm_payments/general/update_on_result_page';
     public const XML_PATH_GENERAL_CHECK_AVAILABLE_PAYMENT_METHODS = 'cm_payments/general/check_available_methods';
+    public const XML_PATH_GENERAL_SEND_ORDER_EMAIL_FOR_PAID = 'cm_payments/general/send_order_email_for_paid';
     public const XML_PATH_GENERAL_CUSTOM_SUCCESS_URL = 'cm_payments/general/custom_success_url';
     public const XML_PATH_GENERAL_CUSTOM_ERROR_URL = 'cm_payments/general/custom_error_url';
     public const XML_PATH_GENERAL_SHIPPING_FEE_NAME = 'cm_payments/general/shipping_fee_name';
@@ -249,6 +250,11 @@ interface ConfigInterface
      * @return bool
      */
     public function isAvailablePaymentMethodsCheckEnabled(): ?bool;
+
+    /**
+     * @return bool
+     */
+    public function isSendOrderEmailForPaid(): bool;
 
     /**
      * @return string
