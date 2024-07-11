@@ -158,7 +158,7 @@
                         data-role="review-save"
                         type="submit"
                         data-bind="
-                        click: placeOrder,
+                        click: placeOrderDirect,
                         attr: {title: $t('Place Order')},
                         css: {disabled: !isPlaceOrderActionAllowed()},
                         enable: (getCode() == isChecked())"
