@@ -1,4 +1,4 @@
-# CM.com Payments Magento 2 module
+# CM.com Payments Magento 2 module.
 
 1. [Get started](#get-started)
 2. [Installation & Update the CM.com Payments Magento 2 plugin](#installation--update-the-cmcom-payments-magento-2-plugin)
