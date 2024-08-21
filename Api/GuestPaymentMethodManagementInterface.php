@@ -22,7 +22,7 @@ use Magento\Quote\Api\Data\AddressInterface;
 interface GuestPaymentMethodManagementInterface
 {
     /**
-     * Get payment methods information
+     * Get payment methods information.
      *
      * @param string $cartId
      * @param AddressInterface|null $shippingAddress
