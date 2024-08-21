@@ -1,3 +1,4 @@
+TEST
 # CM.com Payments Magento 2 module
 
 1. [Get started](#get-started)
