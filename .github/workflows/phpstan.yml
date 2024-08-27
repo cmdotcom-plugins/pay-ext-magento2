@@ -7,6 +7,8 @@ on: push
 jobs:
   build:
     strategy:
+      fail-fast: false
+      max-parallel: 5
       # This Matrix will run the tests on PHP 7.0, 7.1 and 7.2 and on Magento 2.2.11 and 2.3.5-p1.
       # Magento 2.3.5-p1 requires PHP 7.1 and higher, so PHP 7.0 is disabled for this version.
       # Magento 2.2.11 supports PHP up to version 7.1, so PHP 7.2 is disabled for this version.
@@ -19,7 +21,7 @@ jobs:
           - PHP_VERSION: php81-fpm
             MAGENTO_VERSION: 2.4.5-p1
           - PHP_VERSION: php82-fpm
-            MAGENTO_VERSION: 2.4.6-p1
+            MAGENTO_VERSION: 2.4.7-p1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -37,6 +39,12 @@ jobs:
       # Install the extension and PHPStan into Magento
       - name: Install the extensions in Magento
         run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:@dev
+
+      - name: Fix permissions for files
+        run: docker exec magento-project-community-edition sh -c 'find var generated vendor pub/static pub/media app/etc -type f -exec chmod u+w {} +'
+
+      - name: Fix permissions for directories
+        run: docker exec magento-project-community-edition sh -c 'find var generated vendor pub/static pub/media app/etc -type d -exec chmod u+w {} +'
 
       - name: Enable the extension
         run: docker exec magento-project-community-edition bash -c "php bin/magento module:enable CM_Payments && php bin/magento setup:upgrade && php bin/magento setup:di:compile"

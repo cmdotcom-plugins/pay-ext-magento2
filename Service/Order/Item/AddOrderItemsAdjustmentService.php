@@ -33,7 +33,7 @@ class AddOrderItemsAdjustmentService implements AddOrderItemsAdjustmentServiceIn
     /**
      * @var ConfigInterface
      */
-    private ConfigInterface $config;
+    private $config;
 
     /**
      * AddOrderItemsAdjustmentObserver constructor
