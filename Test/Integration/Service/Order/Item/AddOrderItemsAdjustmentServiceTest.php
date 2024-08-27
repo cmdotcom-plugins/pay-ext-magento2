@@ -149,9 +149,13 @@ class AddOrderItemsAdjustmentServiceTest extends IntegrationTestCase
      */
     private function getOrderItemCreate(int $unitAmount, int $amount, string $currencyCode): OrderItemCreate
     {
+        $type = $amount > 0
+            ? OrderItemsRequestBuilderInterface::TYPE_SURCHARGE
+            : OrderItemsRequestBuilderInterface::TYPE_DISCOUNT;
+
         $orderItemCreate = $this->objectManager->create(OrderItemCreate::class);
         $orderItemCreate->setItemId(2);
-        $orderItemCreate->setType(OrderItemsRequestBuilderInterface::TYPE_SURCHARGE);
+        $orderItemCreate->setType($type);
         $orderItemCreate->setSku(OrderItemsRequestBuilderInterface::ITEM_ADJUSTMENT_FEE_SKU);
         $orderItemCreate->setName('CM Adjustment Fee');
         $orderItemCreate->setDescription('CM Adjustment Fee');
