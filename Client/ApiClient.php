@@ -39,7 +39,7 @@ class ApiClient implements ApiClientInterface
     /**
      * @var CMPaymentsLogger
      */
-    private CMPaymentsLogger $logger;
+    private $logger;
 
     /**
      * ApiClient constructor.
