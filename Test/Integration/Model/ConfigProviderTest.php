@@ -24,6 +24,10 @@ class ConfigProviderTest extends IntegrationTestCase
      * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
      * @magentoConfigFixture default_store payment/cm_payments_paypal/active 1
      * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_kbc/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_cbc/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_belfius/active 1
+     *
      */
     public function testGetConfig()
     {
@@ -51,5 +55,8 @@ class ConfigProviderTest extends IntegrationTestCase
         $this->assertArrayHasKey('image', $result['payment']['cm_payments_ideal']);
         $this->assertArrayHasKey('image', $result['payment']['cm_payments_paypal']);
         $this->assertArrayHasKey('image', $result['payment']['cm_payments_bancontact']);
+        $this->assertArrayHasKey('image', $result['payment']['cm_payments_kbc']);
+        $this->assertArrayHasKey('image', $result['payment']['cm_payments_cbc']);
+        $this->assertArrayHasKey('image', $result['payment']['cm_payments_belfius']);
     }
 }
