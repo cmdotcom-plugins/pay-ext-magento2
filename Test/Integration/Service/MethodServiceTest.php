@@ -147,6 +147,177 @@ class MethodServiceTest extends IntegrationTestCase
      * @magentoConfigFixture default_store payment/fake/active 0
      * @magentoConfigFixture default_store payment/fake_vault/active 0
      * @magentoConfigFixture default_store cm_payments/general/enabled 1
+     * @magentoConfigFixture default_store payment/cm_payments/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_paypal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_kbc/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_cbc/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_belfius/active 0
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     */
+    public function testKbcContactPaymentMethod()
+    {
+        $magentoQuote = $this->loadQuoteById('test01');
+
+        $this->clientMock->expects($this->exactly(3))->method('execute')->willReturnOnConsecutiveCalls(
+            [
+                'order_key' => '2287A1617D93780EF28044B98438BF2F',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ],
+            [],
+            [
+                [
+                    'method' => 'IDEAL',
+                    'ideal_details' => [
+                        'issuers' => [
+                            [
+                                'id' => 'BUNQNL2A',
+                                'name' => 'bunq'
+                            ],
+                            [
+                                'id' => 'ASNBNL21',
+                                'name' => 'ASN Bank'
+                            ]
+                        ],
+                    ],
+                ],
+                [
+                    'method' => 'KBC',
+                ],
+                [
+                    'method' => 'PAYPAL',
+                ]
+            ]
+        );
+
+        $magentoMethods = [
+            $this->getPaymentMethod(ConfigProvider::CODE_IDEAL),
+            $this->getPaymentMethod(ConfigProvider::CODE_KBC)
+        ];
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $magentoMethods);
+
+        $banContactMethod = $actualPaymentMethods[1];
+        $this->assertEquals(2, count($actualPaymentMethods));
+        $this->assertEquals('cm_payments_kbc', $banContactMethod->getCode());
+    }
+
+    /**
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
+     * @magentoConfigFixture default_store payment/cm_payments/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_paypal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_kbc/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_cbc/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_belfius/active 0
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     */
+    public function testCbcPaymentMethod()
+    {
+        $magentoQuote = $this->loadQuoteById('test01');
+
+        $this->clientMock->expects($this->exactly(3))->method('execute')->willReturnOnConsecutiveCalls(
+            [
+                'order_key' => '2287A1617D93780EF28044B98438BF2F',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ],
+            [],
+            [
+                [
+                    'method' => 'IDEAL',
+                    'ideal_details' => [
+                        'issuers' => [
+                            [
+                                'id' => 'BUNQNL2A',
+                                'name' => 'bunq'
+                            ],
+                            [
+                                'id' => 'ASNBNL21',
+                                'name' => 'ASN Bank'
+                            ]
+                        ],
+                    ],
+                ],
+                [
+                    'method' => 'CBC',
+                ],
+                [
+                    'method' => 'PAYPAL',
+                ]
+            ]
+        );
+
+        $magentoMethods = [
+            $this->getPaymentMethod(ConfigProvider::CODE_IDEAL),
+            $this->getPaymentMethod(ConfigProvider::CODE_CBC)
+        ];
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $magentoMethods);
+
+        $banContactMethod = $actualPaymentMethods[1];
+        $this->assertEquals(2, count($actualPaymentMethods));
+        $this->assertEquals('cm_payments_cbc', $banContactMethod->getCode());
+    }
+
+    /**
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
+     * @magentoConfigFixture default_store payment/cm_payments/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_paypal/active 0
+     * @magentoConfigFixture default_store payment/cm_payments_bancontact/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_kbc/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_cbc/active 1
+     * @magentoConfigFixture default_store payment/cm_payments_belfius/active 1
+     * @magentoDataFixture Magento/Sales/_files/quote.php
+     */
+    public function testBelfiusPaymentMethod()
+    {
+        $magentoQuote = $this->loadQuoteById('test01');
+
+        $this->clientMock->expects($this->exactly(3))->method('execute')->willReturnOnConsecutiveCalls(
+            [
+                'order_key' => '2287A1617D93780EF28044B98438BF2F',
+                //phpcs:ignore
+                'url' => 'https://testsecure.docdatapayments.com/ps/menu?merchant_name=itonomy_b_v&client_language=NL&payment_cluster_key=0287A1617D93780EF28044B98438BF2F',
+                'expires_on' => '2021-07-12T08:10:57Z'
+            ],
+            [],
+            [
+                [
+                    'method' => 'BELFIUS',
+                ]
+            ]
+        );
+
+        $magentoMethods = [
+            $this->getPaymentMethod(ConfigProvider::CODE_IDEAL),
+            $this->getPaymentMethod(ConfigProvider::CODE_BELFIUS)
+        ];
+        $actualPaymentMethods = $this->methodService->getMethodsByQuote($magentoQuote, $magentoMethods);
+
+        $banContactMethod = $actualPaymentMethods[1];
+        $this->assertEquals(1, count($actualPaymentMethods));
+        $this->assertEquals('cm_payments_belfius', $banContactMethod->getCode());
+    }
+
+    /**
+     * @magentoConfigFixture default_store payment/checkmo/active 0
+     * @magentoConfigFixture default_store payment/fake/active 0
+     * @magentoConfigFixture default_store payment/fake_vault/active 0
+     * @magentoConfigFixture default_store cm_payments/general/enabled 1
      * @magentoConfigFixture default_store payment/cm_payments/active 1
      * @magentoConfigFixture default_store payment/cm_payments_creditcard/active 1
      * @magentoConfigFixture default_store payment/cm_payments_ideal/active 1
