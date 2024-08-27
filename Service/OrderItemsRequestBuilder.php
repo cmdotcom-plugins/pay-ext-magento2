@@ -44,7 +44,7 @@ class OrderItemsRequestBuilder implements OrderItemsRequestBuilderInterface
     /**
      * @var ConfigInterface
      */
-    private ConfigInterface $config;
+    private $config;
 
     /**
      * OrderItemsRequestBuilder constructor
