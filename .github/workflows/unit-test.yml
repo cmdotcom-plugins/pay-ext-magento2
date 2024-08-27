@@ -7,6 +7,8 @@ on: push
 jobs:
   build:
     strategy:
+      fail-fast: false
+      max-parallel: 5
       # This Matrix will run the tests on PHP 7.0, 7.1 and 7.2 and on Magento 2.2.11 and 2.3.5-p1.
       # Magento 2.3.5-p1 requires PHP 7.1 and higher, so PHP 7.0 is disabled for this version.
       # Magento 2.2.11 supports PHP up to version 7.1, so PHP 7.2 is disabled for this version.
@@ -19,7 +21,7 @@ jobs:
           - PHP_VERSION: php81-fpm
             MAGENTO_VERSION: 2.4.5-p1
           - PHP_VERSION: php82-fpm
-            MAGENTO_VERSION: 2.4.6-p1
+            MAGENTO_VERSION: 2.4.7-p1
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -40,7 +42,7 @@ jobs:
 
       # Replace <VENDOR> and <MODULE> with the name in your `composer.json`.
       - name: Install the extension in Magento
-        run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:dev-unit-test-branch
+        run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:@dev
 
       # Only the tests in your repository will be run, the default Magento tests are not included in this.
       - name: Run tests
