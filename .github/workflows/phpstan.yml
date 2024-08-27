@@ -38,6 +38,12 @@ jobs:
       - name: Install the extensions in Magento
         run: docker exec magento-project-community-edition composer require cmdotcom-plugins/magento2-payments:@dev
 
+      - name: Fix permissions for files
+        run: docker exec magento-project-community-edition sh -c 'find var generated vendor pub/static pub/media app/etc -type f -exec chmod u+w {} +'
+
+      - name: Fix permissions for directories
+        run: docker exec magento-project-community-edition sh -c 'find var generated vendor pub/static pub/media app/etc -type d -exec chmod u+w {} +'
+
       - name: Enable the extension
         run: docker exec magento-project-community-edition bash -c "php bin/magento module:enable CM_Payments && php bin/magento setup:upgrade && php bin/magento setup:di:compile"
 
