@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace CM\Payments\Test\Unit\Service;
 
+use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\Service\OrderItemsRequestBuilderInterface;
 use CM\Payments\Client\Model\Request\OrderItemCreate;
 use CM\Payments\Client\Request\OrderItemsCreateRequest;
@@ -363,6 +364,10 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
         $orderItemsFactoryMock = $this->getMockupFactory(OrderItemCreate::class);
         $orderItemsCreateRequestFactoryMock = $this->getMockupFactory(OrderItemsCreateRequest::class);
 
+        $config = $this->getMockBuilder(ConfigInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $orderItemRequestParts = [
             new OrderItemId(),
             new OrderItemSku(),
@@ -394,6 +399,7 @@ class OrderItemsRequestBuilderTest extends UnitTestCase
         $this->orderItemsRequestBuilder = new OrderItemsRequestBuilder(
             $orderItemsFactoryMock,
             $orderItemsCreateRequestFactoryMock,
+            $config,
             $orderItemRequestParts,
             $quoteItemRequestParts
         );
