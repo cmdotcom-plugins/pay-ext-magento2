@@ -94,7 +94,7 @@ For more details on the configuring see the payment methonds section below.
 ## Requirements
 
 - Magento Open Source / Enterprise version 2.3.x & 2.4.x
-- PHP 7.3+
+- PHP 7.2+
 
 ## Setup local development environment
 
