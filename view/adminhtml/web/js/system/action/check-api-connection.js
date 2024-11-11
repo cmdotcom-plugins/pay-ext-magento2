@@ -74,7 +74,6 @@ define([
                 merchantName = this.merchantNameContainer.val(),
                 merchantPassword = this.merchantPasswordContainer.val(),
                 merchantKey = this.merchantKeyContainer.val();
-            debugger;
 
             if (merchantName !== '' && merchantPassword !== '' && merchantKey !== '') {
                 $.ajax({

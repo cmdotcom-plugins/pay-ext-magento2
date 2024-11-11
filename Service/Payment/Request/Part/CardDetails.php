@@ -62,7 +62,7 @@ class CardDetails implements RequestPartInterface
         $browserInformation = new BrowserInformation(
             $browserDetails->getShopperIp() ?? $this->getShopperIp(),
             $browserDetails->getAccept() ?? $this->getAccept(),
-            $browserDetails->getUserAgent() ?? $this->getUserAgent(),
+            $browserDetails->getUserAgent() ?? $this->getUserAgent()
         );
         $encryptedCardDetails = new EncryptedCardDetails($cardDetails->getEncryptedCardData());
         $paymentCardDetails = new CardDetailsModel($browserInformation, $encryptedCardDetails);

@@ -62,10 +62,7 @@ class VersionService implements VersionServiceInterface
         $client = $this->clientFactory->create();
         try {
             /** @var Response $response */
-            $response = $client->request(
-                Request::HTTP_METHOD_GET,
-                $this->getRepositoryUrl(),
-            );
+            $response = $client->request(Request::HTTP_METHOD_GET, $this->getRepositoryUrl());
 
             $result = $this->jsonSerializer->unserialize(
                 $response->getBody()->getContents()
