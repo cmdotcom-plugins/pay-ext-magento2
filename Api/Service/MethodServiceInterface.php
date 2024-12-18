@@ -103,11 +103,7 @@ interface MethodServiceInterface
         ],
         [
             'id' => 'FVLBNL22',
-            'name' => 'Van Lanschot Bankiers',
-        ],
-        [
-            'id' => 'MOYONL21',
-            'name' => 'Moneyou',
+            'name' => 'Van Lanschot',
         ],
         [
             'id' => 'SNSBNL2A',
@@ -119,23 +115,31 @@ interface MethodServiceInterface
         ],
         [
             'id' => 'INGBNL2A',
-            'name' => 'ING Bank',
-        ],
-        [
-            'id' => 'HANDNL2A',
-            'name' => 'Handelsbanken',
-        ],
-        [
-            'id' => 'KREDBE22',
-            'name' => 'KBC',
+            'name' => 'ING',
         ],
         [
             'id' => 'ABNANL2A',
-            'name' => 'ABN Amro Bank',
+            'name' => 'ABN Amro',
         ],
         [
             'id' => 'RABONL2U',
             'name' => 'Rabobank'
+        ],
+        [
+            'id' => 'BITSNL2A',
+            'name' => 'Yoursafe'
+        ],
+        [
+            'id' => 'NNBANL2G',
+            'name' => 'Nationale-Nederlanden'
+        ],
+        [
+            'id' => 'NTSBDEB1',
+            'name' => 'N26'
+        ],
+        [
+            'id' => 'REVOLT21',
+            'name' => 'Revolut'
         ]
     ];
 
