@@ -22,16 +22,14 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <!-- ko if: issuers() -->
-        <div id="iban-select" class="field-select-billing" data-mage-init='{"loader": { "icon": "{store URL}/static/{static version}/frontend/Magento/luma/en_US/images/loader-2.gif"}}'>
+        <div id="iban-select" class="field-select-billing" data-mage-init='{"loader": { "icon": "{store URL}/static/{static version}/frontend/Magento/luma/en_US/images/loader-2.gif"}}' style="display:none">
             <form class="form" data-bind="attr: {'id': getCode() + '-form'}">
                 <select data-bind="options: issuers(), optionsValue: 'id', optionsText: 'name',
-                    optionsCaption: '-- Please select --', value: selectedIssuer" data-validate="{required:true}">
+                    optionsCaption: '-- Please select --', value: selectedIssuer">
                 </select>
             </form>
         </div>
         <br/>
-        <!--/ko-->
 
         <div class="payment-method-billing-address">
             <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->

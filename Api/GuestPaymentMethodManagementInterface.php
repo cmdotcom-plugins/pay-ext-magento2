@@ -35,11 +35,11 @@ interface GuestPaymentMethodManagementInterface
 
     /**
      * @param string $cartId
-     * @return \CM\Payments\Client\Api\IdealIssuerInterface[]
+     * @return \CM\Payments\Client\Api\IdealIssuerInterface[]|bool
      *
      * @throws InputException
      * @throws StateException
      * @throws NoSuchEntityException
      */
-    public function getIbanIssuers(string $cartId): array;
+    public function getIbanIssuers(string $cartId);
 }

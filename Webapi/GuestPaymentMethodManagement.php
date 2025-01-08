@@ -55,7 +55,7 @@ class GuestPaymentMethodManagement implements GuestPaymentMethodManagementInterf
     /**
      * {@inheritDoc}
      */
-    public function getIbanIssuers(string $cartId): array
+    public function getIbanIssuers(string $cartId)
     {
         $quoteId = $this->maskedQuoteIdToQuoteId->execute($cartId);
 

@@ -42,8 +42,13 @@ define([
 
             var self = this;
 
-            getIssuers().done(function(issuers) {
-                self.issuers(issuers);
+            getIssuers().done(function (issuers) {
+                if ((issuers !== undefined) && (issuers.length > 0)) {
+                    $('#iban-select').show();
+                    $('#iban-select > form > select').attr('data-validate', "{required:true}");
+                    self.issuers(issuers);
+                }
+
                 $('#iban-select').trigger('processStop');
             });
 

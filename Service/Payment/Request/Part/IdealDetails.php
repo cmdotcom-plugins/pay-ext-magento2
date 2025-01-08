@@ -29,9 +29,12 @@ class IdealDetails implements RequestPartInterface
         }
 
         $value = $this->getSelectedIssuer($order);
-        $paymentCreate->setIdealDetails([
-            'issuer_id' => $value
-        ]);
+
+        if (!empty($value)) {
+            $paymentCreate->setIdealDetails([
+                'issuer_id' => $value
+            ]);
+        }
 
         return $paymentCreate;
     }

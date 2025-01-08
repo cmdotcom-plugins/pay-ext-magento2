@@ -35,11 +35,11 @@ interface PaymentMethodManagementInterface
 
     /**
      * @param int $cartId
-     * @return \CM\Payments\Client\Api\IdealIssuerInterface[]
+     * @return \CM\Payments\Client\Api\IdealIssuerInterface[]|bool
      *
      * @throws InputException
      * @throws StateException
      * @throws NoSuchEntityException
      */
-    public function getIbanIssuers(int $cartId): array;
+    public function getIbanIssuers(int $cartId);
 }

@@ -45,6 +45,7 @@ interface ConfigInterface
     public const XML_PATH_PAYMENT_GIFTCARD_PROFILE = 'payment/cm_payments_giftcard/profile';
     public const XML_PATH_PAYMENT_KLARNA_MANUAL_CAPTURE = 'payment/cm_payments_klarna/manual_capture';
     public const XML_PATH_PAYMENT_CM_PAYMENTS_PROFILE = 'payment/cm_payments/profile';
+    public const XML_PATH_PAYMENT_IDEAL_ENABLE_ISSUER_SELECTION = 'payment/cm_payments_ideal/enable_issuer_selection';
 
     /**
      * Checks that extension is enabled
@@ -280,4 +281,9 @@ interface ConfigInterface
      * @return bool
      */
     public function isLogAllRestApiCalls(): bool;
+
+    /**
+     * @return bool
+     */
+    public function isIdealIssuerSelectionEnabled(): bool;
 }

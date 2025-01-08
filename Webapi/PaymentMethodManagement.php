@@ -101,8 +101,12 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
     /**
      * {@inheritDoc}
      */
-    public function getIbanIssuers(int $cartId): array
+    public function getIbanIssuers(int $cartId)
     {
+        if (!$this->configService->isIdealIssuerSelectionEnabled()) {
+            return false;
+        }
+
         if (!$this->configService->isAvailablePaymentMethodsCheckEnabled()) {
             $issuers = [];
 

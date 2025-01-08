@@ -297,6 +297,16 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/cm_payments_ideal/active</config_path>
                 </field>
+                <field id="enable_issuer_selection" translate="label comment" type="select" sortOrder="35" showInDefault="1" showInWebsite="1"
+                       showInStore="1" canRestore="1">
+                    <label>Enable Issuer Select</label>
+                    <comment><![CDATA[Enable Ideal Issuer Checkout Selection (Deprecated)]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/cm_payments_ideal/enable_issuer_selection</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
                 <field id="title" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
                        showInStore="1" canRestore="1">
                     <label>Title</label>
