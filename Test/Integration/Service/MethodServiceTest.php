@@ -108,19 +108,7 @@ class MethodServiceTest extends IntegrationTestCase
             [],
             [
                 [
-                    'method' => 'IDEAL',
-                    'ideal_details' => [
-                        'issuers' => [
-                            [
-                                'id' => 'BUNQNL2A',
-                                'name' => 'bunq'
-                            ],
-                            [
-                                'id' => 'ASNBNL21',
-                                'name' => 'ASN Bank'
-                            ]
-                        ],
-                    ],
+                    'method' => 'IDEAL'
                 ],
                 [
                     'method' => 'BANCONTACT',
@@ -171,19 +159,7 @@ class MethodServiceTest extends IntegrationTestCase
             [],
             [
                 [
-                    'method' => 'IDEAL',
-                    'ideal_details' => [
-                        'issuers' => [
-                            [
-                                'id' => 'BUNQNL2A',
-                                'name' => 'bunq'
-                            ],
-                            [
-                                'id' => 'ASNBNL21',
-                                'name' => 'ASN Bank'
-                            ]
-                        ],
-                    ],
+                    'method' => 'IDEAL'
                 ],
                 [
                     'method' => 'KBC',
@@ -235,18 +211,6 @@ class MethodServiceTest extends IntegrationTestCase
             [
                 [
                     'method' => 'IDEAL',
-                    'ideal_details' => [
-                        'issuers' => [
-                            [
-                                'id' => 'BUNQNL2A',
-                                'name' => 'bunq'
-                            ],
-                            [
-                                'id' => 'ASNBNL21',
-                                'name' => 'ASN Bank'
-                            ]
-                        ],
-                    ],
                 ],
                 [
                     'method' => 'CBC',
@@ -702,18 +666,6 @@ class MethodServiceTest extends IntegrationTestCase
         return [
             [
                 'method' => 'IDEAL',
-                'ideal_details' => [
-                    'issuers' => [
-                        [
-                            'id' => 'BUNQNL2A',
-                            'name' => 'bunq'
-                        ],
-                        [
-                            'id' => 'ASNBNL21',
-                            'name' => 'ASN Bank'
-                        ]
-                    ],
-                ],
             ],
             [
                 'method' => 'BANCONTACT',

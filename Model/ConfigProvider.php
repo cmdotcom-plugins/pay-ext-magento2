@@ -128,10 +128,6 @@ class ConfigProvider implements ConfigProviderInterface
                 $config['payment'][$code]['image'] = $this->getImage($code);
                 $config['payment'][$code]['is_direct'] = $this->configService->isMethodDirect($code);
 
-                if ($code == self::CODE_IDEAL) {
-                    $config['payment'][$code]['issuers'] = [];
-                }
-
                 if (in_array($code, [self::CODE_CREDIT_CARD, self::CODE_MAESTRO, self::CODE_VPAY])) {
                     $config['payment'][$code]['encryption_library'] = $this->configService->getEncryptLibrary();
                     $config['payment'][$code]['nsa3ds_library'] = $this->configService->getNsa3dsLibrary();

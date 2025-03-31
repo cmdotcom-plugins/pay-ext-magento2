@@ -17,22 +17,6 @@ class PaymentMethodAdditionalData extends AbstractExtensibleModel implements Pay
     /**
      * {@inheritdoc}
      */
-    public function getIssuers(): array
-    {
-        return $this->getData(self::ISSUERS);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setIssuers(array $issuers): PaymentMethodAdditionalDataInterface
-    {
-        return $this->setData(self::ISSUERS, $issuers);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getExtensionAttributes(): ?PaymentMethodAdditionalDataExtensionInterface
     {
         return $this->_getExtensionAttributes();

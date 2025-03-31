@@ -6,7 +6,6 @@
 define([
     'Magento_Checkout/js/view/payment/default',
     'Magento_Checkout/js/action/redirect-on-success',
-    'CM_Payments/js/action/ideal/get-issuers',
     'mage/url',
     'jquery',
     'loader',
@@ -14,7 +13,6 @@ define([
 ], function (
     Component,
     redirectOnSuccessAction,
-    getIssuers,
     url,
     $,
     loader,
@@ -24,8 +22,6 @@ define([
     return Component.extend({
         defaults: {
             template: 'CM_Payments/payment/ideal',
-            selectedIssuer: null,
-            issuers: ko.observable([]),
             paymentConfig: ''
         },
 
@@ -38,19 +34,7 @@ define([
             this._super();
             this.paymentConfig = window.checkoutConfig.payment[this.item.method];
 
-            $('#iban-select').trigger('processStart');
-
             var self = this;
-
-            getIssuers().done(function (issuers) {
-                if ((issuers !== undefined) && (issuers.length > 0)) {
-                    $('#iban-select').show();
-                    $('#iban-select > form > select').attr('data-validate', "{required:true}");
-                    self.issuers(issuers);
-                }
-
-                $('#iban-select').trigger('processStop');
-            });
 
             return this;
         },
@@ -65,25 +49,13 @@ define([
         },
 
         /**
-         * Get selected issuer
-         *
-         * @returns string
-         */
-        getSelectedIssuer: function () {
-            return this.selectedIssuer;
-        },
-
-        /**
          * Add extra data to request payload paymentInformation
          *
-         * @returns {{additional_data: {selected_issuer: *}, method}}
+         * @returns {{method}}
          */
         getData: function () {
             return {
-                'method': this.item.method,
-                'additional_data': {
-                    "selected_issuer": this.getSelectedIssuer()
-                }
+                'method': this.item.method
             };
         },
 

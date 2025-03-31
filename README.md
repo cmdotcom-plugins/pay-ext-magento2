@@ -138,7 +138,7 @@ This payment method redirects to the CM.com payment menu. In the payment menu yo
 
 ### iDEAL
 
-This method shows the bank issuers in the Magento checkout and redirects directly to the selected issuer. 
+This payment method redirects to the ideal payment menu.
 
 ### Paypal
 

@@ -22,23 +22,6 @@
         </resources>
     </route>
 
-    <route url="/V1/guest-carts/:cartId/cmpayments/get-iban-issuers" method="POST">
-        <service class="CM\Payments\Api\GuestPaymentMethodManagementInterface" method="getIbanIssuers"/>
-        <resources>
-            <resource ref="anonymous"/>
-        </resources>
-    </route>
-
-    <route url="/V1/carts/mine/cmpayments/get-iban-issuers" method="POST">
-        <service class="CM\Payments\Api\PaymentMethodManagementInterface" method="getIbanIssuers"/>
-        <resources>
-            <resource ref="self"/>
-        </resources>
-        <data>
-            <parameter name="cartId" force="true">%cart_id%</parameter>
-        </data>
-    </route>
-
     <route url="/V1/guest-carts/:cartId/cmpayments/get-payment-methods" method="POST">
         <service class="CM\Payments\Api\GuestPaymentMethodManagementInterface" method="getPaymentMethods"/>
         <resources>

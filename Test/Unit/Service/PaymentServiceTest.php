@@ -202,10 +202,7 @@ class PaymentServiceTest extends UnitTestCase
         );
         $order = $this->getOrderMock();
         $paymentCreate = new PaymentCreate(
-            MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_IDEAL],
-            [
-                'ideal_details' => ['issuer_id' => 'INGBNL2A']
-            ]
+            MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_IDEAL]
         );
         $paymentCreateRequest = new PaymentCreateRequest('0287A1617D93780EF28044B98438BF2F', $paymentCreate);
 
@@ -335,10 +332,7 @@ class PaymentServiceTest extends UnitTestCase
             new PaymentCreateRequest(
                 '0287A1617D93780EF28044B98438BF2F',
                 new PaymentCreate(
-                    MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_IDEAL],
-                    [
-                        'ideal_details' => ['issuer_id' => 'INGBNL2A']
-                    ]
+                    MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_IDEAL]
                 )
             )
         );

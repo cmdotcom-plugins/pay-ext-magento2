@@ -36,7 +36,6 @@
     <preference for="CM\Payments\Api\Model\Data\PaymentInterface" type="CM\Payments\Model\Data\Payment"/>
     <preference for="CM\Payments\Api\Data\PaymentMethodAdditionalDataInterface"
                 type="CM\Payments\Model\PaymentMethodAdditionalData"/>
-    <preference for="CM\Payments\Api\Data\IssuerInterface" type="CM\Payments\Model\Issuer" />
     <preference for="CM\Payments\Api\Model\Domain\CMOrderInterface" type="CM\Payments\Model\Domain\CMOrder" />
     <preference for="CM\Payments\Api\Model\Domain\PaymentOrderStatusInterface" type="CM\Payments\Model\Domain\PaymentOrderStatus" />
     <preference for="CM\Payments\Api\Config\ConfigInterface" type="CM\Payments\Config\Config" />
@@ -57,7 +56,6 @@
         <arguments>
             <argument name="parts" xsi:type="array">
                 <item name="method" xsi:type="object">CM\Payments\Service\Payment\Request\Part\Method</item>
-                <item name="idealDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\IdealDetails</item>
                 <item name="elvDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\ElvDetails</item>
                 <item name="cardDetails" xsi:type="object">CM\Payments\Service\Payment\Request\Part\CardDetails</item>
             </argument>
@@ -136,7 +134,6 @@
     <type name="CM\Payments\Observer\AdditionalDataAssignObserver">
         <arguments>
             <argument name="additionalInformationList" xsi:type="array">
-                <item name="selected_issuer" xsi:type="string">selected_issuer</item>
                 <item name="iban" xsi:type="string">iban</item>
                 <item name="dob" xsi:type="string">dob</item>
             </argument>

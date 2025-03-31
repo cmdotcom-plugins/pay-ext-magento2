@@ -15,27 +15,6 @@ use Magento\Payment\Model\InfoInterface;
 
 class AdditionalDataAssignObserverTest extends IntegrationTestCase
 {
-    public function testSetAdditionalData()
-    {
-        /** @var AdditionalDataAssignObserver $additionalDataAssignObserver */
-        $additionalDataAssignObserver = $this->objectManager->create(AdditionalDataAssignObserver::class);
-
-        $paymentInfoMock = $this->createMock(InfoInterface::class);
-        $event = $this->objectManager->create(Event::class);
-        $data =  $this->objectManager->create(DataObject::class);
-        $data->setData('additional_data', [
-            'selected_issuer' => 'ING'
-        ]);
-        $event->setData('payment_model', $paymentInfoMock);
-        $event->setData('data', $data);
-
-        /** @var Observer $observer */
-        $observer = $this->objectManager->create(Observer::class, ['event' => $event]);
-        $observer->setEvent($event);
-        $paymentInfoMock->expects($this->once())->method('setAdditionalInformation')->with('selected_issuer', 'ING');
-
-        $additionalDataAssignObserver->execute($observer);
-    }
 
     public function testDoNothingWhenAdditionalDataIsNotAnArray()
     {

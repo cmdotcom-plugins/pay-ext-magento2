@@ -18,26 +18,6 @@ use Magento\Framework\Api\ExtensibleDataInterface;
 interface PaymentMethodAdditionalDataInterface extends ExtensibleDataInterface
 {
     /**
-     * Properties
-     */
-    public const ISSUERS = 'issuers';
-
-    /**
-     * Get issuers
-     *
-     * @return \CM\Payments\Api\Data\IssuerInterface[]
-     */
-    public function getIssuers(): array;
-
-    /**
-     * Set code
-     *
-     * @param \CM\Payments\Api\Data\IssuerInterface[] $issuers
-     * @return PaymentMethodAdditionalDataInterface
-     */
-    public function setIssuers(array $issuers): PaymentMethodAdditionalDataInterface;
-
-    /**
      * Retrieve existing extension attributes object or create a new one.
      *
      * @return \CM\Payments\Api\Data\PaymentMethodAdditionalDataExtensionInterface|null

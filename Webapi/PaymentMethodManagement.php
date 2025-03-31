@@ -11,8 +11,6 @@ namespace CM\Payments\Webapi;
 use CM\Payments\Api\Config\ConfigInterface;
 use CM\Payments\Api\PaymentMethodManagementInterface;
 use CM\Payments\Api\Service\MethodServiceInterface;
-use CM\Payments\Client\Model\Response\Method\IdealIssuer;
-use CM\Payments\Exception\PaymentMethodNotFoundException;
 use Magento\Checkout\Api\Data\PaymentDetailsInterface;
 use Magento\Checkout\Model\PaymentDetailsFactory;
 use Magento\Framework\Exception\InputException;
@@ -60,6 +58,8 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
      * @param PaymentDetailsFactory $paymentDetailsFactory
      * @param CartTotalRepositoryInterface $cartTotalsRepository
      * @param CartRepositoryInterface $quoteRepository
+     * @param MethodServiceInterface $methodService
+     * @param ConfigInterface $configService
      */
     public function __construct(
         CheckoutPaymentMethodManagementInterface $paymentMethodManagement,
@@ -96,41 +96,6 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
         $paymentDetails->setTotals($this->cartTotalsRepository->get($cartId));
 
         return $paymentDetails;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getIbanIssuers(int $cartId)
-    {
-        if (!$this->configService->isIdealIssuerSelectionEnabled()) {
-            return false;
-        }
-
-        if (!$this->configService->isAvailablePaymentMethodsCheckEnabled()) {
-            $issuers = [];
-
-            foreach (MethodServiceInterface::IDEAL_ISSUERS as $issuer) {
-                $issuers[] = new IdealIssuer($issuer);
-            }
-
-            return $issuers;
-        }
-
-        /** @var Quote $quote */
-        $quote = $this->quoteRepository->getActive($cartId);
-        $this->validateQuote($quote);
-
-        try {
-            $cmMethods = $this->methodService->getCmMethods($quote->getCmOrderKey());
-            $idealMethod = $this->methodService->getMethodFromList(MethodServiceInterface::CM_METHOD_IDEAL, $cmMethods);
-
-            return $idealMethod->getIdealIssuers();
-        } catch (PaymentMethodNotFoundException $exception) {
-            throw new InputException(
-                __('Ideal method not found in the list')
-            );
-        }
     }
 
     /**

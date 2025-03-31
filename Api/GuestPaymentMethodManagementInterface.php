@@ -32,14 +32,4 @@ interface GuestPaymentMethodManagementInterface
      * @throws NoSuchEntityException
      */
     public function getPaymentMethods(string $cartId, ?AddressInterface $shippingAddress): PaymentDetailsInterface;
-
-    /**
-     * @param string $cartId
-     * @return \CM\Payments\Client\Api\IdealIssuerInterface[]|bool
-     *
-     * @throws InputException
-     * @throws StateException
-     * @throws NoSuchEntityException
-     */
-    public function getIbanIssuers(string $cartId);
 }

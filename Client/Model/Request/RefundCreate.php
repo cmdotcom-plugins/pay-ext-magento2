@@ -51,8 +51,14 @@ class RefundCreate
     /**
      * Order constructor
      *
-     * @param string $method
-     * @param array $idealDetails
+     * @param string $orderKey
+     * @param string $paymentId
+     * @param string $orderId
+     * @param string $description
+     * @param int $amount
+     * @param string $currency
+     * @param string $refundReference
+     * @param string $refundRequiredDate
      */
     public function __construct(
         string $orderKey,

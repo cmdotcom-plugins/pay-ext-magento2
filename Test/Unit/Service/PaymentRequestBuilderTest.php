@@ -38,11 +38,6 @@ class PaymentRequestBuilderTest extends UnitTestCase
             MethodServiceInterface::API_METHODS_MAPPING[ConfigProvider::CODE_IDEAL],
             $paymentRequest->getPayload()['method']
         );
-
-        $this->assertSame(
-            'INGBNL2A',
-            $paymentRequest->getPayload()['ideal_details']['issuer_id']
-        );
     }
 
     public function testCreatePaypalPaymentRequestBuilder()
@@ -86,15 +81,6 @@ class PaymentRequestBuilderTest extends UnitTestCase
         $orderMock = $this->createMock(Order::class);
         $paymentMock = $this->createMock(OrderPaymentInterface::class);
         $paymentMock->method('getMethod')->willReturn($paymentMethod);
-
-        if ($paymentMethod == ConfigProvider::CODE_IDEAL) {
-            $paymentMock->method('getAdditionalInformation')->willReturn(
-                [
-                    'selected_issuer' => 'INGBNL2A'
-                ]
-            );
-        }
-
         $paymentMock->method('setAdditionalInformation')->willReturnSelf();
 
         $orderMock->method('getEntityId')->willReturn('1');

@@ -514,16 +514,6 @@ class Config implements ConfigInterface
         return $manualCapture === '1' || $manualCapture === true;
     }
 
-    public function isIdealIssuerSelectionEnabled(): bool
-    {
-        return $this->getConfig(
-            self::XML_PATH_PAYMENT_IDEAL_ENABLE_ISSUER_SELECTION,
-            ScopeInterface::SCOPE_STORES,
-            (string)$this->storeManager->getStore()->getId(),
-            true
-        );
-    }
-
     /**
      * Get config value by path
      *
