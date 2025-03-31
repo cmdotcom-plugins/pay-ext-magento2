@@ -52,7 +52,7 @@
             </cm_payments>
             <cm_payments_ideal>
                 <active>0</active>
-                <enable_issuer_selection>1</enable_issuer_selection>
+                <enable_issuer_selection>0</enable_issuer_selection>
                 <mode>direct</mode>
                 <model>CMPaymentsIdealFacade</model>
                 <order_status>pending</order_status>
