@@ -45,7 +45,7 @@ class GuestPaymentMethodManagement implements GuestPaymentMethodManagementInterf
      */
     public function getPaymentMethods(
         string $cartId,
-        AddressInterface $shippingAddress = null
+        ?AddressInterface $shippingAddress = null
     ): PaymentDetailsInterface {
         $quoteId = $this->maskedQuoteIdToQuoteId->execute($cartId);
 

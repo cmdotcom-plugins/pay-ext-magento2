@@ -82,7 +82,7 @@ class PaymentMethodManagement implements PaymentMethodManagementInterface
      */
     public function getPaymentMethods(
         int $cartId,
-        AddressInterface $shippingAddress = null
+        ?AddressInterface $shippingAddress = null
     ): PaymentDetailsInterface {
         /** @var Quote $quote */
         $quote = $this->quoteRepository->getActive($cartId);

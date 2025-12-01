@@ -239,7 +239,7 @@ class Config implements ConfigInterface
     /**
      * @inheritDoc
      */
-    public function getPaymentProfile(string $paymentMethod = null): string
+    public function getPaymentProfile(?string $paymentMethod = null): string
     {
         $defaultPaymentMethodProfile = $this->getConfig(
             self::XML_PATH_PAYMENT_PROFILE,

@@ -36,7 +36,7 @@ class PaymentCreate
     public function __construct(
         string $method = '',
         array $elvDetails = [],
-        CardDetails $cardDetails = null
+        ?CardDetails $cardDetails = null
     ) {
         $this->method = $method;
         $this->elvDetails = $elvDetails;

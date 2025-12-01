@@ -90,7 +90,7 @@ interface ConfigInterface
      * @return string
      * @throws NoSuchEntityException
      */
-    public function getPaymentProfile(string $paymentMethod = null): string;
+    public function getPaymentProfile(?string $paymentMethod = null): string;
 
     /**
      * Get mode

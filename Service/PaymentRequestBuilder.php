@@ -58,9 +58,9 @@ class PaymentRequestBuilder implements PaymentRequestBuilderInterface
     public function create(
         string $orderId,
         string $orderKey,
-        OrderInterface $order = null,
-        CardDetailsInterface $cardDetails = null,
-        BrowserDetailsInterface $browserDetails = null
+        ?OrderInterface $order = null,
+        ?CardDetailsInterface $cardDetails = null,
+        ?BrowserDetailsInterface $browserDetails = null
     ): PaymentCreateRequest {
         /** @var PaymentCreate $paymentCreate */
         $paymentCreate = $this->clientPaymentCreateFactory->create();

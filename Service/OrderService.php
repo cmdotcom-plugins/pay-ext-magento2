@@ -277,7 +277,7 @@ class OrderService implements OrderServiceInterface
      * @param OrderCreate $orderCreateResponse
      * @param int|null $orderId
      */
-    private function saveCmOrder(string $incrementId, OrderCreate $orderCreateResponse, int $orderId = null): void
+    private function saveCmOrder(string $incrementId, OrderCreate $orderCreateResponse, ?int $orderId = null): void
     {
         /** @var CMOrder $cmOrder */
         $model = $this->cmOrderFactory->create();

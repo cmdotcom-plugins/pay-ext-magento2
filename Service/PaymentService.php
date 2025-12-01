@@ -153,8 +153,8 @@ class PaymentService implements PaymentServiceInterface
      */
     public function create(
         int $orderId,
-        CardDetailsInterface $cardDetails = null,
-        BrowserDetailsInterface $browserDetails = null
+        ?CardDetailsInterface $cardDetails = null,
+        ?BrowserDetailsInterface $browserDetails = null
     ): CMPaymentInterface {
         $order = $this->orderRepository->get($orderId);
 

@@ -77,7 +77,7 @@ class UnitTestCase extends TestCase
      * @param ?string $interface
      * @return \PHPUnit\Framework\MockObject\MockObject
      */
-    protected function getMockupFactory(string $instanceName, string $interface = null)
+    protected function getMockupFactory(string $instanceName, ?string $interface = null)
     {
         $className = $interface ?? $instanceName;
         $orderFactoryMock = $this->getMockBuilder($className . 'Factory')

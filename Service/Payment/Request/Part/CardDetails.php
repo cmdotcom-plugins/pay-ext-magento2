@@ -49,9 +49,9 @@ class CardDetails implements RequestPartInterface
      */
     public function process(
         PaymentCreate $paymentCreate,
-        OrderInterface $order = null,
-        CardDetailsInterface $cardDetails = null,
-        BrowserDetailsInterface $browserDetails = null
+        ?OrderInterface $order = null,
+        ?CardDetailsInterface $cardDetails = null,
+        ?BrowserDetailsInterface $browserDetails = null
     ): PaymentCreate {
         if ($cardDetails === null || $browserDetails === null) {
             return $paymentCreate;
