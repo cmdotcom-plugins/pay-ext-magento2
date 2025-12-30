@@ -10,7 +10,6 @@ namespace CM\Payments\Test\Unit\Service;
 
 use CM\Payments\Client\Model\Request\PaymentCreate;
 use CM\Payments\Client\Request\PaymentCreateRequest;
-use CM\Payments\Service\Payment\Request\Part\IdealDetails;
 use CM\Payments\Service\Payment\Request\Part\Method;
 use CM\Payments\Service\PaymentRequestBuilder;
 use CM\Payments\Test\Unit\UnitTestCase;
@@ -105,7 +104,6 @@ class PaymentRequestBuilderTest extends UnitTestCase
             $clientPaymentCreateFactoryMock,
             $paymentCreateRequestFactoryMock,
             [
-                new IdealDetails(),
                 new Method()
             ]
         );
